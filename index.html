@@ -1005,5 +1005,141 @@ window.ensureCashSession=async function(point){
   if(!pending.length)return cash;const batch=db.batch(),now=nowIso();for(const tr of pending){const mov=db.collection('movimentos_caixa').doc();batch.set(mov,{id:mov.id,caixaId:cash.id,tipo:'transferencia_entrada_cantina',valorCentavos:Number(tr.valorCentavos||0),origemCaixaId:tr.origemCaixaId||null,transferenciaId:tr.id,usuarioId:state.user.id,usuarioNome:state.user.nome,dataChave:day,criadoEm:now});batch.set(tr.ref,{status:'recebido',destinoCaixaId:cash.id,recebidoPorId:state.user.id,recebidoPorNome:state.user.nome,recebidoEm:now,atualizadoEm:now},{merge:true})}await batch.commit();await audit('retornos_cantina_recebidos',{caixaId:cash.id,quantidade:pending.length,valorCentavos:pending.reduce((s,x)=>s+Number(x.valorCentavos||0),0)});return cash
 }
 </script>
+
+<style id="piaget-v122-brand-style">
+/* V1.2.2 — atualização exclusivamente visual de marca + conta sem QR Code */
+:root{--brand-icon-light:url('assets/logo-piaget-icon.png');--brand-icon-dark:url('assets/logo-piaget-icon-white-orange.png');--brand-icon-orange:url('assets/logo-piaget-icon-blue-white.png');--brand-icon-black:url('assets/logo-piaget-icon-white.png')}
+
+/* Cabeçalho fixo: símbolo simples + nome digitado no sistema */
+.brand-logo{
+  width:52px!important;height:52px!important;padding:2px!important;border-radius:0!important;
+  background:transparent!important;display:grid!important;place-items:center!important;overflow:visible!important;flex:none
+}
+.brand-logo img{width:48px!important;height:48px!important;object-fit:contain!important;display:block!important}
+.brand h1{font-size:18px!important;letter-spacing:.055em!important;line-height:1.05!important}
+.brand small{font-size:11px!important;margin-top:3px!important;display:block}
+
+/* Tela de escolha de perfil: símbolo simples grande; nunca assinatura completa reduzida */
+.role-brand{margin-bottom:24px!important}
+.role-brand-v122{display:flex;align-items:center;justify-content:center;gap:18px;max-width:560px;margin:0 auto}
+.role-brand-v122 img{width:96px;height:86px;object-fit:contain;display:block;flex:none}
+.role-brand-v122-copy{text-align:left;min-width:0}
+.role-brand-v122-copy strong{display:block;color:var(--azul);font-size:24px;line-height:1.05;letter-spacing:.045em;text-transform:uppercase}
+.role-brand-v122-copy span{display:block;margin-top:7px;color:var(--muted);font-size:13px;line-height:1.4}
+
+/* Setup / carregamento: símbolo simples com escala legível */
+.setup-brand-v120 img{width:88px!important;height:78px!important;max-height:none!important;object-fit:contain!important}
+
+/* Portal do responsável: fundo azul = versão branca + laranja, sem caixa branco */
+.parent-hero .v121-parent-icon,.parent-hero .v122-parent-icon{
+  width:78px!important;height:70px!important;object-fit:contain!important;display:block!important;
+  margin:0 0 14px 0!important;padding:0!important;background:transparent!important;border-radius:0!important;box-shadow:none!important
+}
+
+/* Pequenos estados vazios em fundo claro */
+.v121-empty-brand img{width:48px!important;height:43px!important;object-fit:contain!important}
+
+/* Relatório de conta sem QR: link e instruções ganham hierarquia */
+.wa-report-v122{background:#fff;width:760px;max-width:100%;padding:30px;color:#111;font-family:Arial,sans-serif}
+.wa-head-v122{display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:4px solid var(--azul);padding-bottom:18px;margin-bottom:18px}
+.wa-brand-v122{display:flex;align-items:center;gap:22px;min-width:0}
+.wa-brand-v122 img{width:260px;height:auto;max-height:138px;object-fit:contain;display:block;flex:none}
+.wa-report-title-v122{min-width:0}.wa-report-title-v122 strong{display:block;color:var(--azul);font-size:22px;line-height:1.05}.wa-report-title-v122 span{display:block;margin-top:6px;color:#6b7182;font-size:12px}
+.wa-access-v122{margin-top:18px;border:2px solid rgba(44,56,150,.16);border-left:7px solid var(--laranja);border-radius:16px;padding:18px;background:#f7f8fe}
+.wa-access-v122 h3{margin:0 0 9px;color:var(--azul);font-size:17px}
+.wa-access-v122 ol{margin:0 0 12px 20px;padding:0;color:#4c5262;font-size:12px;line-height:1.55}
+.wa-access-link-v122{display:block;background:#fff;border:1px solid rgba(44,56,150,.18);border-radius:11px;padding:12px;color:var(--azul);font-weight:700;font-size:12px;line-height:1.45;word-break:break-all}
+.wa-access-note-v122{margin-top:9px;color:#6b7182;font-size:11px;line-height:1.45}
+
+@media(max-width:720px){
+  .brand-logo{width:46px!important;height:46px!important}.brand-logo img{width:43px!important;height:43px!important}.brand h1{font-size:15px!important}
+  .role-brand-v122{gap:13px}.role-brand-v122 img{width:74px;height:66px}.role-brand-v122-copy strong{font-size:19px}.role-brand-v122-copy span{font-size:12px}
+  .wa-head-v122{align-items:flex-start}.wa-brand-v122{gap:14px;align-items:flex-start;flex-direction:column}.wa-brand-v122 img{width:220px}
+}
+</style>
+<script id="piaget-v122-brand-patch">
+/* =========================================================
+   Escola Piaget — V1.2.2
+   Escopo propositalmente restrito:
+   1) uso correto do símbolo simples na interface;
+   2) contraste por fundo;
+   3) relatório da conta sem QR Code, com link e instruções.
+   ========================================================= */
+const V122_VERSION='1.2.2-dev';
+const BRAND_V122={
+  light:'assets/logo-piaget-icon.png',
+  dark:'assets/logo-piaget-icon-white-orange.png',
+  orange:'assets/logo-piaget-icon-blue-white.png',
+  black:'assets/logo-piaget-icon-white.png',
+  full:BRAND_V120.full
+};
+
+function applyBrandingV122(){
+  /* Topbar em fundo claro: símbolo azul + laranja, com Escola Piaget digitado ao lado. */
+  const logo=document.querySelector('.brand-logo');
+  if(logo)logo.innerHTML=`<img src="${BRAND_V122.light}" alt="Símbolo Escola Piaget">`;
+  const brandTitle=document.querySelector('.brand h1');if(brandTitle)brandTitle.textContent='Escola Piaget';
+  const brandSub=document.querySelector('.brand small');if(brandSub)brandSub.textContent='Vendas, cantina e atendimento';
+
+  /* Tela de acesso: substitui a assinatura completa pequena por símbolo simples grande + texto do próprio sistema. */
+  const roleBrand=document.querySelector('#roleScreen .role-brand');
+  if(roleBrand)roleBrand.innerHTML=`<div class="role-brand-v122"><img src="${BRAND_V122.light}" alt="Símbolo Escola Piaget"><div class="role-brand-v122-copy"><strong>Escola Piaget</strong><span>Vendas, cantina e atendimento</span></div></div>`;
+
+  /* Telas de setup usam somente o símbolo simples. */
+  document.querySelectorAll('.setup-brand-v120 img').forEach(img=>{img.src=BRAND_V122.light;img.alt='Símbolo Escola Piaget'});
+
+  /* Card do aluno está em fundo azul: usa a variação branca + laranja, sem caixa branco. */
+  const parentHero=document.querySelector('#parentScreen .parent-hero');
+  if(parentHero){const img=parentHero.querySelector('img');if(img){img.src=BRAND_V122.dark;img.className='v122-parent-icon';img.alt='Símbolo Escola Piaget'}}
+
+  /* Pequenos estados em fundo claro. */
+  document.querySelectorAll('.v121-empty-brand img').forEach(img=>{img.src=BRAND_V122.light;img.alt='Símbolo Escola Piaget'});
+}
+window.addEventListener('DOMContentLoaded',applyBrandingV122);
+window.addEventListener('load',()=>{applyBrandingV122();setTimeout(applyBrandingV122,250);setTimeout(applyBrandingV122,850)});
+
+/* O portal do responsável é renderizado dinamicamente; reaplica a marca após cada renderização. */
+const _renderParentPortalV122=window.renderParentPortal;
+if(typeof _renderParentPortalV122==='function')window.renderParentPortal=async function(...args){const out=await _renderParentPortalV122.apply(this,args);applyBrandingV122();return out};
+
+/* Documento de conta: sem QR Code. O acesso passa a ser explicado e o link ganha destaque. */
+window.generateReport=async function(id){
+  const a=state.students.find(x=>x.id===id),acc=await getAccount(id),snap=await db.collection('movimentos_conta').where('alunoId','==',id).get(),rows=openDebtRowsForReportV110(snap.docs.map(d=>d.data())),link=parentUrl(a);
+  state.currentReportV110={type:'student',student:a,account:acc,rows,link};
+  $('#reportHost').classList.remove('hidden');
+  $('#reportHost').innerHTML=`<div id="reportSheet" class="wa-report wa-report-v122"><div class="wa-head-v122"><div class="wa-brand-v122"><img src="${BRAND_V122.full}" alt="Escola Piaget"><div class="wa-report-title-v122"><strong>Conta da Cantina</strong><span>Relatório de valores em aberto</span></div></div></div><div class="wa-student"><strong>${esc(a.nome)}</strong><div>${esc(a.turma)} · Matrícula ${esc(a.matricula)}</div><div class="muted">Emitido em ${new Date().toLocaleString('pt-BR')}</div></div><table class="wa-table"><thead><tr><th>Data</th><th>Itens</th><th style="text-align:right">Em aberto</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.data)}</td><td>${esc(r.itens)}</td><td style="text-align:right;font-weight:800">${fmt(r.valorCentavos)}</td></tr>`).join('')||'<tr><td colspan="3">Sem consumos em aberto detalhados.</td></tr>'}</tbody></table><div class="wa-total"><span>Total em aberto</span><strong>${fmt(acc.dividaCentavos)}</strong></div><div class="wa-access-v122"><h3>Como consultar a conta do aluno</h3><ol><li>Toque ou copie o link abaixo.</li><li>Abra o endereço no navegador do celular.</li><li>Na página do aluno, confira os lançamentos, o saldo e as opções disponíveis.</li></ol><span class="wa-access-link-v122">${esc(link)}</span><div class="wa-access-note-v122">Guarde este link para consultar novamente a conta deste aluno. Limite autorizado: ${fmt(acc.limiteFiadoCentavos)} · Compra sem saldo: ${acc.autorizadoSemSaldo?'Liberada':'Bloqueada'}.</div></div></div>`;
+  openModal('Relatório da conta',`<div class="alert">O relatório agora destaca o link de acesso à conta e traz instruções de consulta. O QR Code foi removido.</div><div class="actions" style="margin-top:14px"><button class="btn btn-primary" onclick="downloadReportPdf('${esc(a.matricula)}')">Baixar PDF A4</button><button class="btn btn-orange" onclick="downloadReportPng('${esc(a.matricula)}')">Baixar imagem</button><button class="btn btn-light" onclick="copyParentLink('${id}')">Copiar link</button></div>`)
+};
+
+window.downloadReportPdf=async function(mat){
+  const r=state.currentReportV110;if(!r||r.type!=='student')return;
+  const {jsPDF}=window.jspdf,pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'}),blue=[44,56,150],orange=[255,152,31],link=r.link;
+  let y=await drawPdfBrandHeaderV121(pdf,'Conta da Cantina','Relatório de valores em aberto');
+  pdf.setTextColor(20,24,40);pdf.setFont('helvetica','bold');pdf.setFontSize(12);pdf.text(r.student.nome,15,y+4);
+  pdf.setFont('helvetica','normal');pdf.setFontSize(10);pdf.text(`${r.student.turma} · Matrícula ${r.student.matricula}`,15,y+10);
+  pdf.setTextColor(100);pdf.text(`Emitido em ${new Date().toLocaleString('pt-BR')}`,15,y+16);y+=26;
+  const drawHead=()=>{pdf.setFillColor(238,240,248);pdf.rect(15,y,180,8,'F');pdf.setTextColor(70);pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.text('DATA',17,y+5.2);pdf.text('ITENS',49,y+5.2);pdf.text('EM ABERTO',172,y+5.2);y+=9};
+  drawHead();pdf.setFont('helvetica','normal');pdf.setTextColor(25);
+  for(const row of r.rows){
+    const lines=pdf.splitTextToSize(row.itens,112),h=Math.max(8,lines.length*4.4+3);
+    if(y+h>258){pdf.addPage();y=await drawPdfContinuationHeaderV121(pdf,'Conta da Cantina');drawHead()}
+    pdf.setDrawColor(225);pdf.line(15,y+h,195,y+h);pdf.setFontSize(9);pdf.text(row.data,17,y+5);pdf.text(lines,49,y+5);pdf.setFont('helvetica','bold');pdf.text(fmt(row.valorCentavos).replace(/\u00a0/g,' '),193,y+5,{align:'right'});pdf.setFont('helvetica','normal');y+=h
+  }
+  if(y>225){pdf.addPage();y=await drawPdfContinuationHeaderV121(pdf,'Conta da Cantina')}
+  pdf.setFillColor(...blue);pdf.roundedRect(15,y+4,180,18,3,3,'F');pdf.setTextColor(255);pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.text('TOTAL EM ABERTO',20,y+15);pdf.setFontSize(17);pdf.text(fmt(r.account.dividaCentavos).replace(/\u00a0/g,' '),190,y+16,{align:'right'});y+=31;
+  pdf.setTextColor(25);pdf.setFontSize(9);pdf.setFont('helvetica','normal');pdf.text(`Limite autorizado: ${fmt(r.account.limiteFiadoCentavos).replace(/\u00a0/g,' ')} · Compra sem saldo: ${r.account.autorizadoSemSaldo?'Liberada':'Bloqueada'}`,15,y);y+=9;
+
+  const instructions=['1. Toque no link abaixo ou copie o endereço.','2. Abra o endereço no navegador do celular.','3. Confira os lançamentos, o saldo e as opções disponíveis na página do aluno.'];
+  const boxY=y;pdf.setFillColor(247,248,254);pdf.setDrawColor(225,228,244);pdf.roundedRect(15,boxY,180,42,3,3,'FD');pdf.setFillColor(...orange);pdf.rect(15,boxY,3.5,42,'F');
+  pdf.setTextColor(...blue);pdf.setFont('helvetica','bold');pdf.setFontSize(11);pdf.text('COMO CONSULTAR A CONTA DO ALUNO',22,boxY+8);
+  pdf.setTextColor(70,76,94);pdf.setFont('helvetica','normal');pdf.setFontSize(8.5);let iy=boxY+14;for(const line of instructions){pdf.text(line,22,iy);iy+=5}
+  pdf.setTextColor(...blue);pdf.setFont('helvetica','bold');pdf.setFontSize(9);pdf.textWithLink('ABRIR CONTA DO ALUNO',22,boxY+34,{url:link});
+  pdf.setFont('helvetica','normal');pdf.setFontSize(7);pdf.setTextColor(82,88,108);pdf.text(pdf.splitTextToSize(link,105),82,boxY+33);
+  pdf.save(`conta-cantina-${mat}.pdf`)
+};
+
+window.addEventListener('load',()=>{db?.collection('configuracoes')?.doc('sistema')?.set({versao:V122_VERSION,atualizadoEm:nowIso()},{merge:true}).catch(()=>{});setTimeout(applyBrandingV122,1000)});
+</script>
+
 </body>
 </html>

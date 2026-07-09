@@ -1,23 +1,12 @@
-# Changelog — V1.2.1
+# Changelog
 
-## Documentos
-- identidade visual oficial adicionada ao PDF da conta;
-- identidade visual oficial adicionada à imagem para WhatsApp;
-- identidade visual oficial adicionada ao comprovante de venda;
-- identidade visual oficial adicionada ao fechamento de caixa;
-- logo completa usada somente em tamanho legível;
-- símbolo simples usado em espaços compactos e páginas de continuação.
-
-## Caixa
-- visão gerencial consolidada de todos os caixas;
-- consulta detalhada de movimentos por caixa;
-- divergência exige justificativa;
-- fechamento registra responsável e horário;
-- assinatura operacional do perfil registrada;
-- coleção `fechamentos_caixa` criada para snapshots;
-- retorno da cantina para secretaria espelhado quando possível;
-- transferências pendentes registradas quando o caixa de destino não está aberto.
-
-## Compatibilidade
-- atualização incremental;
-- sem exclusão ou reinicialização de dados existentes.
+## V1.2.2
+- Corrigido o uso equivocado de assinatura completa em espaços pequenos da interface.
+- Substituído o asset de ícone por símbolo simples oficial.
+- Adicionadas variações de símbolo por contraste de fundo.
+- Cabeçalho fixo refinado: símbolo simples + nome digitado do sistema.
+- Tela de seleção de perfil refinada: símbolo simples grande + texto.
+- Portal do responsável ajustado para símbolo branco/laranja em fundo azul.
+- QR Code removido do relatório da conta.
+- Link da conta do aluno destacado com instruções de consulta.
+- Nenhuma regra operacional alterada.
