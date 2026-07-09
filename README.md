@@ -1,40 +1,69 @@
-# Vendas Piaget — V1 integrada
+# Escola Piaget — Sistema de Vendas V1.2.0
 
-## Conteúdo
-- `index.html`: aplicação completa em um único HTML, com os 217 alunos reais incorporados para a primeira importação.
-- `obrigado.html`: retorno do checkout.
-- `api/`: criação do checkout, webhook e verificação da InfinitePay.
-- `lib/`: Firebase Admin e processamento idempotente de pagamentos.
-- `firestore.rules`: regra temporária de desenvolvimento, sem Authentication.
+Versão consolidada sobre a V1.1.0, mantendo os dados e IDs existentes no Firestore.
 
-## Primeiro uso
-1. No Firebase `vendaspiaget`, publique temporariamente o conteúdo de `firestore.rules`.
-2. Abra o `index.html` por um servidor local ou faça deploy na Vercel.
-3. Clique em **Importar base real**. O sistema grava alunos, contas zeradas, produtos, turmas e usuários provisórios. A inicialização não sobrescreve uma base já existente.
-4. Use os acessos provisórios de Ruan, Daniele, Evanda ou Lucas.
+## Implantação
 
-## InfinitePay na Vercel
-Configure estas variáveis de ambiente:
-- `FIREBASE_PROJECT_ID=vendaspiaget`
-- `FIREBASE_CLIENT_EMAIL=...`
-- `FIREBASE_PRIVATE_KEY=...`
-- `INFINITEPAY_HANDLE=piaget`
-- `PUBLIC_BASE_URL=https://seu-dominio.vercel.app`
+1. Faça o deploy da **pasta inteira**, não apenas do `index.html`.
+2. Preserve a subpasta `assets/`, pois a interface usa os arquivos oficiais da marca.
+3. Não apague o Firestore e não reinicialize alunos, contas ou vendas.
+4. Abra a aplicação e faça um teste com um perfil interno antes de liberar uso operacional.
 
-As credenciais Firebase Admin nunca devem ser colocadas no HTML.
+## O que mudou
 
-## Situação de segurança
-A V1 está preparada para desenvolvimento sem Authentication, conforme solicitado. As regras temporárias deixam o banco acessível a qualquer pessoa que conheça o projeto ou o endereço publicado. Antes de uso real/publicação, ativar Authentication e substituir as regras.
+### Identidade e experiência
+- paleta principal da Escola Piaget;
+- logotipo e ícone oficiais sem alterar proporção ou cores;
+- navegação mais limpa e responsiva;
+- telas específicas para secretaria, cantina, gestão e responsável;
+- venda da secretaria em fluxo guiado de quatro etapas: cliente, itens, pagamento e confirmação;
+- modais flutuantes para escolhas e pagamentos.
 
-## Dados e regras implantados
-- 217 alunos reais; os registros chamados “Aluno de teste” foram excluídos.
-- A matrícula duplicada `230106` é preservada em dois IDs internos diferentes; a pergunta de confirmação resolve qual aluno deve ser aberto.
-- Teto da escola para fiado: R$ 50; o responsável pode definir valor menor.
-- Pagamento quita dívida antes de gerar crédito.
-- 30 salgados por dia, editável.
-- Recreios: 9h–9h30, 9h30–10h e 15h30–16h.
-- Lanche completo = soma de salgado + suco ou salgado + refrigerante.
-- Camisa de farda: 4–14 por R$ 42; P–XGG por R$ 47, com modelo masculino/feminino a partir do P.
+### Catálogo e estoque
+- área `Produtos e estoque` com abas de produtos, estoque, movimentações, reposição e modelos de farda;
+- modos de controle: unitário, capacidade diária, derivado/combos e sem controle;
+- salgado continua com capacidade diária e configuração padrão existente;
+- combos consomem os componentes, não um estoque próprio;
+- venda interna da cantina, consumo em conta e venda da secretaria passam pela camada central de estoque;
+- toda movimentação gera histórico em `movimentos_estoque`.
 
-## Correção 1.0.1
-A persistência offline do Firestore foi removida do carregamento inicial. Em alguns navegadores, o SDK compat já iniciava a instância antes de `enablePersistence`, provocando a mensagem “Firestore has already been started”. A aplicação agora conecta diretamente ao Firestore e continua funcionando normalmente online.
+### Farda
+- modelos e variações por tamanho/modelo;
+- estoque por variação;
+- item disponível pode ser entregue ou reservado;
+- item indisponível não cria estoque negativo: segue para produção;
+- portal do responsável permite solicitar/comprar farda e informa se há entrega imediata ou produção.
+
+### Portal do responsável
+- ações principais mais claras: pedir lanche, comprar farda, pagar em aberto e adicionar crédito;
+- catálogo filtra produtos indisponíveis;
+- validação de disponibilidade antes de iniciar checkout;
+- histórico de pedidos de farda visível.
+
+## Migração automática
+
+Na primeira carga da V1.2, o sistema verifica `configuracoes/geral.v120Migrado`.
+
+Quando necessário, cria somente a estrutura nova:
+- campos de controle de estoque nos produtos existentes;
+- documentos de estoque sem inventar quantidades;
+- modelo padrão de camisa com tamanhos e preços já definidos no projeto;
+- variações de farda;
+- marca a migração como concluída.
+
+**Importante:** produtos unitários existentes começam com estoque `não configurado`, e não com quantidade fictícia. Cadastre o estoque físico real antes de liberar a venda desses itens. Fardas sem estoque configurado/disponível seguem para produção.
+
+## Limite técnico conhecido
+
+O portal do responsável valida a disponibilidade antes de iniciar o checkout. Para proteção completa contra duas pessoas comprarem a última unidade ao mesmo tempo, a confirmação final de pagamento deve revalidar e reservar/baixar estoque em uma transação no backend/webhook. A V1.2 não finge que essa proteção já existe.
+
+## Segurança
+
+O Authentication continua propositalmente adiado. O arquivo `firestore.rules` incluído é **temporário para desenvolvimento** e permite leitura/escrita abertas. Não use essas regras em ambiente público ou definitivo.
+
+## Arquivos principais
+- `index.html` — aplicação;
+- `obrigado.html` — retorno de pagamento;
+- `firestore.rules` — regras temporárias de desenvolvimento;
+- `assets/` — recursos visuais oficiais usados pela interface;
+- `preview-v1.2.png` — prévia visual.

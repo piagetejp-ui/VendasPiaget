@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Escola Piaget — Vendas e Cantina</title>
+<title>Escola Piaget — Vendas, Cantina e Atendimento</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -23,6 +23,238 @@
 @media(max-width:1080px){.sales-shell{grid-template-columns:1fr}.product-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:720px){.sale-toolbar .btn{min-width:calc(50% - 5px)}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.detail-toolbar{align-items:stretch}.detail-toolbar .fg{min-width:100%}.wa-report{width:680px}.kpi.clickable:hover{transform:none}}
 @media print{.topbar,.sidebar,.header,.btn,.actions,.modal-back{display:none!important}.shell{display:block!important}.main{padding:0!important}.card,.table-wrap{box-shadow:none!important;border-color:#bbb!important}.kpi{break-inside:avoid}.table-wrap{overflow:visible!important}table{page-break-inside:auto}tr{break-inside:avoid;page-break-inside:avoid}thead{display:table-header-group}@page{size:A4;margin:14mm}}
+</style>
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style id="piaget-v120-theme">
+/* =========================================================
+   Escola Piaget V1.2 — Identidade visual e UX refinada
+   Paleta oficial: #2C3896 / #FF981F / #000000 / #FFFFFF
+   ========================================================= */
+:root{
+  --azul:#2C3896;
+  --azul2:#23307f;
+  --azul3:#18225f;
+  --laranja:#FF981F;
+  --laranja2:#e9820a;
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --texto:#171820;
+  --muted:#6e7281;
+  --borda:#e7e8ef;
+  --verde:#15864b;
+  --vermelho:#c93636;
+  --amarelo:#a76b00;
+  --roxo:#6c4cb1;
+  --shadow:0 18px 55px rgba(25,32,86,.10);
+  --shadow-sm:0 8px 28px rgba(25,32,86,.08);
+  --radius:20px;
+}
+html{background:var(--bg)}
+body{
+  background:
+    radial-gradient(circle at 92% -10%,rgba(255,152,31,.10),transparent 28%),
+    radial-gradient(circle at 10% 0%,rgba(44,56,150,.08),transparent 26%),
+    var(--bg);
+  color:var(--texto);
+  font-family:'Montserrat','Barlow',Arial,sans-serif;
+}
+button,input,select,textarea{font-family:inherit}
+.title,.card-title,.setup h2,.parent-hero h2,.kpi-value{
+  font-family:'PP Monument Wide','Montserrat','Barlow',Arial,sans-serif;
+}
+
+/* Topbar */
+.topbar{
+  height:76px;
+  background:rgba(255,255,255,.94);
+  color:var(--texto);
+  border-bottom:1px solid rgba(44,56,150,.10);
+  box-shadow:0 8px 30px rgba(27,31,72,.06);
+  backdrop-filter:blur(16px);
+  padding:0 24px;
+}
+.brand{gap:13px}.brand-logo{
+  width:48px;height:48px;border-radius:14px;background:#fff;
+  overflow:hidden;padding:6px;
+}
+.brand-logo img{width:100%;height:100%;object-fit:contain;display:block}
+.brand h1{font-size:17px;letter-spacing:.08em;color:var(--azul);font-weight:800}
+.brand small{color:var(--muted);opacity:1;font-size:11px}
+.pill{background:#f0f2fb;color:var(--azul);font-weight:700;border:1px solid #e1e5f6}
+.top-actions .btn-orange{box-shadow:0 7px 20px rgba(255,152,31,.22)}
+
+/* App shell */
+.shell{grid-template-columns:258px 1fr;min-height:calc(100vh - 76px)}
+.sidebar{
+  background:linear-gradient(180deg,var(--azul) 0%,var(--azul3) 100%);
+  border-right:0;padding:18px 12px;color:#fff;box-shadow:8px 0 34px rgba(20,29,84,.08)
+}
+.nav-label{color:rgba(255,255,255,.52);padding:10px 13px 5px}
+.nav-btn{
+  color:rgba(255,255,255,.78);border-radius:14px;padding:12px 13px;font-weight:650;
+  transition:.18s ease;gap:11px
+}
+.nav-btn:hover{background:rgba(255,255,255,.10);color:#fff;transform:translateX(2px)}
+.nav-btn.active{
+  background:#fff;color:var(--azul);box-shadow:0 12px 30px rgba(0,0,0,.16);transform:none
+}
+.nav-btn.active:before{content:"";width:5px;height:20px;border-radius:999px;background:var(--laranja);margin-left:-4px}
+.nav-btn.active{box-shadow:0 12px 30px rgba(0,0,0,.16)}
+.nav-foot{
+  border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);
+  color:rgba(255,255,255,.72);border-radius:16px;padding:13px
+}
+.nav-foot strong{color:#fff}
+.main{padding:28px;max-width:1680px;width:100%;margin:0 auto}
+.header{align-items:center;margin-bottom:22px}
+.title{font-size:28px;letter-spacing:.015em;text-transform:none;color:#181a23}
+.subtitle{font-size:13px;margin-top:6px}
+.accent{width:44px;height:5px;background:var(--laranja);margin-bottom:10px}
+
+/* Cards and KPIs */
+.card,.kpi{
+  border:1px solid rgba(44,56,150,.09);border-radius:var(--radius);box-shadow:var(--shadow-sm)
+}
+.card{overflow:hidden}.card-head{padding:16px 18px;border-color:var(--borda);background:rgba(250,250,253,.78)}
+.card-title{font-size:13px;text-transform:none;letter-spacing:.02em;font-weight:800;color:#252735}
+.card-body{padding:18px}
+.kpi{padding:18px;transition:.18s ease;background:rgba(255,255,255,.97)}
+.kpi:before{height:4px;background:var(--azul)}
+.kpi.clickable:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:rgba(44,56,150,.20)}
+.kpi-label{font-size:10px;letter-spacing:.09em}
+.kpi-value{font-size:27px;letter-spacing:-.02em}
+.kpi-arrow{background:#f0f2fb;color:var(--azul);width:28px;height:28px;border-radius:999px;display:grid;place-items:center;position:absolute;right:13px;bottom:13px}
+
+/* Buttons */
+.btn{border-radius:12px;padding:11px 15px;transition:.16s ease;min-height:42px}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn-primary{background:var(--azul);box-shadow:0 8px 20px rgba(44,56,150,.20)}
+.btn-primary:hover{background:var(--azul2)}
+.btn-orange{background:var(--laranja);color:#161616;box-shadow:0 8px 20px rgba(255,152,31,.22)}
+.btn-light{background:#eef0fa;color:var(--azul)}
+.btn-outline{border:1px solid var(--borda);color:#4f5362;background:#fff}
+.btn-outline:hover{border-color:rgba(44,56,150,.28);color:var(--azul)}
+.btn-icon{width:42px;height:42px;padding:0;border-radius:13px}
+
+/* Forms */
+.fg label{font-size:10px;letter-spacing:.08em;color:#777b8b}
+.fi{
+  border:1px solid #dfe1eb;border-radius:13px;padding:12px 13px;background:#fff;
+  min-height:46px;transition:.15s ease
+}
+.fi:focus{border-color:var(--azul);box-shadow:0 0 0 4px rgba(44,56,150,.09)}
+textarea.fi{min-height:100px}
+.search-results{max-height:300px}
+.student-row{border-radius:14px;padding:12px 13px;transition:.15s ease}
+.student-row:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(44,56,150,.08)}
+
+/* Tables */
+.table-wrap{border-color:var(--borda);border-radius:16px}
+th{background:#f3f4f9;color:#747988;padding:11px 12px}
+td{padding:12px;border-color:#ececf2}
+tr:hover td{background:#fafaff}
+
+/* Modal */
+.modal-back{background:rgba(16,20,51,.58);backdrop-filter:blur(8px);padding:22px;z-index:220}
+.modal{width:min(820px,100%);border-radius:24px;box-shadow:0 40px 110px rgba(7,12,44,.30);border:1px solid rgba(255,255,255,.36)}
+.modal-head{padding:18px 21px;background:#fbfbfd}.modal-body{padding:21px}.x{border-radius:12px}
+
+/* Role / setup screens */
+.role-screen{
+  min-height:calc(100vh - 76px);
+  background:
+    linear-gradient(135deg,rgba(44,56,150,.06),rgba(255,152,31,.05)),
+    var(--bg);
+}
+.role-box{width:min(1040px,100%)}
+.role-brand{display:flex;justify-content:center;margin-bottom:24px}
+.role-brand img{width:min(270px,60vw);height:auto}
+.role-grid{gap:16px}
+.role-card{
+  border-radius:22px;box-shadow:var(--shadow);border:1px solid rgba(44,56,150,.09);
+  min-height:184px;transition:.2s ease;position:relative;overflow:hidden
+}
+.role-card:after{content:"";position:absolute;inset:auto -30px -50px auto;width:110px;height:110px;border-radius:50%;background:rgba(44,56,150,.05)}
+.role-card:hover{transform:translateY(-5px);box-shadow:0 26px 65px rgba(25,32,86,.14)}
+.role-icon{width:50px;height:50px;border-radius:15px;background:#eef0fa;color:var(--azul);display:grid;place-items:center;font-size:23px}
+.setup{border-radius:24px;box-shadow:var(--shadow);border:1px solid rgba(44,56,150,.10)}
+
+/* Parent portal */
+.parent-wrap{width:min(1050px,calc(100% - 24px));margin:24px auto 46px}
+.parent-hero{
+  background:linear-gradient(135deg,var(--azul),var(--azul3));border-radius:26px;padding:26px;
+  box-shadow:0 24px 62px rgba(44,56,150,.22);position:relative;overflow:hidden
+}
+.parent-hero:after{content:"";position:absolute;right:-60px;top:-90px;width:250px;height:250px;border:2px solid rgba(255,152,31,.38);border-radius:46%}
+.parent-hero h2{font-size:28px;text-transform:none;letter-spacing:0}
+.parent-actions-v120{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.parent-action-v120{background:#fff;border:1px solid rgba(44,56,150,.09);border-radius:18px;padding:17px;text-align:left;cursor:pointer;box-shadow:var(--shadow-sm);transition:.18s ease}
+.parent-action-v120:hover{transform:translateY(-3px);border-color:rgba(44,56,150,.22)}
+.parent-action-v120 .ico{width:42px;height:42px;border-radius:13px;background:#eef0fa;color:var(--azul);display:grid;place-items:center;font-size:20px;margin-bottom:12px}
+.parent-action-v120 strong{display:block}.parent-action-v120 span{display:block;color:var(--muted);font-size:12px;margin-top:5px;line-height:1.4}
+
+/* Vendas — landing */
+.sales-launch-v120{
+  border-radius:26px;padding:24px;background:linear-gradient(135deg,var(--azul),var(--azul3));color:#fff;
+  box-shadow:0 26px 65px rgba(44,56,150,.22);display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative;overflow:hidden
+}
+.sales-launch-v120:after{content:"";position:absolute;right:-35px;top:-65px;width:210px;height:210px;border-radius:50%;border:35px solid rgba(255,152,31,.14)}
+.sales-launch-v120 h3{font-size:24px;margin:0 0 7px;font-weight:800}.sales-launch-v120 p{margin:0;opacity:.75;font-size:13px;max-width:680px}
+.sales-launch-v120 .btn{position:relative;z-index:2;min-width:190px}
+.sales-guide-v120{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.sales-guide-step{background:#fff;border:1px solid var(--borda);border-radius:16px;padding:14px;display:flex;gap:10px;align-items:flex-start}
+.sales-guide-step b{width:28px;height:28px;border-radius:10px;background:#eef0fa;color:var(--azul);display:grid;place-items:center;flex:0 0 auto}.sales-guide-step span{font-size:12px;color:var(--muted);line-height:1.4}.sales-guide-step strong{display:block;color:var(--texto);margin-bottom:2px}
+
+/* Sale wizard */
+.wizard-back-v120{position:fixed;inset:0;background:rgba(13,18,55,.62);backdrop-filter:blur(10px);z-index:180;display:none;align-items:center;justify-content:center;padding:20px}
+.wizard-back-v120.open{display:flex}
+.wizard-v120{width:min(1120px,100%);max-height:94vh;background:#fff;border-radius:28px;box-shadow:0 45px 130px rgba(5,9,38,.34);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,.35)}
+.wizard-head-v120{padding:18px 22px;border-bottom:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between;gap:18px;background:#fbfbfd}
+.wizard-title-v120{display:flex;align-items:center;gap:12px}.wizard-title-v120 img{width:38px;height:38px;object-fit:contain}.wizard-title-v120 strong{display:block;color:var(--azul)}.wizard-title-v120 span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.wizard-steps-v120{display:flex;align-items:center;gap:6px;flex:1;justify-content:center}.wizard-step-v120{display:flex;align-items:center;gap:7px;color:#9a9dab;font-size:11px;font-weight:700}.wizard-step-v120 i{font-style:normal;width:28px;height:28px;border-radius:999px;background:#eef0f5;display:grid;place-items:center}.wizard-step-v120.active{color:var(--azul)}.wizard-step-v120.active i{background:var(--azul);color:#fff}.wizard-step-v120.done{color:var(--verde)}.wizard-step-v120.done i{background:#e0f6e9;color:var(--verde)}.wizard-line-v120{width:28px;height:2px;background:#e8e9ef}
+.wizard-body-v120{padding:24px;overflow:auto;min-height:470px;background:#f8f8fb}
+.wizard-foot-v120{padding:16px 22px;border-top:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff}
+.wizard-panel-v120{background:#fff;border:1px solid var(--borda);border-radius:20px;padding:18px;box-shadow:0 8px 25px rgba(25,32,86,.05)}
+.wizard-grid-v120{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.wizard-choice-v120{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.choice-card-v120{border:1px solid var(--borda);border-radius:16px;padding:16px;background:#fff;cursor:pointer;text-align:left;transition:.16s ease;min-height:112px}.choice-card-v120:hover{border-color:rgba(44,56,150,.30);transform:translateY(-2px);box-shadow:0 10px 25px rgba(44,56,150,.08)}.choice-card-v120 .ico{width:38px;height:38px;border-radius:12px;background:#eef0fa;color:var(--azul);display:grid;place-items:center;margin-bottom:9px}.choice-card-v120 strong{display:block}.choice-card-v120 span{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.35}
+.wizard-cart-v120{display:grid;gap:8px}.wizard-cart-line-v120{display:flex;justify-content:space-between;gap:12px;padding:11px;border:1px solid var(--borda);border-radius:14px;background:#fff}.wizard-cart-line-v120 .meta{font-size:11px;color:var(--muted);margin-top:3px}.wizard-cart-total-v120{display:flex;justify-content:space-between;padding:14px 2px 0;font-size:18px;font-weight:800;color:var(--azul)}
+.wizard-summary-v120{display:grid;gap:10px}.wizard-summary-row-v120{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid #ececf2}.wizard-summary-row-v120:last-child{border:0}.wizard-confirm-v120{background:linear-gradient(135deg,#f7f8ff,#fff8ee);border:1px solid rgba(44,56,150,.10);border-radius:20px;padding:18px}
+
+/* Stock / catalog */
+.tabs-v120{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tab-v120{border:1px solid var(--borda);background:#fff;color:var(--muted);padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;font-size:12px}.tab-v120.active{background:var(--azul);color:#fff;border-color:var(--azul);box-shadow:0 8px 20px rgba(44,56,150,.18)}
+.stock-toolbar-v120{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.stock-state-v120{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:800}.stock-state-v120.ok{background:#e0f6e9;color:#11713d}.stock-state-v120.low{background:#fff2d7;color:#8a5800}.stock-state-v120.zero{background:#ffe4e4;color:#a52525}.stock-state-v120.unknown{background:#eef0f5;color:#696d7c}.stock-state-v120.production{background:#ede9ff;color:#5d42a5}
+.stock-product-v120{display:flex;align-items:center;gap:10px}.stock-product-v120 .icon{width:38px;height:38px;border-radius:12px;background:#eef0fa;color:var(--azul);display:grid;place-items:center;font-weight:800}
+.stock-cards-v120{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.stock-card-v120{background:#fff;border:1px solid var(--borda);border-radius:18px;padding:16px;box-shadow:var(--shadow-sm)}.stock-card-v120 .num{font-size:26px;font-weight:800;color:var(--azul);margin-top:6px}.stock-card-v120 .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.catalog-card-v120{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:14px;border:1px solid var(--borda);border-radius:16px;background:#fff}.catalog-card-v120 + .catalog-card-v120{margin-top:9px}.catalog-card-v120 .meta{font-size:11px;color:var(--muted);margin-top:4px}.catalog-list-v120{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.inventory-movement-positive{color:var(--verde);font-weight:800}.inventory-movement-negative{color:var(--vermelho);font-weight:800}
+
+/* Uniform store */
+.uniform-grid-v120{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.uniform-option-v120{border:1px solid var(--borda);border-radius:17px;padding:15px;background:#fff;cursor:pointer;transition:.16s ease}.uniform-option-v120:hover{transform:translateY(-2px);border-color:rgba(44,56,150,.28);box-shadow:var(--shadow-sm)}.uniform-option-v120.selected{border-color:var(--azul);box-shadow:0 0 0 3px rgba(44,56,150,.09)}
+
+/* Availability badges */
+.availability-v120{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;border-radius:999px;padding:4px 8px}.availability-v120.available{background:#e0f6e9;color:#126f3e}.availability-v120.unavailable{background:#ffe5e5;color:#a62d2d}.availability-v120.production{background:#fff0db;color:#8a5400}.availability-v120.unknown{background:#eef0f5;color:#696d7c}
+.product-btn.disabled-v120{opacity:.48;cursor:not-allowed;filter:grayscale(.2)}
+
+/* Toast */
+.toast{border-radius:14px;box-shadow:0 18px 50px rgba(18,22,53,.26)}
+
+/* Responsive */
+@media(max-width:1050px){
+  .shell{grid-template-columns:220px 1fr}.main{padding:22px}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .parent-actions-v120{grid-template-columns:repeat(2,1fr)}.wizard-grid-v120{grid-template-columns:1fr}.stock-cards-v120{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:780px){
+  .topbar{height:68px;padding:0 12px}.brand small{display:none}.brand-logo{width:42px;height:42px}.brand h1{font-size:14px}.top-actions{gap:5px}.top-actions .pill{display:none}.top-actions .btn{padding:9px 10px;min-height:38px;font-size:11px}
+  .shell{display:block}.sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:70;display:flex;flex-direction:row;overflow-x:auto;padding:8px;background:rgba(30,40,115,.97);backdrop-filter:blur(14px);box-shadow:0 -10px 35px rgba(20,29,84,.18)}.nav-label,.nav-foot{display:none}.nav-btn{flex:0 0 auto;padding:9px 11px;font-size:11px;border-radius:12px}.nav-btn.active:before{display:none}.main{padding:16px 12px 92px}.header{align-items:flex-start}.title{font-size:23px}.g2,.g3,.g4,.form-row,.form-3{grid-template-columns:1fr}.role-grid{grid-template-columns:1fr 1fr}.role-card{min-height:150px;padding:16px}.product-grid{grid-template-columns:repeat(2,1fr)}.parent-actions-v120{grid-template-columns:1fr 1fr}.sales-launch-v120{align-items:flex-start;flex-direction:column}.sales-launch-v120 .btn{width:100%}.sales-guide-v120{grid-template-columns:1fr 1fr}.wizard-back-v120{padding:0}.wizard-v120{height:100vh;max-height:none;border-radius:0}.wizard-head-v120{padding:12px}.wizard-steps-v120{justify-content:flex-start;overflow:auto}.wizard-step-v120 span{display:none}.wizard-line-v120{width:15px}.wizard-body-v120{padding:14px;min-height:0;flex:1}.wizard-foot-v120{padding:12px}.wizard-choice-v120{grid-template-columns:1fr 1fr}.stock-cards-v120,.catalog-list-v120,.uniform-grid-v120{grid-template-columns:1fr}.modal-back{padding:0}.modal{max-height:100vh;height:auto;border-radius:22px 22px 0 0;align-self:flex-end;width:100%}.modal-back.open{align-items:flex-end}.parent-wrap{width:calc(100% - 20px);margin:14px auto 90px}.parent-hero{padding:20px;border-radius:22px}
+}
+@media(max-width:480px){
+  .role-grid{grid-template-columns:1fr}.parent-actions-v120{grid-template-columns:1fr}.sales-guide-v120{grid-template-columns:1fr}.wizard-choice-v120{grid-template-columns:1fr}.wizard-step-v120 i{width:25px;height:25px}.actions .btn{flex:1}.catalog-list-v120{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -253,6 +485,372 @@ function showCashMovesV110(){const r=state.currentCashReportV110;if(!r)return;op
 async function downloadCashPdfV110(){const r=state.currentCashReportV110;if(!r?.cash)return;const {jsPDF}=window.jspdf,pdf=new jsPDF({unit:'mm',format:'a4'});pdf.setFillColor(44,56,150);pdf.rect(0,0,210,8,'F');pdf.setTextColor(44,56,150);pdf.setFont('helvetica','bold');pdf.setFontSize(18);pdf.text(`Escola Piaget — Fechamento de caixa`,15,19);pdf.setTextColor(30);pdf.setFontSize(10);pdf.setFont('helvetica','normal');pdf.text(`Ponto: ${r.point} · Turno: ${r.shift} · Data: ${dateKey()}`,15,28);let y=40;const lines=[['Saldo inicial',r.initial],['Vendas em dinheiro',r.sales],['Saldo esperado',r.expected],['Saldo contado',r.cash.valorContadoCentavos],['Diferença',r.cash.diferencaCentavos]];for(const [label,val] of lines){if(val==null)continue;pdf.setDrawColor(225);pdf.line(15,y+6,195,y+6);pdf.text(label,17,y+4);pdf.setFont('helvetica','bold');pdf.text(fmt(val).replace(/\u00a0/g,' '),193,y+4,{align:'right'});pdf.setFont('helvetica','normal');y+=9}y+=7;pdf.setFont('helvetica','bold');pdf.text('MOVIMENTOS',15,y);y+=7;pdf.setFont('helvetica','normal');for(const m of r.moves.sort((a,b)=>String(a.criadoEm).localeCompare(String(b.criadoEm)))){if(y>275){pdf.addPage();y=18}pdf.text(humanDate(m.criadoEm),15,y);pdf.text(String(m.tipo||'').replaceAll('_',' '),55,y);pdf.text(fmt(m.valorCentavos).replace(/\u00a0/g,' '),193,y,{align:'right'});y+=6}pdf.save(`fechamento-caixa-${r.point}-${dateKey()}.pdf`)}
 
 window.addEventListener('load',async()=>{await boot();if(await renderParentFromQuery())return;const saved=localStorage.getItem('vp_profile');if(saved&&INITIAL_USERS.some(x=>x.id===saved)&&!$('#roleScreen').classList.contains('hidden'))selectProfile(saved)});
+</script>
+<script id="piaget-v120-app">
+/* =========================================================
+   Escola Piaget — V1.2.0
+   Identidade oficial + UX guiada + estoque central + loja do responsável
+   ========================================================= */
+const V120_VERSION='1.2.0-dev';
+const BRAND_V120={
+  blue:'#2C3896',orange:'#FF981F',black:'#000000',white:'#FFFFFF',
+  icon:'assets/logo-piaget-icon.png',full:'assets/logo-piaget-horizontal.png',seal:'assets/selo-piaget.png'
+};
+
+function sanitizeKeyV120(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'')||'padrao'}
+function stockIdV120(productId,variationKey='padrao'){return `${sanitizeKeyV120(productId)}__${sanitizeKeyV120(variationKey)}`}
+function uniformVariationKeyV120(modelId,size,gender=''){return `${sanitizeKeyV120(modelId)}__${sanitizeKeyV120(size)}__${sanitizeKeyV120(gender||'unico')}`}
+function uniformStockIdV120(modelId,size,gender=''){return `farda__${uniformVariationKeyV120(modelId,size,gender)}`}
+function stockMapV120(){return new Map((state.inventory||[]).map(x=>[x.id,x]))}
+function stockDocV120(productId,variation='padrao'){return stockMapV120().get(stockIdV120(productId,variation))||null}
+function uniformStockDocV120(modelId,size,gender=''){return stockMapV120().get(uniformStockIdV120(modelId,size,gender))||null}
+function stockAvailableV120(s){return Math.max(0,Number(s?.quantidadeFisica||0)-Number(s?.quantidadeReservada||0))}
+function uniformModelByIdV120(id){return (state.uniformModels||[]).find(x=>x.id===id)}
+function productControlV120(p){if(!p)return 'sem_controle';if(p.combo)return 'derivado';if(p.id==='salgado'||p.controleCapacidade)return 'capacidade_diaria';return p.controleEstoque||'unitario'}
+function isStockConfiguredV120(s){return !!s?.configurado}
+function stockStatusTextV120(info){if(info.mode==='sem_controle')return 'Sem controle';if(info.mode==='capacidade_diaria')return `${info.available} disponível(is) hoje`;if(info.mode==='derivado')return info.configured?`${info.available} combinação(ões)`:'Componentes sem estoque';if(!info.configured)return 'Estoque não configurado';return `${info.available} disponível(is)`}
+function dailyCapacityInfoV120(){const d=state.dailyCapacity||{};const planned=Number(d.quantidadePlanejada||state.config?.quantidadePadraoSalgados||30);const used=Number(d.vendidoDinheiro||0)+Number(d.vendidoAvulso||0)+Number(d.consumoConta||0)+Number(d.pedidosConfirmados||0)+activeReservationTotal(d.reservas);return{planned,used,available:Math.max(0,planned-used),configured:true}}
+function productAvailabilityV120(p,seen=new Set()){
+  if(!p)return{mode:'sem_controle',configured:true,available:Infinity,sellable:true};
+  if(seen.has(p.id))return{mode:'derivado',configured:false,available:0,sellable:false};
+  const mode=productControlV120(p);
+  if(mode==='sem_controle')return{mode,configured:true,available:Infinity,sellable:true};
+  if(mode==='capacidade_diaria'){const d=dailyCapacityInfoV120();return{mode,configured:true,available:d.available,sellable:d.available>0,planned:d.planned,used:d.used}}
+  if(mode==='unitario'){
+    const s=stockDocV120(p.id);const configured=isStockConfiguredV120(s),available=configured?stockAvailableV120(s):0;
+    return{mode,configured,available,sellable:configured&&available>0,physical:Number(s?.quantidadeFisica||0),reserved:Number(s?.quantidadeReservada||0),stock:s};
+  }
+  if(mode==='derivado'){
+    const next=new Set(seen);next.add(p.id);const comps=(p.componentes||[]).map(c=>{const cp=productById(c.produtoId),i=productAvailabilityV120(cp,next);return{...i,qty:Number(c.quantidade||1),product:cp}});
+    if(!comps.length)return{mode,configured:false,available:0,sellable:false,components:[]};
+    const configured=comps.every(i=>i.configured!==false),finite=comps.filter(i=>Number.isFinite(i.available));
+    const available=finite.length?Math.max(0,Math.floor(Math.min(...finite.map(i=>i.available/i.qty)))):Infinity;
+    return{mode,configured,available,sellable:configured&&available>0,components:comps};
+  }
+  return{mode,configured:true,available:Infinity,sellable:true};
+}
+function availabilityBadgeV120(info,{uniform=false}={}){
+  if(uniform&&info.production)return `<span class="availability-v120 production">Produção necessária</span>`;
+  if(info.configured===false)return `<span class="availability-v120 unknown">Não configurado</span>`;
+  if(info.available===Infinity)return `<span class="availability-v120 available">Disponível</span>`;
+  if(info.available>0)return `<span class="availability-v120 available">${info.available} disponível(is)</span>`;
+  return `<span class="availability-v120 unavailable">Sem estoque</span>`;
+}
+function stockStateBadgeV120(info){
+  if(info.mode==='sem_controle')return `<span class="stock-state-v120 unknown">Sem controle</span>`;
+  if(info.configured===false)return `<span class="stock-state-v120 unknown">Não configurado</span>`;
+  if(info.available<=0)return `<span class="stock-state-v120 zero">Sem estoque</span>`;
+  if(info.available<=3)return `<span class="stock-state-v120 low">Estoque baixo</span>`;
+  return `<span class="stock-state-v120 ok">Disponível</span>`;
+}
+function fmtQtyV120(v){return Number(v||0).toLocaleString('pt-BR')}
+function statusLabelV120(v){return String(v||'').replaceAll('_',' ').replace(/\b\w/g,m=>m.toUpperCase())}
+
+async function refreshStockStateV120(){
+  const [ss,ds]=await Promise.all([
+    db.collection('estoques').get().catch(()=>({docs:[]})),
+    db.collection('disponibilidade_salgados').doc(dateKey()).get().catch(()=>({exists:false,data:()=>({})}))
+  ]);
+  state.inventory=ss.docs.map(d=>({id:d.id,...d.data()}));
+  state.dailyCapacity=ds.exists?ds.data():{dataChave:dateKey(),quantidadePlanejada:Number(state.config?.quantidadePadraoSalgados||30),vendidoDinheiro:0,vendidoAvulso:0,consumoConta:0,pedidosConfirmados:0,reservas:{}};
+}
+
+async function migrateV120Schema(){
+  const cfgRef=db.collection('configuracoes').doc('sistema');
+  const [cfgSnap,pSnap,sSnap,mSnap]=await Promise.all([
+    cfgRef.get(),db.collection('produtos').get(),db.collection('estoques').get().catch(()=>({docs:[]})),db.collection('modelos_farda').get().catch(()=>({docs:[]}))
+  ]);
+  if(cfgSnap.data()?.v120Migrado)return false;
+  const existingStocks=new Set(sSnap.docs.map(d=>d.id));
+  const existingModels=new Set(mSnap.docs.map(d=>d.id));
+  const batch=db.batch(),now=nowIso();
+  for(const d of pSnap.docs){
+    const p={id:d.id,...d.data()};
+    const control=p.combo?'derivado':(p.id==='salgado'||p.controleCapacidade?'capacidade_diaria':(p.controleEstoque||'unitario'));
+    batch.set(d.ref,{
+      controleEstoque:control,
+      vendaCantina:p.vendaCantina??true,
+      vendaSecretaria:p.vendaSecretaria??true,
+      vendaResponsavel:p.vendaResponsavel??!!p.portal,
+      atualizadoEm:now
+    },{merge:true});
+    if(control==='unitario'){
+      const sid=stockIdV120(p.id);if(!existingStocks.has(sid))batch.set(db.collection('estoques').doc(sid),{
+        id:sid,produtoId:p.id,tipo:'unitario',variacaoKey:'padrao',configurado:false,quantidadeFisica:0,quantidadeReservada:0,criadoEm:now,atualizadoEm:now
+      });
+    }
+  }
+  const modelId='camisa_padrao';
+  if(!existingModels.has(modelId))batch.set(db.collection('modelos_farda').doc(modelId),{
+    id:modelId,nome:'Camisa de farda',ativo:true,portal:true,
+    tamanhosInfantis:['4','6','8','10','12','14'],tamanhosAdultos:['P','M','G','GG','XGG'],
+    generoAdulto:true,precoInfantilCentavos:Number(cfgSnap.data()?.precoFardaInfantilCentavos||4200),precoAdultoCentavos:Number(cfgSnap.data()?.precoFardaAdultoCentavos||4700),
+    criadoEm:now,atualizadoEm:now
+  });
+  const variants=[];
+  for(const s of ['4','6','8','10','12','14'])variants.push({size:s,gender:''});
+  for(const s of ['P','M','G','GG','XGG'])for(const g of ['masculino','feminino'])variants.push({size:s,gender:g});
+  for(const v of variants){const sid=uniformStockIdV120(modelId,v.size,v.gender);if(!existingStocks.has(sid))batch.set(db.collection('estoques').doc(sid),{
+    id:sid,produtoId:'camisa_farda',tipo:'farda',modeloFardaId:modelId,variacaoKey:uniformVariationKeyV120(modelId,v.size,v.gender),tamanho:v.size,modelo:v.gender,configurado:false,quantidadeFisica:0,quantidadeReservada:0,criadoEm:now,atualizadoEm:now
+  })}
+  batch.set(cfgRef,{versao:V120_VERSION,v120Migrado:true,precoFardaInfantilCentavos:Number(cfgSnap.data()?.precoFardaInfantilCentavos||4200),precoFardaAdultoCentavos:Number(cfgSnap.data()?.precoFardaAdultoCentavos||4700),atualizadoEm:now},{merge:true});
+  await batch.commit();
+  return true;
+}
+
+async function loadCore(){
+  const [as,ps,cs,ss,ms,ds]=await Promise.all([
+    db.collection('alunos').get(),db.collection('produtos').get(),db.collection('configuracoes').doc('sistema').get(),
+    db.collection('estoques').get().catch(()=>({docs:[]})),db.collection('modelos_farda').get().catch(()=>({docs:[]})),
+    db.collection('disponibilidade_salgados').doc(dateKey()).get().catch(()=>({exists:false,data:()=>({})}))
+  ]);
+  state.students=as.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.ordemTurma-b.ordemTurma||a.nome.localeCompare(b.nome));
+  state.products=ps.docs.map(d=>({id:d.id,...d.data()}));
+  state.config=cs.data();
+  state.inventory=ss.docs.map(d=>({id:d.id,...d.data()}));
+  state.uniformModels=ms.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.ativo!==false);
+  state.dailyCapacity=ds.exists?ds.data():{dataChave:dateKey(),quantidadePlanejada:Number(state.config?.quantidadePadraoSalgados||30),vendidoDinheiro:0,vendidoAvulso:0,consumoConta:0,pedidosConfirmados:0,reservas:{}};
+  if(state.config&&!state.config.v120Migrado){await migrateV120Schema();return loadCore()}
+}
+
+function applyBrandingV120(){
+  const logo=document.querySelector('.brand-logo');if(logo)logo.innerHTML=`<img src="${BRAND_V120.icon}" alt="Escola Piaget">`;
+  const brandTitle=document.querySelector('.brand h1');if(brandTitle)brandTitle.textContent='Escola Piaget';
+  const brandSub=document.querySelector('.brand small');if(brandSub)brandSub.textContent='Vendas, cantina e atendimento';
+  const roleBox=document.querySelector('#roleScreen .role-box');if(roleBox&&!roleBox.querySelector('.role-brand'))roleBox.insertAdjacentHTML('afterbegin',`<div class="role-brand"><img src="${BRAND_V120.full}" alt="Escola Piaget"></div>`);
+  const setupBoxes=document.querySelectorAll('.setup');setupBoxes.forEach((b,i)=>{if(!b.querySelector('.setup-brand-v120'))b.insertAdjacentHTML('afterbegin',`<div class="setup-brand-v120" style="display:flex;justify-content:center;margin-bottom:14px"><img src="${BRAND_V120.icon}" alt="Escola Piaget" style="width:72px;max-height:58px;object-fit:contain"></div>`)});
+}
+
+function iconV120(name){const m={home:'⌂',food:'◉',orders:'✓',cash:'R$',search:'⌕',students:'◎',sales:'▤',billing:'▧',uniform:'◇',products:'▦',settings:'⚙',audit:'≡'};return `<span style="width:22px;text-align:center;font-weight:800">${m[name]||'•'}</span>`}
+function buildSidebar(){
+  const p=state.user.perfil;let items=[];
+  if(p==='cantina')items=[['dashboard','home','Resumo'],['atendimento','food','Atendimento'],['entregas','orders','Pedidos do dia'],['caixa','cash','Caixa cantina'],['consulta','search','Consultar aluno']];
+  if(p==='secretaria')items=[['dashboard','home','Resumo'],['alunos','students','Alunos e contas'],['vendas','sales','Vendas da secretaria'],['cobrancas','billing','Cobranças'],['pedidos','orders','Pedidos'],['caixa','cash','Caixa secretaria'],['fardas','uniform','Fardas'],['produtos','products','Produtos e estoque']];
+  if(p==='gestao')items=[['dashboard','home','Visão geral'],['atendimento','food','Cantina'],['alunos','students','Alunos e contas'],['vendas','sales','Vendas'],['cobrancas','billing','Cobranças'],['pedidos','orders','Pedidos'],['caixa','cash','Caixas'],['fardas','uniform','Fardas'],['produtos','products','Produtos e estoque'],['config','settings','Configurações'],['auditoria','audit','Auditoria']];
+  $('#sidebar').innerHTML=`<div class="nav-label">Operação</div>${items.map(i=>`<button class="nav-btn" data-page="${i[0]}" onclick="navigate('${i[0]}')">${iconV120(i[1])}<span>${i[2]}</span></button>`).join('')}<div class="nav-foot"><strong>${esc(state.user.nome)}</strong><br>${p==='gestao'?'Gestão completa':p==='secretaria'?'Secretaria':'Operador da cantina'}<br><br>Ambiente provisório de desenvolvimento.</div>`;
+}
+
+/* =========================
+   Dashboard refinado
+   ========================= */
+async function renderDashboard(){
+  const el=$('#mainContent');el.innerHTML=pageHeader('Resumo','Carregando os indicadores da operação...')+'<div class="empty">Carregando...</div>';
+  await refreshStockStateV120();
+  const today=dateKey();const [vs,os,acs,fs]=await Promise.all([
+    db.collection('vendas').where('dataChave','==',today).get().catch(()=>({docs:[]})),
+    db.collection('ocorrencias_entrega').where('dataChave','==',today).get().catch(()=>({docs:[]})),
+    db.collection('contas_alunos').get(),db.collection('pedidos_farda').get().catch(()=>({docs:[]}))
+  ]);
+  const sales=vs.docs.map(d=>({id:d.id,...d.data()})),occ=os.docs.map(d=>d.data()),accounts=acs.docs.map(d=>({id:d.id,...d.data()})),fardas=fs.docs.map(d=>({id:d.id,...d.data()}));
+  const gross=sales.reduce((s,x)=>s+Number(x.valorBrutoCentavos||0),0),debt=accounts.reduce((s,x)=>s+Number(x.dividaCentavos||0),0),blocked=accounts.filter(x=>x.bloqueadoPorLimite||x.bloqueioManual).length,pendingUniform=fardas.filter(x=>!['entregue','cancelado'].includes(x.statusAtendimento)).length;
+  const stockAlerts=state.products.filter(p=>p.ativo&&!p.combo&&productControlV120(p)==='unitario').filter(p=>{const i=productAvailabilityV120(p);return i.configured===false||i.available<=3}).length;
+  el.innerHTML=pageHeader('Resumo','Acompanhe a operação e clique nos indicadores para investigar.',state.user?.perfil!=='cantina'?`<button class="btn btn-primary" onclick="navigate('vendas');setTimeout(startSaleWizardV120,120)">+ Iniciar venda</button>`:'')+`
+  <div class="grid g4">
+    <div class="kpi clickable" onclick="renderInsightV110('sales')"><div class="kpi-label">Vendas hoje</div><div class="kpi-value">${fmt(gross)}</div><div class="kpi-sub">${sales.length} operações registradas</div><span class="kpi-arrow">›</span></div>
+    <div class="kpi orange clickable" onclick="renderInsightV110('debts')"><div class="kpi-label">Valores em aberto</div><div class="kpi-value">${fmt(debt)}</div><div class="kpi-sub">${accounts.filter(x=>Number(x.dividaCentavos||0)>0).length} alunos</div><span class="kpi-arrow">›</span></div>
+    <div class="kpi red clickable" onclick="renderInsightV110('blocked')"><div class="kpi-label">Contas bloqueadas</div><div class="kpi-value">${blocked}</div><div class="kpi-sub">Limite ou bloqueio manual</div><span class="kpi-arrow">›</span></div>
+    <div class="kpi green clickable" onclick="renderProdutos('estoque')"><div class="kpi-label">Atenção no estoque</div><div class="kpi-value">${stockAlerts}</div><div class="kpi-sub">Baixo, zerado ou não configurado</div><span class="kpi-arrow">›</span></div>
+  </div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card clickable" onclick="renderInsightV110('deliveries')"><div class="card-head"><div class="card-title">Entregas de hoje</div><span class="badge b-blue">ver detalhes</span></div><div class="card-body"><div class="kpi-value">${occ.filter(x=>x.status==='programado').length}</div><span class="muted">programadas</span> · <strong>${occ.filter(x=>x.status==='entregue').length}</strong> entregues · <strong>${occ.filter(x=>x.status==='ausente').length}</strong> ausências</div></div>
+    <div class="card clickable" onclick="renderInsightV110('uniforms')"><div class="card-head"><div class="card-title">Fardas pendentes</div><span class="badge b-blue">ver pedidos</span></div><div class="card-body"><div class="kpi-value">${pendingUniform}</div><span class="muted">produção, reserva ou entrega</span></div></div>
+  </div>`;
+}
+
+/* =========================
+   Estoque central — helpers transacionais
+   ========================= */
+function groupCatalogItemsV120(items){
+  const map=new Map();for(const x of items||[]){if(!x.produtoId)continue;const q=Number(x.quantidade||1);if(q<=0)continue;const g=map.get(x.produtoId)||{produtoId:x.produtoId,quantidade:0,nome:x.nome||productById(x.produtoId)?.nome||x.produtoId};g.quantidade+=q;map.set(x.produtoId,g)}return[...map.values()]
+}
+async function planCatalogInventoryTxV120(tx,items,meta={}){
+  const groups=groupCatalogItemsV120(items),unitPlans=[];let salgadoQty=0;
+  for(const g of groups){
+    const p=productById(g.produtoId);if(!p)continue;const mode=productControlV120(p);
+    if(mode==='unitario'){
+      const ref=db.collection('estoques').doc(stockIdV120(p.id)),snap=await tx.get(ref),d=snap.exists?snap.data():null;
+      if(!d?.configurado)throw new Error(`O estoque de ${p.nome} ainda não foi configurado.`);
+      const available=stockAvailableV120(d);if(available<g.quantidade)throw new Error(`Estoque insuficiente de ${p.nome}. Disponível: ${available}.`);
+      unitPlans.push({ref,data:d,product:p,qty:g.quantidade});
+    }else if(mode==='capacidade_diaria')salgadoQty+=g.quantidade;
+  }
+  let salgadoPlan=null;if(salgadoQty>0)salgadoPlan=await readSalgadoUpdateTx(tx,[{produtoId:'salgado',quantidade:salgadoQty}],meta.salgadoKind||'venda_secretaria');
+  return{unitPlans,salgadoPlan,salgadoQty,meta};
+}
+function writeCatalogInventoryPlanV120(tx,plan){
+  for(const pl of plan.unitPlans){const mov=db.collection('movimentos_estoque').doc(),newPhysical=Number(pl.data.quantidadeFisica||0)-pl.qty;tx.set(pl.ref,{quantidadeFisica:newPhysical,atualizadoEm:nowIso(),ultimoMovimentoEm:nowIso()},{merge:true});tx.set(mov,{id:mov.id,produtoId:pl.product.id,tipo:'saida_venda',quantidade:-pl.qty,origem:plan.meta.origem||'sistema',sourceId:plan.meta.sourceId||null,alunoId:plan.meta.alunoId||null,usuarioId:state.user?.id||null,dataChave:dateKey(),criadoEm:nowIso()})}
+  if(plan.salgadoPlan){tx.set(plan.salgadoPlan.ref,plan.salgadoPlan.data,{merge:true});const mov=db.collection('movimentos_estoque').doc();tx.set(mov,{id:mov.id,produtoId:'salgado',tipo:'saida_venda',quantidade:-plan.salgadoQty,origem:plan.meta.origem||'sistema',sourceId:plan.meta.sourceId||null,alunoId:plan.meta.alunoId||null,usuarioId:state.user?.id||null,dataChave:dateKey(),criadoEm:nowIso()})}
+}
+async function applyCatalogInventoryTxV120(tx,items,meta={}){const plan=await planCatalogInventoryTxV120(tx,items,meta);writeCatalogInventoryPlanV120(tx,plan)}
+
+async function planUniformInventoryTxV120(tx,items,meta={}){
+  const plans=[];
+  for(const x of items||[]){
+    const action=x.estoqueAcao||((x.statusAtendimento==='entregue')?'saida_imediata':(x.statusAtendimento==='reservado_estoque'?'reservar':'producao'));if(action==='producao')continue;
+    const modelId=x.modeloFardaId||'camisa_padrao',ref=db.collection('estoques').doc(uniformStockIdV120(modelId,x.tamanho,x.modelo||'')),snap=await tx.get(ref),d=snap.exists?snap.data():null;
+    if(!d?.configurado)throw new Error(`O estoque da farda ${x.tamanho}${x.modelo?` ${x.modelo}`:''} ainda não foi configurado.`);
+    const available=stockAvailableV120(d),q=Number(x.quantidade||1);if(available<q)throw new Error(`Não há farda suficiente para ${x.tamanho}${x.modelo?` ${x.modelo}`:''}. Disponível: ${available}.`);
+    plans.push({x,action,ref,d,q,modelId});
+  }
+  return{plans,meta};
+}
+function writeUniformInventoryPlanV120(tx,plan){
+  for(const pl of plan.plans){const mov=db.collection('movimentos_estoque').doc();if(pl.action==='reservar'){tx.set(pl.ref,{quantidadeReservada:Number(pl.d.quantidadeReservada||0)+pl.q,atualizadoEm:nowIso(),ultimoMovimentoEm:nowIso()},{merge:true});tx.set(mov,{id:mov.id,produtoId:'camisa_farda',modeloFardaId:pl.modelId,variacaoKey:pl.d.variacaoKey,tamanho:pl.x.tamanho,modelo:pl.x.modelo||'',tipo:'reserva',quantidade:pl.q,origem:plan.meta.origem||'secretaria',sourceId:plan.meta.sourceId||null,alunoId:plan.meta.alunoId||null,usuarioId:state.user?.id||null,dataChave:dateKey(),criadoEm:nowIso()})}else{tx.set(pl.ref,{quantidadeFisica:Number(pl.d.quantidadeFisica||0)-pl.q,atualizadoEm:nowIso(),ultimoMovimentoEm:nowIso()},{merge:true});tx.set(mov,{id:mov.id,produtoId:'camisa_farda',modeloFardaId:pl.modelId,variacaoKey:pl.d.variacaoKey,tamanho:pl.x.tamanho,modelo:pl.x.modelo||'',tipo:'saida_venda',quantidade:-pl.q,origem:plan.meta.origem||'secretaria',sourceId:plan.meta.sourceId||null,alunoId:plan.meta.alunoId||null,usuarioId:state.user?.id||null,dataChave:dateKey(),criadoEm:nowIso()})}}
+}
+async function applyUniformInventoryTxV120(tx,items,meta={}){const plan=await planUniformInventoryTxV120(tx,items,meta);writeUniformInventoryPlanV120(tx,plan)}
+
+/* =========================
+   Fluxos de venda atrelados ao estoque
+   ========================= */
+async function registerCashSale(){
+  if(!state.cart.length)return;
+  try{const cash=await ensureCashSession('cantina'),items=expandCart(state.cart),total=items.reduce((s,x)=>s+x.quantidade*x.precoUnitarioCentavos,0),saleRef=db.collection('vendas').doc(),movRef=db.collection('movimentos_caixa').doc();await db.runTransaction(async tx=>{await applyCatalogInventoryTxV120(tx,items,{origem:'cantina_dinheiro',sourceId:saleRef.id,salgadoKind:'venda_dinheiro'});tx.set(saleRef,{id:saleRef.id,origem:'cantina',operadorId:state.user.id,operadorNome:state.user.nome,caixaId:cash.id,formaPagamento:'dinheiro',valorBrutoCentavos:total,itens:items,dataChave:dateKey(),criadoEm:nowIso(),status:'confirmada',schemaVersion:3});tx.set(movRef,{id:movRef.id,caixaId:cash.id,tipo:'venda',vendaId:saleRef.id,valorCentavos:total,usuarioId:state.user.id,dataChave:dateKey(),criadoEm:nowIso()})});await audit('venda_dinheiro_cantina',{vendaId:saleRef.id,valorCentavos:total});state.cart=[];await refreshStockStateV120();renderCashCart();renderQuickProducts();toast('Venda registrada e estoque atualizado.')}catch(e){alert(e.message)}
+}
+async function registerAccountConsumption(){
+  if(!state.cart.length)return;const student=state.selectedStudent,items=expandCart(state.cart),total=items.reduce((s,x)=>s+x.quantidade*x.precoUnitarioCentavos,0);
+  try{const accountRef=db.collection('contas_alunos').doc(student.id),moveRef=db.collection('movimentos_conta').doc(),saleRef=db.collection('vendas').doc();await db.runTransaction(async tx=>{const snap=await tx.get(accountRef),a=snap.data()||{};const saldo=Number(a.saldoCreditoCentavos||0),divida=Number(a.dividaCentavos||0),limite=Number(a.limiteFiadoCentavos||0),usadoSaldo=Math.min(saldo,total),geraDivida=total-usadoSaldo,novaDivida=divida+geraDivida;if(a.bloqueioManual)throw new Error('A conta está bloqueada pela secretaria ou gestão.');if(geraDivida>0&&!a.autorizadoSemSaldo)throw new Error('O responsável não autorizou compras sem saldo.');if(novaDivida>limite)throw new Error(`A compra ultrapassa o limite. Disponível: ${fmt(Math.max(0,limite-divida)+saldo)}.`);await applyCatalogInventoryTxV120(tx,items,{origem:'cantina_conta',sourceId:saleRef.id,alunoId:student.id,salgadoKind:'consumo_conta'});const hit=limite>0&&novaDivida>=limite;tx.set(accountRef,{saldoCreditoCentavos:saldo-usadoSaldo,dividaCentavos:novaDivida,bloqueadoPorLimite:hit,atualizadoEm:nowIso()},{merge:true});tx.set(moveRef,{id:moveRef.id,alunoId:student.id,tipo:'consumo',valorCentavos:total,creditoUtilizadoCentavos:usadoSaldo,dividaGeradaCentavos:geraDivida,itens:items,origem:'cantina',usuarioId:state.user.id,usuarioNome:state.user.nome,dataChave:dateKey(),criadoEm:nowIso()});tx.set(saleRef,{id:saleRef.id,alunoId:student.id,origem:'cantina',operadorId:state.user.id,operadorNome:state.user.nome,formaPagamento:usadoSaldo===total?'credito_pre_pago':usadoSaldo>0?'credito_e_fiado':'conta_aluno',valorBrutoCentavos:total,itens:items,dataChave:dateKey(),criadoEm:nowIso(),status:'confirmada',schemaVersion:3});if(hit){const alertRef=db.collection('alertas').doc();tx.set(alertRef,{tipo:'limite_atingido',alunoId:student.id,alunoNome:student.nome,dividaCentavos:novaDivida,limiteCentavos:limite,status:'pendente',criadoEm:nowIso()})}});await audit('consumo_conta',{alunoId:student.id,valorCentavos:total});await refreshStockStateV120();closeModal();toast('Consumo registrado e estoque atualizado.')}catch(e){alert(e.message)}
+}
+function renderQuickProducts(){const el=$('#quickProducts');if(!el)return;const rows=state.products.filter(p=>p.ativo&&p.vendaRapida);el.innerHTML=rows.map(p=>{const i=productAvailabilityV120(p),disabled=!i.sellable;return `<button class="product-btn ${p.combo?'combo':''} ${disabled?'disabled-v120':''}" ${disabled?'disabled':''} onclick="addToCart('${p.id}')"><strong>${esc(p.nome)}</strong><span>${fmt(productPrice(p))}</span><div style="margin-top:7px">${availabilityBadgeV120(i)}</div></button>`}).join('')||'<div class="empty">Nenhum produto rápido disponível.</div>'}
+
+/* =========================
+   Vendas da Secretaria — tela simples + assistente guiado
+   ========================= */
+function ensureWizardHostV120(){
+  let host=$('#saleWizardV120');if(host)return host;document.body.insertAdjacentHTML('beforeend',`<div id="saleWizardV120" class="wizard-back-v120"><div class="wizard-v120"><div class="wizard-head-v120" id="saleWizardHeadV120"></div><div class="wizard-body-v120" id="saleWizardBodyV120"></div><div class="wizard-foot-v120" id="saleWizardFootV120"></div></div></div>`);return $('#saleWizardV120')
+}
+function wizardOpenV120(){return $('#saleWizardV120')?.classList.contains('open')}
+function closeSaleWizardV120(){const h=$('#saleWizardV120');if(h)h.classList.remove('open')}
+function startSaleWizardV120(){ensureSaleStateV110(true);state.saleWizardV120={step:1,noStudent:false};ensureWizardHostV120().classList.add('open');renderSaleWizardV120()}
+function saleWizardStepV120(n){state.saleWizardV120=state.saleWizardV120||{step:1};state.saleWizardV120.step=n;renderSaleWizardV120()}
+function saleWizardBackV120(){const s=state.saleWizardV120||{step:1};if(s.step<=1)return closeSaleWizardV120();s.step--;renderSaleWizardV120()}
+function saleWizardNextV120(){const st=ensureSaleStateV110(),w=state.saleWizardV120||{step:1};if(w.step===1&&!st.studentId&&!w.noStudent)return alert('Selecione um aluno ou marque “Venda sem aluno”.');if(w.step===2&&!st.cart.length)return alert('Adicione pelo menos um item.');if(w.step===3&&paymentTotalV110()!==saleTotalV110())return alert('Os pagamentos precisam fechar exatamente o total da venda.');w.step=Math.min(4,w.step+1);renderSaleWizardV120()}
+function saleWizardNoStudentV120(){const st=ensureSaleStateV110();st.studentId=null;st.student=null;st.cart=st.cart.filter(x=>x.tipo!=='debito_conta'&&x.tipo!=='farda');state.saleWizardV120.noStudent=true;renderSaleWizardV120()}
+function saleWizardStudentSearchHtmlV120(){const st=ensureSaleStateV110(),w=state.saleWizardV120||{};return `<div class="wizard-panel-v120"><div class="accent"></div><h3 style="margin:0 0 5px">Para quem é a venda?</h3><p class="muted" style="margin:0 0 16px">Identifique o aluno para vincular a operação, consultar débitos e vender farda.</p>${st.student?`<div class="sale-student-chip"><div><strong>${esc(st.student.nome)}</strong><span class="muted">${esc(st.student.turma)} · Matrícula ${esc(st.student.matricula)}</span></div><button class="btn btn-outline" onclick="clearSaleStudentV110()">Trocar</button></div>`:`<div class="fg"><label>Buscar por nome ou matrícula</label><input id="saleWizardSearchV120" class="fi" placeholder="Comece a digitar..." oninput="searchStudentsInto(this.value,'saleWizardResultsV120','chooseSaleStudentV110')"></div><div id="saleWizardResultsV120" class="search-results"></div><div style="display:flex;align-items:center;gap:10px;margin-top:14px"><span style="height:1px;background:var(--borda);flex:1"></span><span class="muted" style="font-size:11px">ou</span><span style="height:1px;background:var(--borda);flex:1"></span></div><button class="btn btn-outline" style="width:100%;margin-top:14px" onclick="saleWizardNoStudentV120()">Continuar como venda sem aluno</button>${w.noStudent?`<div class="alert" style="margin-top:12px">Venda sem aluno selecionada. Itens de dívida e farda ficarão indisponíveis.</div>`:''}`}</div>`}
+function wizardCartHtmlV120(){const st=ensureSaleStateV110();if(!st.cart.length)return `<div class="empty-soft">Nenhum item adicionado.</div>`;return `<div class="wizard-cart-v120">${st.cart.map(x=>`<div class="wizard-cart-line-v120"><div><strong>${esc(x.nome)}</strong><div class="meta">${itemKindLabelV110(x)}${x.tipo==='farda'?` · ${esc(x.tamanho)} ${esc(x.modelo||'')}`:''}</div></div><div style="text-align:right"><strong>${fmt(centsOfLine(x))}</strong><div class="actions" style="margin-top:5px;justify-content:flex-end">${!['debito_conta','avulso'].includes(x.tipo)?`<button class="btn btn-outline btn-icon" onclick="changeStructuredQtyV110('${x.id}',-1)">−</button><span class="badge b-blue">${x.quantidade||1}</span><button class="btn btn-outline btn-icon" onclick="changeStructuredQtyV110('${x.id}',1)">+</button>`:''}<button class="btn btn-outline btn-icon" onclick="removeStructuredItemV110('${x.id}')">×</button></div></div></div>`).join('')}<div class="wizard-cart-total-v120"><span>Total</span><span>${fmt(saleTotalV110())}</span></div></div>`}
+function saleWizardItemsHtmlV120(){const st=ensureSaleStateV110();return `<div class="wizard-grid-v120"><div class="wizard-panel-v120"><div class="accent"></div><h3 style="margin:0 0 5px">O que está sendo vendido?</h3><p class="muted" style="margin:0 0 16px">Misture itens diferentes na mesma operação. O sistema preservará a composição.</p><div class="wizard-choice-v120"><button class="choice-card-v120" onclick="openCatalogPickerV110()"><div class="ico">▦</div><strong>Cantina e produtos</strong><span>Produtos cadastrados e combos disponíveis.</span></button><button class="choice-card-v120" onclick="openUniformItemV110()" ${!st.studentId?'disabled':''}><div class="ico">◇</div><strong>Farda</strong><span>Consulta estoque por modelo, tamanho e variação.</span></button><button class="choice-card-v120" onclick="addDebtItemV110()" ${!st.studentId?'disabled':''}><div class="ico">R$</div><strong>Valor em aberto</strong><span>Adiciona a dívida atual da conta do aluno.</span></button><button class="choice-card-v120" onclick="openFreeItemV110()"><div class="ico">＋</div><strong>Item avulso</strong><span>Passeio, evento, taxa, figurino ou outro.</span></button></div></div><div class="wizard-panel-v120"><h3 style="margin:0 0 12px">Carrinho</h3>${wizardCartHtmlV120()}</div></div>`}
+function wizardPaymentsHtmlV120(){const st=ensureSaleStateV110(),remaining=remainingSaleV110();return `<div class="wizard-grid-v120"><div class="wizard-panel-v120"><div class="accent"></div><h3 style="margin:0 0 5px">Como foi pago?</h3><p class="muted" style="margin:0 0 16px">Registre dinheiro, Pix, cartão ou divida o pagamento entre formas.</p><div class="wizard-choice-v120"><button class="choice-card-v120" onclick="openPaymentV110('dinheiro')"><div class="ico">R$</div><strong>Dinheiro</strong><span>Calcula troco e movimenta o caixa físico.</span></button><button class="choice-card-v120" onclick="openPaymentV110('pix')"><div class="ico">◇</div><strong>Pix</strong><span>Identifique banco, InfinitePay, Rede ou outra origem.</span></button><button class="choice-card-v120" onclick="openPaymentV110('cartao')"><div class="ico">▤</div><strong>Cartão</strong><span>Registre adquirente, modalidade, parcelas e bruto.</span></button><button class="choice-card-v120" onclick="openPaymentV110()"><div class="ico">＋</div><strong>Outra parcela</strong><span>Use para pagamento dividido.</span></button></div><div class="alert ${remaining===0?'':'warn'}" style="margin-top:14px">Total da venda: <strong>${fmt(saleTotalV110())}</strong> · Falta registrar: <strong>${fmt(Math.max(0,remaining))}</strong></div></div><div class="wizard-panel-v120"><h3 style="margin:0 0 12px">Pagamentos registrados</h3>${st.payments.length?st.payments.map((p,i)=>`<div class="wizard-cart-line-v120"><div><strong>${esc(paymentLabelV110(p))}</strong><div class="meta">${p.adquirente?esc(p.adquirente):p.origemPix?esc(p.origemPix):''}</div></div><div style="text-align:right"><strong>${fmt(p.valorAplicadoCentavos)}</strong><br><button class="btn btn-outline" style="margin-top:5px" onclick="removePaymentV110(${i})">Remover</button></div></div>`).join(''):`<div class="empty-soft">Nenhum pagamento registrado.</div>`}</div></div>`}
+function wizardConfirmHtmlV120(){const st=ensureSaleStateV110();return `<div class="wizard-grid-v120"><div class="wizard-panel-v120"><div class="accent"></div><h3 style="margin:0 0 12px">Revise antes de confirmar</h3><div class="wizard-confirm-v120"><div class="wizard-summary-v120"><div class="wizard-summary-row-v120"><span>Aluno</span><strong>${st.student?esc(st.student.nome):'Venda sem aluno'}</strong></div>${st.cart.map(x=>`<div class="wizard-summary-row-v120"><span>${esc(x.nome)}${Number(x.quantidade||1)>1?` × ${x.quantidade}`:''}</span><strong>${fmt(centsOfLine(x))}</strong></div>`).join('')}<div class="wizard-summary-row-v120" style="font-size:18px;color:var(--azul)"><span>Total</span><strong>${fmt(saleTotalV110())}</strong></div></div></div></div><div class="wizard-panel-v120"><h3 style="margin:0 0 12px">Pagamento</h3>${st.payments.map(p=>`<div class="wizard-summary-row-v120"><span>${esc(paymentLabelV110(p))}</span><strong>${fmt(p.valorAplicadoCentavos)}</strong></div>`).join('')}<div class="alert" style="margin-top:14px">Ao confirmar, a venda será registrada, o caixa será movimentado quando houver dinheiro e o estoque será atualizado conforme cada item.</div></div></div>`}
+function renderSaleWizardV120(){
+  ensureWizardHostV120();const w=state.saleWizardV120||{step:1},steps=['Cliente','Itens','Pagamento','Confirmar'];
+  $('#saleWizardHeadV120').innerHTML=`<div class="wizard-title-v120"><img src="${BRAND_V120.icon}" alt=""><div><strong>Nova venda</strong><span>Atendimento guiado da secretaria</span></div></div><div class="wizard-steps-v120">${steps.map((s,i)=>`${i?'<span class="wizard-line-v120"></span>':''}<div class="wizard-step-v120 ${w.step===i+1?'active':w.step>i+1?'done':''}"><i>${w.step>i+1?'✓':i+1}</i><span>${s}</span></div>`).join('')}</div><button class="x" onclick="closeSaleWizardV120()">×</button>`;
+  $('#saleWizardBodyV120').innerHTML=w.step===1?saleWizardStudentSearchHtmlV120():w.step===2?saleWizardItemsHtmlV120():w.step===3?wizardPaymentsHtmlV120():wizardConfirmHtmlV120();
+  $('#saleWizardFootV120').innerHTML=`<button class="btn btn-outline" onclick="saleWizardBackV120()">${w.step===1?'Cancelar':'← Voltar'}</button><div class="actions">${w.step<4?`<button class="btn btn-primary" onclick="saleWizardNextV120()">Continuar →</button>`:`<button class="btn btn-primary" onclick="saveStructuredSaleV110()">✓ Confirmar venda</button>`}</div>`;
+}
+function renderVendas(){renderSalesLandingV120()}
+async function renderSalesLandingV120(){
+  const el=$('#mainContent');el.innerHTML=pageHeader('Vendas da secretaria','Registre o que foi vendido, para quem e como foi pago.',`<button class="btn btn-outline" onclick="renderSalesHistoryV110()">Histórico completo</button>`)+`<div class="sales-launch-v120"><div><h3>Pronto para atender?</h3><p>Inicie uma venda e siga quatro etapas simples: cliente, itens, pagamento e confirmação.</p></div><button class="btn btn-orange" onclick="startSaleWizardV120()">+ Iniciar nova venda</button></div><div class="sales-guide-v120"><div class="sales-guide-step"><b>1</b><span><strong>Cliente</strong>Selecione o aluno ou continue sem vínculo.</span></div><div class="sales-guide-step"><b>2</b><span><strong>Itens</strong>Misture cantina, farda, dívida e avulsos.</span></div><div class="sales-guide-step"><b>3</b><span><strong>Pagamento</strong>Dinheiro, Pix, cartão ou dividido.</span></div><div class="sales-guide-step"><b>4</b><span><strong>Confirmar</strong>Revise e registre tudo de uma vez.</span></div></div><div class="grid g4" id="salesKpisV110" style="margin-top:16px"><div class="kpi"><div class="kpi-label">Hoje</div><div class="kpi-value">...</div></div></div><div id="recentSalesV120" style="margin-top:14px"></div>`;await renderSalesKpisV110();const s=await db.collection('vendas').where('dataChave','==',dateKey()).get().catch(()=>({docs:[]}));const rows=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.criadoEm).localeCompare(String(a.criadoEm))).slice(0,8);$('#recentSalesV120').innerHTML=rows.length?saleRowsTableV110(rows):'<div class="card"><div class="empty">Nenhuma venda registrada hoje.</div></div>'}
+function chooseSaleStudentV110(id){const st=ensureSaleStateV110(),a=state.students.find(x=>x.id===id);st.studentId=id;st.student=a;state.saleWizardV120=state.saleWizardV120||{step:1};state.saleWizardV120.noStudent=false;if(wizardOpenV120())return renderSaleWizardV120();const input=$('#saleV110StudentSearch'),results=$('#saleV110StudentResults');if(input)input.value='';if(results)results.innerHTML='';renderSaleStudentChipV110();renderSaleCartV110()}
+function clearSaleStudentV110(){const st=ensureSaleStateV110();st.studentId=null;st.student=null;st.cart=st.cart.filter(x=>x.tipo!=='debito_conta'&&x.tipo!=='farda');if(state.saleWizardV120)state.saleWizardV120.noStudent=false;if(wizardOpenV120())return renderSaleWizardV120();renderSaleStudentChipV110();renderSaleCartV110()}
+function renderSaleCartV110(){if(wizardOpenV120())return renderSaleWizardV120();const el=$('#saleV110Cart');if(!el)return;const st=ensureSaleStateV110();el.innerHTML=st.cart.length?`<div style="margin-top:13px">${st.cart.map(x=>`<div class="sale-item"><div><strong>${esc(x.nome)}</strong><div class="sale-item-meta">${itemKindLabelV110(x)}${x.categoria?` · ${esc(x.categoria)}`:''}${x.tipo==='farda'?` · ${esc(x.tamanho)}${x.modelo?` ${esc(x.modelo)}`:''} · ${esc(String(x.statusAtendimento).replaceAll('_',' '))}`:''}</div></div><div style="text-align:right"><strong>${fmt(centsOfLine(x))}</strong><div class="actions" style="margin-top:5px;justify-content:flex-end">${!['debito_conta','avulso'].includes(x.tipo)?`<button class="btn btn-outline" onclick="changeStructuredQtyV110('${x.id}',-1)">−</button><span class="badge b-blue">${x.quantidade||1}</span><button class="btn btn-outline" onclick="changeStructuredQtyV110('${x.id}',1)">+</button>`:''}<button class="btn btn-outline" onclick="removeStructuredItemV110('${x.id}')">×</button></div></div></div>`).join('')}<div class="sale-total"><span>Total</span><span>${fmt(saleTotalV110())}</span></div></div>`:`<div class="empty-soft" style="margin-top:13px">Adicione os itens que compõem a venda.</div>`;renderPaymentsV110()}
+function renderPaymentsV110(){if(wizardOpenV120())return renderSaleWizardV120();const el=$('#saleV110Payments'),sum=$('#saleV110Summary');if(!el||!sum)return;const st=ensureSaleStateV110(),total=saleTotalV110(),paid=paymentTotalV110(),rem=Math.max(0,total-paid);el.innerHTML=st.payments.length?st.payments.map(p=>`<div class="payment-card"><div class="payment-card-top"><div><strong>${esc(paymentLabelV110(p))}</strong><div class="payment-breakdown">${p.metodo==='dinheiro'?`Recebido ${fmt(p.valorRecebidoCentavos)} · Troco ${fmt(p.trocoCentavos)}`:p.metodo==='cartao'?`Bruto passado ${fmt(p.valorBrutoPassadoCentavos)}${p.nsu?` · Ref. ${esc(p.nsu)}`:''}`:p.metodo==='pix'&&p.referencia?`Ref. ${esc(p.referencia)}`:''}</div></div><div style="text-align:right"><strong>${fmt(p.valorAplicadoCentavos)}</strong><br><button class="btn btn-outline" style="margin-top:5px" onclick="removePaymentV110('${p.id}')">Remover</button></div></div></div>`).join(''):`<div class="empty-soft">Nenhuma forma de pagamento adicionada.</div>`;sum.innerHTML=`<div class="mini-breakdown"><span><span>Total da venda</span><strong>${fmt(total)}</strong></span><span><span>Pagamentos informados</span><strong>${fmt(paid)}</strong></span><span><span>Restante</span><strong class="${rem===0?'':'neg'}">${fmt(rem)}</strong></span></div><button class="btn btn-green" style="width:100%;margin-top:14px" onclick="saveStructuredSaleV110()" ${total<=0||rem!==0?'disabled':''}>Finalizar venda</button><button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="resetStructuredSaleV110()">Limpar operação</button>`}
+
+async function openCatalogPickerV110(){await refreshStockStateV120();const products=state.products.filter(p=>p.ativo&&p.vendaSecretaria!==false);openModal('Adicionar produto',`<div class="fg"><label>Produto disponível</label><select id="v110CatalogProduct" class="fi" onchange="updateCatalogAvailabilityV120()">${products.map(p=>{const i=productAvailabilityV120(p);return `<option value="${p.id}" ${!i.sellable?'disabled':''}>${esc(p.nome)} — ${fmt(productPrice(p))}${!i.sellable?' — indisponível':''}</option>`}).join('')}</select></div><div id="catalogAvailabilityV120"></div><div class="fg" style="margin-top:12px"><label>Quantidade</label><input id="v110CatalogQty" type="number" min="1" value="1" class="fi"></div><button class="btn btn-primary" style="width:100%" onclick="confirmCatalogItemV110()">Adicionar ao carrinho</button>`);updateCatalogAvailabilityV120()}
+function updateCatalogAvailabilityV120(){const p=productById($('#v110CatalogProduct')?.value);const i=productAvailabilityV120(p),h=$('#catalogAvailabilityV120');if(h)h.innerHTML=`<div class="alert ${i.sellable?'':'warn'}">${availabilityBadgeV120(i)} <span style="margin-left:6px">${esc(stockStatusTextV120(i))}</span></div>`}
+function confirmCatalogItemV110(){const p=productById($('#v110CatalogProduct').value),q=Math.max(1,Number($('#v110CatalogQty').value||1)),i=productAvailabilityV120(p);if(!i.sellable)return alert(`Produto indisponível. ${stockStatusTextV120(i)}.`);if(Number.isFinite(i.available)&&q>i.available)return alert(`Quantidade maior que o disponível (${i.available}).`);addStructuredItemV110({tipo:'produto',produtoId:p.id,nome:p.nome,categoria:p.categoria,quantidade:q,precoUnitarioCentavos:productPrice(p),valorCentavos:q*productPrice(p),combo:!!p.combo});closeModal()}
+
+async function openUniformItemV110(){const st=ensureSaleStateV110();if(!st.studentId)return alert('Selecione um aluno para adicionar farda.');await refreshStockStateV120();const models=(state.uniformModels||[]).filter(x=>x.ativo!==false);if(!models.length)return alert('Nenhum modelo de farda ativo.');openModal('Adicionar farda',`<div class="fg"><label>Modelo</label><select id="v120UniformModelId" class="fi" onchange="renderUniformPickerFieldsV120()">${models.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('')}</select></div><div id="uniformPickerFieldsV120"></div>`);renderUniformPickerFieldsV120()}
+function renderUniformPickerFieldsV120(){const m=uniformModelByIdV120($('#v120UniformModelId')?.value)||(state.uniformModels||[])[0];if(!m)return;const sizes=[...(m.tamanhosInfantis||[]),...(m.tamanhosAdultos||[])];$('#uniformPickerFieldsV120').innerHTML=`<div class="form-row"><div class="fg"><label>Tamanho</label><select id="v110UniformSize" class="fi" onchange="renderUniformAvailabilityV120()">${sizes.map(x=>`<option>${x}</option>`).join('')}</select></div><div class="fg"><label>Variação</label><select id="v110UniformModel" class="fi" onchange="renderUniformAvailabilityV120()"><option value="">Modelo único</option><option value="masculino">Masculino</option><option value="feminino">Feminino</option></select></div></div><div class="fg"><label>Quantidade</label><input id="v110UniformQty" type="number" min="1" value="1" class="fi" oninput="renderUniformAvailabilityV120()"></div><div id="uniformAvailabilityV120"></div><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="confirmUniformItemV110()">Adicionar ao carrinho</button>`;renderUniformAvailabilityV120()}
+function normalizeUniformGenderFieldV120(){const m=uniformModelByIdV120($('#v120UniformModelId')?.value),size=$('#v110UniformSize')?.value,adult=(m?.tamanhosAdultos||[]).includes(size),sel=$('#v110UniformModel');if(sel){sel.disabled=!adult||!m?.generoAdulto;if(!adult||!m?.generoAdulto)sel.value='';else if(!sel.value)sel.value='masculino'}}
+function uniformSelectionInfoV120(){normalizeUniformGenderFieldV120();const modelId=$('#v120UniformModelId')?.value||'camisa_padrao',m=uniformModelByIdV120(modelId),size=$('#v110UniformSize')?.value||'',gender=$('#v110UniformModel')?.value||'',q=Math.max(1,Number($('#v110UniformQty')?.value||1)),s=uniformStockDocV120(modelId,size,gender),configured=!!s?.configurado,available=configured?stockAvailableV120(s):0,adult=(m?.tamanhosAdultos||[]).includes(size),unit=adult?Number(m?.precoAdultoCentavos||state.config.precoFardaAdultoCentavos||4700):Number(m?.precoInfantilCentavos||state.config.precoFardaInfantilCentavos||4200);return{modelId,m,size,gender,q,s,configured,available,unit,production:!configured||available<q}}
+function renderUniformAvailabilityV120(){const h=$('#uniformAvailabilityV120');if(!h)return;const i=uniformSelectionInfoV120();h.innerHTML=`<div class="alert ${i.production?'warn':''}">${i.production?`<strong>Produção necessária.</strong> Não há ${i.q} unidade(s) disponíveis para entrega imediata.`:`<strong>Disponível.</strong> ${i.available} unidade(s) livres em estoque.`}<br><span class="muted">Preço unitário: ${fmt(i.unit)}</span></div>${!i.production?`<div class="fg" style="margin-top:12px"><label>Atendimento</label><select id="v120UniformStockAction" class="fi"><option value="saida_imediata">Entregar agora</option><option value="reservar">Reservar para retirada</option></select></div>`:''}`}
+function confirmUniformItemV110(){const i=uniformSelectionInfoV120(),action=i.production?'producao':($('#v120UniformStockAction')?.value||'saida_imediata'),status=action==='producao'?'aguardando_producao':action==='reservar'?'reservado_estoque':'entregue';addStructuredItemV110({tipo:'farda',nome:i.m?.nome||'Camisa de farda',categoria:'Farda',modeloFardaId:i.modelId,tamanho:i.size,modelo:i.gender,quantidade:i.q,precoUnitarioCentavos:i.unit,valorCentavos:i.q*i.unit,statusAtendimento:status,estoqueAcao:action});closeModal()}
+
+async function saveStructuredSaleV110(){
+  const st=ensureSaleStateV110(),total=saleTotalV110(),paid=paymentTotalV110();if(!st.cart.length||total<=0)return alert('Adicione itens.');if(paid!==total)return alert('Os pagamentos precisam fechar exatamente o total da venda.');if(st.cart.some(x=>['debito_conta','farda'].includes(x.tipo))&&!st.studentId)return alert('Débito e farda exigem aluno selecionado.');
+  try{const cashAmount=st.payments.filter(p=>p.metodo==='dinheiro').reduce((s,p)=>s+p.valorAplicadoCentavos,0),cash=cashAmount>0?await ensureCashSession('secretaria'):null,saleRef=db.collection('vendas').doc(),cashMove=cash?db.collection('movimentos_caixa').doc():null,queueRef=db.collection('fila_integracao').doc(),accountRef=st.studentId?db.collection('contas_alunos').doc(st.studentId):null,accountMove=st.cart.some(x=>x.tipo==='debito_conta')?db.collection('movimentos_conta').doc():null,payRefs=st.payments.map(()=>({pv:db.collection('pagamentos_venda').doc(),p:db.collection('pagamentos').doc()})),itemRefs=st.cart.map(()=>db.collection('itens_venda').doc()),uniformRefs=st.cart.filter(x=>x.tipo==='farda').map(()=>db.collection('pedidos_farda').doc()),catalog=expandStructuredItemsV110(st.cart);
+    await db.runTransaction(async tx=>{let acc=null;if(accountRef){const snap=await tx.get(accountRef);acc=snap.data()||{}}const catalogPlan=await planCatalogInventoryTxV120(tx,catalog,{origem:'secretaria',sourceId:saleRef.id,alunoId:st.studentId||null,salgadoKind:'venda_secretaria'}),uniformPlan=await planUniformInventoryTxV120(tx,st.cart.filter(x=>x.tipo==='farda'),{origem:'secretaria',sourceId:saleRef.id,alunoId:st.studentId||null});writeCatalogInventoryPlanV120(tx,catalogPlan);writeUniformInventoryPlanV120(tx,uniformPlan);const debtLine=st.cart.find(x=>x.tipo==='debito_conta');if(debtLine){const current=Number(acc?.dividaCentavos||0),amount=centsOfLine(debtLine);if(current<amount)throw new Error('A dívida do aluno mudou. Remova e adicione novamente o débito ao carrinho.');const newDebt=current-amount,limit=Number(acc?.limiteFiadoCentavos||0);tx.set(accountRef,{dividaCentavos:newDebt,bloqueadoPorLimite:limit>0&&newDebt>=limit,atualizadoEm:nowIso()},{merge:true});tx.set(accountMove,{id:accountMove.id,alunoId:st.studentId,tipo:'pagamento_venda_secretaria',valorCentavos:amount,aplicadoDividaCentavos:amount,vendaId:saleRef.id,formaPagamento:st.payments.length===1?st.payments[0].metodo:'dividido',usuarioId:state.user.id,dataChave:dateKey(),criadoEm:nowIso()})}
+      const saleData={id:saleRef.id,alunoId:st.studentId||null,alunoNome:st.student?.nome||null,turma:st.student?.turma||null,origem:'secretaria',operadorId:state.user.id,operadorNome:state.user.nome,formaPagamento:st.payments.length===1?st.payments[0].metodo:'dividido',valorBrutoCentavos:total,itens:st.cart.map(x=>({...x,valorCentavos:centsOfLine(x)})),pagamentos:st.payments,caixaId:cash?.id||null,dataChave:dateKey(),criadoEm:nowIso(),status:'confirmada',schemaVersion:3};tx.set(saleRef,saleData);st.cart.forEach((x,i)=>tx.set(itemRefs[i],{id:itemRefs[i].id,vendaId:saleRef.id,alunoId:st.studentId||null,...x,valorCentavos:centsOfLine(x),criadoEm:nowIso()}));st.payments.forEach((p,i)=>{const common={id:payRefs[i].pv.id,vendaId:saleRef.id,alunoId:st.studentId||null,...p,valorBrutoCentavos:p.metodo==='cartao'?p.valorBrutoPassadoCentavos:p.valorAplicadoCentavos,origem:'secretaria',usuarioId:state.user.id,status:'confirmado',dataChave:dateKey(),criadoEm:nowIso()};tx.set(payRefs[i].pv,common);tx.set(payRefs[i].p,{...common,id:payRefs[i].p.id})});if(cashMove)tx.set(cashMove,{id:cashMove.id,caixaId:cash.id,tipo:'venda',vendaId:saleRef.id,valorCentavos:cashAmount,usuarioId:state.user.id,usuarioNome:state.user.nome,dataChave:dateKey(),criadoEm:nowIso()});let ui=0;for(const x of st.cart.filter(i=>i.tipo==='farda')){const r=uniformRefs[ui++];tx.set(r,{id:r.id,vendaId:saleRef.id,alunoId:st.studentId,alunoNome:st.student.nome,turma:st.student.turma,produto:x.nome||'Camisa de farda',modeloFardaId:x.modeloFardaId||'camisa_padrao',tamanho:x.tamanho,modelo:x.modelo||'',quantidade:x.quantidade,precoUnitarioCentavos:x.precoUnitarioCentavos,totalCentavos:centsOfLine(x),statusPagamento:'pago',statusAtendimento:x.statusAtendimento,estoqueAcao:x.estoqueAcao||'producao',estoqueReservado:x.estoqueAcao==='reservar',estoqueBaixado:x.estoqueAcao==='saida_imediata',criadoPor:state.user.id,criadoEm:nowIso(),atualizadoEm:nowIso()})}tx.set(queueRef,{id:queueRef.id,tipo:'venda_bruta',origem:'secretaria',sourceId:saleRef.id,valorBrutoCentavos:total,pagamentos:st.payments.map(p=>({metodo:p.metodo,valorAplicadoCentavos:p.valorAplicadoCentavos,adquirente:p.adquirente||null,origemPix:p.origemPix||null})),itens:st.cart.map(x=>({tipo:x.tipo,categoria:x.categoria||null,nome:x.nome,valorCentavos:centsOfLine(x)})),status:'pendente',dataChave:dateKey(),criadoEm:nowIso()})});
+    await audit('venda_composta_secretaria',{vendaId:saleRef.id,valorCentavos:total,formas:st.payments.map(p=>p.metodo)});ensureSaleStateV110(true);await refreshStockStateV120();closeSaleWizardV120();toast('Venda registrada. Caixa e estoque atualizados.');await renderSalesLandingV120();setTimeout(()=>openSaleDetailsV110(saleRef.id),250)
+  }catch(e){console.error(e);alert(e.message)}
+}
+
+/* =========================
+   Produtos, estoque, movimentos e reposição
+   ========================= */
+async function renderProdutos(tab='catalogo'){
+  state.productsTabV120=tab;await refreshStockStateV120();const el=$('#mainContent');el.innerHTML=pageHeader('Produtos e estoque','Cadastre produtos, preços, visibilidade e disponibilidade em um único lugar.',`<button class="btn btn-primary" onclick="openNewProductV120()">+ Novo produto</button>`)+`<div class="tabs-v120">${[['catalogo','Produtos'],['estoque','Estoque'],['movimentos','Movimentações'],['reposicao','Reposição'],['fardas','Modelos de farda']].map(([id,l])=>`<button class="tab-v120 ${tab===id?'active':''}" onclick="renderProdutos('${id}')">${l}</button>`).join('')}</div><div id="productsWorkspaceV120"><div class="empty">Carregando...</div></div>`;if(tab==='catalogo')renderCatalogV120();if(tab==='estoque')renderStockV120();if(tab==='movimentos')await renderStockMovementsV120();if(tab==='reposicao')renderReplenishmentV120();if(tab==='fardas')renderUniformModelsV120()}
+function renderCatalogV120(){const h=$('#productsWorkspaceV120');const cats=[...new Set(state.products.map(x=>x.categoria))];h.innerHTML=cats.map(cat=>`<div class="card" style="margin-bottom:14px"><div class="card-head"><div class="card-title">${esc(cat)}</div><span class="muted">${state.products.filter(p=>p.categoria===cat).length} item(ns)</span></div><div class="card-body"><div class="catalog-list-v120">${state.products.filter(p=>p.categoria===cat).map(p=>{const i=productAvailabilityV120(p);return `<div class="catalog-card-v120"><div><strong>${esc(p.nome)}</strong><div class="meta">${p.combo?'Preço calculado pelos componentes':fmt(productPrice(p))} · ${statusLabelV120(productControlV120(p))}</div><div style="margin-top:7px">${stockStateBadgeV120(i)} <span class="badge ${p.ativo?'b-green':'b-red'}">${p.ativo?'ativo':'inativo'}</span></div></div><div class="actions"><button class="btn btn-light" onclick="editProductV120('${p.id}')">Editar</button>${productControlV120(p)==='unitario'?`<button class="btn btn-outline" onclick="openStockEntryV120('${p.id}')">Estoque</button>`:''}</div></div>`}).join('')}</div></div></div>`).join('')}
+function stockRowV120(p){const i=productAvailabilityV120(p);if(i.mode==='capacidade_diaria')return `<tr><td><div class="stock-product-v120"><div class="icon">S</div><div><strong>${esc(p.nome)}</strong><div class="muted">Capacidade diária</div></div></div></td><td>${i.planned}</td><td>—</td><td>${i.available}</td><td>${stockStateBadgeV120(i)}</td><td><button class="btn btn-light" onclick="openDailyCapacityV120()">Ajustar dia</button></td></tr>`;return `<tr><td><div class="stock-product-v120"><div class="icon">${esc(initials(p.nome).slice(0,1))}</div><div><strong>${esc(p.nome)}</strong><div class="muted">Estoque unitário</div></div></div></td><td>${i.configured?fmtQtyV120(i.physical):'—'}</td><td>${i.configured?fmtQtyV120(i.reserved):'—'}</td><td>${i.configured?fmtQtyV120(i.available):'—'}</td><td>${stockStateBadgeV120(i)}</td><td><button class="btn btn-light" onclick="openStockEntryV120('${p.id}')">${i.configured?'Movimentar':'Definir estoque'}</button></td></tr>`}
+function renderStockV120(){const h=$('#productsWorkspaceV120'),unit=state.products.filter(p=>p.ativo&&!p.combo&&['unitario','capacidade_diaria'].includes(productControlV120(p))),uniform=(state.inventory||[]).filter(x=>x.tipo==='farda');h.innerHTML=`<div class="stock-cards-v120"><div class="stock-card-v120"><div class="lbl">Produtos controlados</div><div class="num">${unit.length}</div></div><div class="stock-card-v120"><div class="lbl">Sem configuração inicial</div><div class="num">${unit.filter(p=>productAvailabilityV120(p).configured===false).length+uniform.filter(x=>!x.configurado).length}</div></div><div class="stock-card-v120"><div class="lbl">Baixo ou zerado</div><div class="num">${unit.filter(p=>{const i=productAvailabilityV120(p);return i.configured&&Number.isFinite(i.available)&&i.available<=3}).length}</div></div></div><div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">Produtos da cantina</div></div><div class="table-wrap" style="border:0"><table><thead><tr><th>Produto</th><th>Físico / planejado</th><th>Reservado</th><th>Disponível</th><th>Situação</th><th>Ação</th></tr></thead><tbody>${unit.map(stockRowV120).join('')}</tbody></table></div></div><div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">Farda por variação</div><button class="btn btn-outline" onclick="renderProdutos('fardas')">Gerenciar modelos</button></div><div class="table-wrap" style="border:0"><table><thead><tr><th>Modelo</th><th>Variação</th><th>Físico</th><th>Reservado</th><th>Disponível</th><th>Situação</th><th>Ação</th></tr></thead><tbody>${uniform.map(s=>{const m=uniformModelByIdV120(s.modeloFardaId);const i={mode:'unitario',configured:!!s.configurado,available:s.configurado?stockAvailableV120(s):0};return `<tr><td>${esc(m?.nome||'Farda')}</td><td><strong>${esc(s.tamanho||'-')}</strong>${s.modelo?` · ${esc(s.modelo)}`:''}</td><td>${s.configurado?fmtQtyV120(s.quantidadeFisica):'—'}</td><td>${s.configurado?fmtQtyV120(s.quantidadeReservada):'—'}</td><td>${s.configurado?fmtQtyV120(stockAvailableV120(s)):'—'}</td><td>${stockStateBadgeV120(i)}</td><td><button class="btn btn-light" onclick="openStockEntryByIdV120('${s.id}')">${s.configurado?'Movimentar':'Definir estoque'}</button></td></tr>`}).join('')}</tbody></table></div></div>`}
+async function renderStockMovementsV120(){const h=$('#productsWorkspaceV120'),s=await db.collection('movimentos_estoque').orderBy('criadoEm','desc').limit(120).get().catch(()=>({docs:[]})),rows=s.docs.map(d=>({id:d.id,...d.data()}));h.innerHTML=`<div class="card"><div class="card-head"><div class="card-title">Últimas movimentações</div><span class="muted">${rows.length} registro(s)</span></div>${rows.length?`<div class="table-wrap" style="border:0"><table><thead><tr><th>Data</th><th>Produto</th><th>Tipo</th><th>Origem</th><th style="text-align:right">Quantidade</th></tr></thead><tbody>${rows.map(r=>{const p=productById(r.produtoId),name=r.produtoId==='camisa_farda'?(uniformModelByIdV120(r.modeloFardaId)?.nome||'Farda'):p?.nome||r.produtoId;return `<tr><td>${humanDate(r.criadoEm)}</td><td><strong>${esc(name)}</strong>${r.tamanho?`<br><span class="muted">${esc(r.tamanho)} ${esc(r.modelo||'')}</span>`:''}</td><td>${esc(statusLabelV120(r.tipo))}</td><td>${esc(statusLabelV120(r.origem||'-'))}</td><td class="money ${Number(r.quantidade||0)>=0?'inventory-movement-positive':'inventory-movement-negative'}">${Number(r.quantidade||0)>0?'+':''}${fmtQtyV120(r.quantidade)}</td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">Nenhuma movimentação registrada.</div>'}</div>`}
+function renderReplenishmentV120(){const h=$('#productsWorkspaceV120'),unit=state.products.filter(p=>p.ativo&&productControlV120(p)==='unitario');h.innerHTML=`<div class="grid g2"><div class="card"><div class="card-head"><div class="card-title">Registrar entrada</div></div><div class="card-body"><div class="fg"><label>Produto</label><select id="replenishProductV120" class="fi">${unit.map(p=>`<option value="${p.id}">${esc(p.nome)}</option>`).join('')}</select></div><div class="fg"><label>Quantidade recebida</label><input id="replenishQtyV120" type="number" min="1" class="fi" placeholder="0"></div><div class="fg"><label>Observação</label><input id="replenishNoteV120" class="fi" placeholder="Ex.: reposição semanal"></div><button class="btn btn-primary" style="width:100%" onclick="saveReplenishmentV120()">Confirmar entrada</button></div></div><div class="card"><div class="card-head"><div class="card-title">Como funciona</div></div><div class="card-body"><div class="alert">Entradas, vendas, reservas, liberações e ajustes ficam registradas individualmente. O sistema não armazena custo ou margem do fornecedor.</div><p class="muted" style="line-height:1.6">Produtos ainda não configurados precisam receber um estoque inicial antes da primeira venda. O salgado continua com capacidade diária. Combos consomem os componentes.</p></div></div></div>`}
+function renderUniformModelsV120(){const h=$('#productsWorkspaceV120'),models=state.uniformModels||[];h.innerHTML=`<div class="stock-toolbar-v120"><div><strong>Modelos cadastrados</strong><div class="muted">Cada modelo pode ter preços e variações próprias.</div></div><button class="btn btn-primary" onclick="openNewUniformModelV120()">+ Novo modelo</button></div><div class="catalog-list-v120">${models.map(m=>`<div class="catalog-card-v120"><div><strong>${esc(m.nome)}</strong><div class="meta">4–14: ${fmt(m.precoInfantilCentavos)} · Adultos: ${fmt(m.precoAdultoCentavos)}</div><div style="margin-top:7px"><span class="badge ${m.ativo!==false?'b-green':'b-red'}">${m.ativo!==false?'ativo':'inativo'}</span> <span class="badge b-blue">${m.portal!==false?'portal':'interno'}</span></div></div><div class="actions"><button class="btn btn-light" onclick="editUniformModelV120('${m.id}')">Editar</button><button class="btn btn-outline" onclick="renderProdutos('estoque')">Estoque</button></div></div>`).join('')||'<div class="empty">Nenhum modelo.</div>'}</div>`}
+function openNewProductV120(){openModal('Novo produto',productFormV120())}
+function productFormV120(p={}){return `<div class="form-row"><div class="fg"><label>Nome</label><input id="prodNameV120" class="fi" value="${esc(p.nome||'')}"></div><div class="fg"><label>Categoria</label><input id="prodCatV120" class="fi" value="${esc(p.categoria||'')}"></div></div><div class="form-row"><div class="fg"><label>Preço</label><input id="prodPriceV120" class="fi" value="${p.precoCentavos!=null?(Number(p.precoCentavos)/100).toFixed(2).replace('.',','):''}" placeholder="0,00"></div><div class="fg"><label>Controle</label><select id="prodControlV120" class="fi"><option value="unitario" ${productControlV120(p)==='unitario'?'selected':''}>Estoque unitário</option><option value="sem_controle" ${productControlV120(p)==='sem_controle'?'selected':''}>Sem controle de estoque</option></select></div></div><div class="grid g3"><label class="switch-line"><span><strong>Cantina</strong><small class="muted">Pode vender</small></span><input id="prodCantinaV120" type="checkbox" ${p.vendaCantina!==false?'checked':''}></label><label class="switch-line"><span><strong>Secretaria</strong><small class="muted">Pode vender</small></span><input id="prodSecretariaV120" type="checkbox" ${p.vendaSecretaria!==false?'checked':''}></label><label class="switch-line"><span><strong>Responsável</strong><small class="muted">Aparece no portal</small></span><input id="prodPortalV120" type="checkbox" ${(p.vendaResponsavel??p.portal)?'checked':''}></label></div><button class="btn btn-primary" style="width:100%;margin-top:15px" onclick="${p.id?`saveProductEditV120('${p.id}')`:'saveNewProductV120()'}">Salvar produto</button>`}
+async function saveNewProductV120(){const name=$('#prodNameV120').value.trim(),cat=$('#prodCatV120').value.trim(),price=parseBRL($('#prodPriceV120').value),control=$('#prodControlV120').value;if(!name||!cat||price<=0)return alert('Preencha nome, categoria e preço.');const id=`produto_${sanitizeKeyV120(name)}_${Date.now().toString(36)}`,ref=db.collection('produtos').doc(id),now=nowIso(),batch=db.batch();batch.set(ref,{id,nome:name,categoria:cat,precoCentavos:price,ativo:true,vendaRapida:false,portal:$('#prodPortalV120').checked,vendaResponsavel:$('#prodPortalV120').checked,vendaCantina:$('#prodCantinaV120').checked,vendaSecretaria:$('#prodSecretariaV120').checked,controleEstoque:control,combo:false,criadoEm:now,atualizadoEm:now});if(control==='unitario'){const sid=stockIdV120(id);batch.set(db.collection('estoques').doc(sid),{id:sid,produtoId:id,tipo:'unitario',variacaoKey:'padrao',configurado:false,quantidadeFisica:0,quantidadeReservada:0,criadoEm:now,atualizadoEm:now})}await batch.commit();await audit('produto_criado',{produtoId:id});await loadCore();closeModal();renderProdutos('catalogo');toast('Produto cadastrado.')}
+function editProductV120(id){const p=productById(id);if(!p)return;openModal('Editar produto',productFormV120(p)+`<div class="actions" style="margin-top:12px"><button class="btn ${p.ativo?'btn-red':'btn-green'}" onclick="toggleProductV120('${id}',${!p.ativo})">${p.ativo?'Inativar':'Ativar'}</button></div>`)}
+async function saveProductEditV120(id){const p=productById(id),price=parseBRL($('#prodPriceV120').value),control=$('#prodControlV120').value;if(!$('#prodNameV120').value.trim()||!$('#prodCatV120').value.trim()||price<=0)return alert('Preencha os campos corretamente.');const batch=db.batch(),now=nowIso();batch.set(db.collection('produtos').doc(id),{nome:$('#prodNameV120').value.trim(),categoria:$('#prodCatV120').value.trim(),precoCentavos:price,controleEstoque:control,portal:$('#prodPortalV120').checked,vendaResponsavel:$('#prodPortalV120').checked,vendaCantina:$('#prodCantinaV120').checked,vendaSecretaria:$('#prodSecretariaV120').checked,historicoPrecos:[...(p.historicoPrecos||[]),...(price!==Number(p.precoCentavos||0)?[{precoCentavos:price,inicioEm:now,usuario:state.user.id}]:[])],atualizadoEm:now},{merge:true});if(control==='unitario'&&!stockDocV120(id)){const sid=stockIdV120(id);batch.set(db.collection('estoques').doc(sid),{id:sid,produtoId:id,tipo:'unitario',variacaoKey:'padrao',configurado:false,quantidadeFisica:0,quantidadeReservada:0,criadoEm:now,atualizadoEm:now})}await batch.commit();await audit('produto_editado',{produtoId:id});await loadCore();closeModal();renderProdutos('catalogo');toast('Produto atualizado.')}
+async function toggleProductV120(id,val){await db.collection('produtos').doc(id).set({ativo:val,atualizadoEm:nowIso()},{merge:true});await audit(val?'produto_ativado':'produto_inativado',{produtoId:id});await loadCore();closeModal();renderProdutos('catalogo')}
+function openStockEntryV120(productId){const s=stockDocV120(productId),p=productById(productId);if(!p)return;openModal(s?.configurado?'Movimentar estoque':'Definir estoque inicial',`<p><strong>${esc(p.nome)}</strong></p>${s?.configurado?`<div class="grid g3"><div class="kpi"><div class="kpi-label">Físico</div><div class="kpi-value">${fmtQtyV120(s.quantidadeFisica)}</div></div><div class="kpi orange"><div class="kpi-label">Reservado</div><div class="kpi-value">${fmtQtyV120(s.quantidadeReservada)}</div></div><div class="kpi green"><div class="kpi-label">Disponível</div><div class="kpi-value">${fmtQtyV120(stockAvailableV120(s))}</div></div></div>`:''}<div class="fg" style="margin-top:14px"><label>${s?.configurado?'Tipo de movimento':'Quantidade física atual'}</label>${s?.configurado?`<select id="stockActionV120" class="fi"><option value="entrada">Entrada / reposição</option><option value="saida_ajuste">Baixa por ajuste</option><option value="definir">Corrigir saldo físico para</option></select>`:''}<input id="stockQtyV120" type="number" min="0" class="fi" placeholder="0" style="margin-top:8px"></div><div class="fg"><label>Observação</label><input id="stockNoteV120" class="fi" placeholder="Motivo ou referência"></div><button class="btn btn-primary" style="width:100%" onclick="saveStockMovementV120('${stockIdV120(productId)}')">Salvar</button>`)}
+function openStockEntryByIdV120(stockId){const s=stockMapV120().get(stockId);if(!s)return;const name=s.tipo==='farda'?(uniformModelByIdV120(s.modeloFardaId)?.nome||'Farda'):productById(s.produtoId)?.nome||s.produtoId;openModal(s.configurado?'Movimentar estoque':'Definir estoque inicial',`<p><strong>${esc(name)}</strong>${s.tamanho?` — ${esc(s.tamanho)} ${esc(s.modelo||'')}`:''}</p>${s.configurado?`<div class="grid g3"><div class="kpi"><div class="kpi-label">Físico</div><div class="kpi-value">${fmtQtyV120(s.quantidadeFisica)}</div></div><div class="kpi orange"><div class="kpi-label">Reservado</div><div class="kpi-value">${fmtQtyV120(s.quantidadeReservada)}</div></div><div class="kpi green"><div class="kpi-label">Disponível</div><div class="kpi-value">${fmtQtyV120(stockAvailableV120(s))}</div></div></div>`:''}<div class="fg" style="margin-top:14px"><label>${s.configurado?'Tipo de movimento':'Quantidade física atual'}</label>${s.configurado?`<select id="stockActionV120" class="fi"><option value="entrada">Entrada / reposição</option><option value="saida_ajuste">Baixa por ajuste</option><option value="definir">Corrigir saldo físico para</option></select>`:''}<input id="stockQtyV120" type="number" min="0" class="fi" placeholder="0" style="margin-top:8px"></div><div class="fg"><label>Observação</label><input id="stockNoteV120" class="fi" placeholder="Motivo ou referência"></div><button class="btn btn-primary" style="width:100%" onclick="saveStockMovementV120('${stockId}')">Salvar</button>`)}
+async function saveStockMovementV120(stockId){const qty=Number($('#stockQtyV120').value);if(!Number.isFinite(qty)||qty<0)return alert('Quantidade inválida.');const ref=db.collection('estoques').doc(stockId),mov=db.collection('movimentos_estoque').doc();await db.runTransaction(async tx=>{const snap=await tx.get(ref),s=snap.data()||{};const configured=!!s.configurado,action=configured?($('#stockActionV120')?.value||'entrada'):'definir',current=Number(s.quantidadeFisica||0);let next=current,delta=0,type='ajuste_inicial';if(!configured||action==='definir'){next=qty;delta=qty-current;type=configured?'ajuste_saldo':'estoque_inicial'}else if(action==='entrada'){next=current+qty;delta=qty;type='entrada'}else{if(current-qty<Number(s.quantidadeReservada||0))throw new Error('A baixa deixaria o estoque físico abaixo do que já está reservado.');next=current-qty;delta=-qty;type='saida_ajuste'}tx.set(ref,{configurado:true,quantidadeFisica:next,atualizadoEm:nowIso(),ultimoMovimentoEm:nowIso()},{merge:true});tx.set(mov,{id:mov.id,produtoId:s.produtoId||null,modeloFardaId:s.modeloFardaId||null,variacaoKey:s.variacaoKey||null,tamanho:s.tamanho||null,modelo:s.modelo||null,tipo:type,quantidade:delta,origem:'ajuste_manual',observacao:$('#stockNoteV120')?.value||'',usuarioId:state.user.id,dataChave:dateKey(),criadoEm:nowIso()})});await audit('movimento_estoque',{stockId});await refreshStockStateV120();closeModal();renderProdutos(state.productsTabV120||'estoque');toast('Estoque atualizado.')}
+async function saveReplenishmentV120(){const id=$('#replenishProductV120').value,qty=Number($('#replenishQtyV120').value);if(!id||!Number.isFinite(qty)||qty<=0)return alert('Informe uma quantidade válida.');const s=stockDocV120(id);if(!s?.configurado)return alert('Defina primeiro o estoque inicial deste produto.');const ref=db.collection('estoques').doc(s.id),mov=db.collection('movimentos_estoque').doc();await db.runTransaction(async tx=>{const snap=await tx.get(ref),d=snap.data();tx.set(ref,{quantidadeFisica:Number(d.quantidadeFisica||0)+qty,atualizadoEm:nowIso(),ultimoMovimentoEm:nowIso()},{merge:true});tx.set(mov,{id:mov.id,produtoId:id,tipo:'entrada',quantidade:qty,origem:'reposicao',observacao:$('#replenishNoteV120').value||'',usuarioId:state.user.id,dataChave:dateKey(),criadoEm:nowIso()})});await refreshStockStateV120();renderProdutos('reposicao');toast('Reposição registrada.')}
+function openDailyCapacityV120(){const d=dailyCapacityInfoV120();openModal('Capacidade de salgados — hoje',`<div class="grid g3"><div class="kpi"><div class="kpi-label">Planejado</div><div class="kpi-value">${d.planned}</div></div><div class="kpi orange"><div class="kpi-label">Utilizado</div><div class="kpi-value">${d.used}</div></div><div class="kpi green"><div class="kpi-label">Disponível</div><div class="kpi-value">${d.available}</div></div></div><div class="fg" style="margin-top:14px"><label>Quantidade planejada / recebida hoje</label><input id="dailyCapV120" type="number" min="0" class="fi" value="${d.planned}"></div><button class="btn btn-primary" style="width:100%" onclick="saveDailyCapacityV120()">Salvar quantidade do dia</button>`)}
+async function saveDailyCapacityV120(){const q=Number($('#dailyCapV120').value);if(!Number.isFinite(q)||q<0)return alert('Quantidade inválida.');const d=dailyCapacityInfoV120();if(q<d.used)return alert(`Não é possível definir abaixo do que já foi utilizado (${d.used}).`);await db.collection('disponibilidade_salgados').doc(dateKey()).set({dataChave:dateKey(),quantidadePlanejada:q,atualizadoEm:nowIso()},{merge:true});await refreshStockStateV120();closeModal();renderProdutos('estoque');toast('Capacidade do dia atualizada.')}
+function uniformModelFormV120(m={}){return `<div class="fg"><label>Nome do modelo</label><input id="uniformModelNameV120" class="fi" value="${esc(m.nome||'')}"></div><div class="form-row"><div class="fg"><label>Preço 4 a 14</label><input id="uniformModelChildPriceV120" class="fi" value="${m.precoInfantilCentavos!=null?(m.precoInfantilCentavos/100).toFixed(2).replace('.',','):'42,00'}"></div><div class="fg"><label>Preço P a XGG</label><input id="uniformModelAdultPriceV120" class="fi" value="${m.precoAdultoCentavos!=null?(m.precoAdultoCentavos/100).toFixed(2).replace('.',','):'47,00'}"></div></div><div class="form-row"><div class="fg"><label>Tamanhos infantis</label><input id="uniformModelChildSizesV120" class="fi" value="${esc((m.tamanhosInfantis||['4','6','8','10','12','14']).join(', '))}"></div><div class="fg"><label>Tamanhos adultos</label><input id="uniformModelAdultSizesV120" class="fi" value="${esc((m.tamanhosAdultos||['P','M','G','GG','XGG']).join(', '))}"></div></div><label class="switch-line"><span><strong>Variação masculino/feminino nos adultos</strong></span><input id="uniformModelGenderV120" type="checkbox" ${m.generoAdulto!==false?'checked':''}></label><label class="switch-line" style="margin-top:10px"><span><strong>Disponível para o responsável</strong></span><input id="uniformModelPortalV120" type="checkbox" ${m.portal!==false?'checked':''}></label><button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="${m.id?`saveUniformModelEditV120('${m.id}')`:'saveNewUniformModelV120()'}">Salvar modelo</button>`}
+function openNewUniformModelV120(){openModal('Novo modelo de farda',uniformModelFormV120())}
+function editUniformModelV120(id){const m=uniformModelByIdV120(id);openModal('Editar modelo de farda',uniformModelFormV120(m))}
+function parseSizesV120(v){return String(v||'').split(',').map(x=>x.trim()).filter(Boolean)}
+async function saveNewUniformModelV120(){const name=$('#uniformModelNameV120').value.trim(),child=parseBRL($('#uniformModelChildPriceV120').value),adult=parseBRL($('#uniformModelAdultPriceV120').value),cs=parseSizesV120($('#uniformModelChildSizesV120').value),as=parseSizesV120($('#uniformModelAdultSizesV120').value);if(!name||child<=0||adult<=0||!cs.length)return alert('Preencha o modelo e os preços.');const id=`farda_${sanitizeKeyV120(name)}_${Date.now().toString(36)}`,now=nowIso(),gender=$('#uniformModelGenderV120').checked,batch=db.batch();batch.set(db.collection('modelos_farda').doc(id),{id,nome:name,ativo:true,portal:$('#uniformModelPortalV120').checked,tamanhosInfantis:cs,tamanhosAdultos:as,generoAdulto:gender,precoInfantilCentavos:child,precoAdultoCentavos:adult,criadoEm:now,atualizadoEm:now});const vars=[...cs.map(size=>({size,gender:''})),...as.flatMap(size=>gender?[{size,gender:'masculino'},{size,gender:'feminino'}]:[{size,gender:''}])];for(const v of vars){const sid=uniformStockIdV120(id,v.size,v.gender);batch.set(db.collection('estoques').doc(sid),{id:sid,produtoId:'camisa_farda',tipo:'farda',modeloFardaId:id,variacaoKey:uniformVariationKeyV120(id,v.size,v.gender),tamanho:v.size,modelo:v.gender,configurado:false,quantidadeFisica:0,quantidadeReservada:0,criadoEm:now,atualizadoEm:now})}await batch.commit();await loadCore();closeModal();renderProdutos('fardas');toast('Modelo criado. Agora defina o estoque das variações.')}
+async function saveUniformModelEditV120(id){const name=$('#uniformModelNameV120').value.trim(),child=parseBRL($('#uniformModelChildPriceV120').value),adult=parseBRL($('#uniformModelAdultPriceV120').value),cs=parseSizesV120($('#uniformModelChildSizesV120').value),as=parseSizesV120($('#uniformModelAdultSizesV120').value),gender=$('#uniformModelGenderV120').checked;if(!name||child<=0||adult<=0)return alert('Dados inválidos.');const batch=db.batch(),now=nowIso();batch.set(db.collection('modelos_farda').doc(id),{nome:name,portal:$('#uniformModelPortalV120').checked,tamanhosInfantis:cs,tamanhosAdultos:as,generoAdulto:gender,precoInfantilCentavos:child,precoAdultoCentavos:adult,atualizadoEm:now},{merge:true});const existing=new Set((state.inventory||[]).filter(x=>x.tipo==='farda'&&x.modeloFardaId===id).map(x=>x.id)),vars=[...cs.map(size=>({size,gender:''})),...as.flatMap(size=>gender?[{size,gender:'masculino'},{size,gender:'feminino'}]:[{size,gender:''}])];for(const v of vars){const sid=uniformStockIdV120(id,v.size,v.gender);if(!existing.has(sid))batch.set(db.collection('estoques').doc(sid),{id:sid,produtoId:'camisa_farda',tipo:'farda',modeloFardaId:id,variacaoKey:uniformVariationKeyV120(id,v.size,v.gender),tamanho:v.size,modelo:v.gender,configurado:false,quantidadeFisica:0,quantidadeReservada:0,criadoEm:now,atualizadoEm:now})}await batch.commit();await loadCore();closeModal();renderProdutos('fardas');toast('Modelo atualizado.')}
+
+/* =========================
+   Farda — estoque e produção
+   ========================= */
+async function renderFardas(){await refreshStockStateV120();const snap=await db.collection('pedidos_farda').get().catch(()=>({docs:[]}));const rows=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.criadoEm).localeCompare(String(a.criadoEm))),prod=rows.filter(x=>['aguardando_producao','enviado_fabrica','em_producao'].includes(x.statusAtendimento)).length,ready=rows.filter(x=>x.statusAtendimento==='pronto_retirada').length;$('#mainContent').innerHTML=pageHeader('Fardas','Estoque por variação, produção e entrega.',`<div class="actions"><button class="btn btn-outline" onclick="renderProdutos('estoque')">Ver estoque</button><button class="btn btn-primary" onclick="newUniformOrder()">+ Novo pedido</button></div>`)+`<div class="grid g3"><div class="kpi clickable" onclick="renderInsightV110('uniforms')"><div class="kpi-label">Pendentes</div><div class="kpi-value">${rows.filter(x=>!['entregue','cancelado'].includes(x.statusAtendimento)).length}</div><span class="kpi-arrow">›</span></div><div class="kpi orange"><div class="kpi-label">Em produção</div><div class="kpi-value">${prod}</div></div><div class="kpi green"><div class="kpi-label">Prontas para retirada</div><div class="kpi-value">${ready}</div></div></div><div class="card" style="margin-top:14px">${rows.length?`<div class="table-wrap" style="border:0"><table><thead><tr><th>Aluno</th><th>Modelo / variação</th><th>Origem</th><th>Pagamento</th><th>Atendimento</th><th style="text-align:right">Total</th><th>Ação</th></tr></thead><tbody>${rows.map(r=>`<tr><td><strong>${esc(r.alunoNome||'-')}</strong><br><span class="muted">${esc(r.turma||'')}</span></td><td>${esc(r.produto||uniformModelByIdV120(r.modeloFardaId)?.nome||'Farda')}<br><span class="muted">${esc(r.tamanho||'-')} ${r.modelo?`· ${esc(r.modelo)}`:''} · ${r.quantidade||1} un.</span></td><td>${esc(r.solicitadoVia==='portal_responsavel'?'Portal do responsável':'Secretaria')}</td><td><span class="badge ${r.statusPagamento==='pago'?'b-green':'b-yellow'}">${esc(statusLabelV120(r.statusPagamento))}</span></td><td><span class="badge b-blue">${esc(statusLabelV120(r.statusAtendimento))}</span></td><td class="money">${fmt(r.totalCentavos)}</td><td><button class="btn btn-light" onclick="updateUniformStatus('${r.id}')">Alterar estado</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nenhum pedido de farda.</div>'}</div>`}
+async function newUniformOrder(){await refreshStockStateV120();const models=state.uniformModels||[];openModal('Novo pedido de farda',`<div class="fg"><label>Aluno</label><input class="fi" id="uniformStudentText" oninput="searchStudentsInto(this.value,'uniformStudentResults','chooseUniformStudent')"><input type="hidden" id="uniformStudentId"><div id="uniformStudentResults" class="search-results"></div></div><div class="fg"><label>Modelo</label><select id="manualUniformModelIdV120" class="fi" onchange="renderManualUniformFieldsV120()">${models.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('')}</select></div><div id="manualUniformFieldsV120"></div>`);renderManualUniformFieldsV120()}
+function renderManualUniformFieldsV120(){const m=uniformModelByIdV120($('#manualUniformModelIdV120')?.value)||(state.uniformModels||[])[0];if(!m)return;const sizes=[...(m.tamanhosInfantis||[]),...(m.tamanhosAdultos||[])];$('#manualUniformFieldsV120').innerHTML=`<div class="form-row"><div class="fg"><label>Tamanho</label><select id="uniformSize" class="fi" onchange="renderManualUniformAvailabilityV120()">${sizes.map(x=>`<option>${x}</option>`).join('')}</select></div><div class="fg"><label>Variação</label><select id="uniformModel" class="fi" onchange="renderManualUniformAvailabilityV120()"><option value="">Modelo único</option><option value="masculino">Masculino</option><option value="feminino">Feminino</option></select></div></div><div class="form-row"><div class="fg"><label>Quantidade</label><input id="uniformQty" type="number" min="1" value="1" class="fi" oninput="renderManualUniformAvailabilityV120()"></div><div class="fg"><label>Pagamento</label><select id="uniformPayment" class="fi"><option value="pago">Pago</option><option value="aguardando_pagamento">Aguardando pagamento</option></select></div></div><div id="manualUniformAvailabilityV120"></div><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveUniformOrder()">Salvar pedido</button>`;renderManualUniformAvailabilityV120()}
+function manualUniformInfoV120(){const m=uniformModelByIdV120($('#manualUniformModelIdV120')?.value),size=$('#uniformSize')?.value,adult=(m?.tamanhosAdultos||[]).includes(size);if($('#uniformModel')){$('#uniformModel').disabled=!adult||!m?.generoAdulto;if(!adult||!m?.generoAdulto)$('#uniformModel').value='';else if(!$('#uniformModel').value)$('#uniformModel').value='masculino'}const gender=adult&&m?.generoAdulto?($('#uniformModel')?.value||'masculino'):'';const q=Math.max(1,Number($('#uniformQty')?.value||1)),s=uniformStockDocV120(m?.id,size,gender),available=s?.configurado?stockAvailableV120(s):0,unit=adult?Number(m?.precoAdultoCentavos||4700):Number(m?.precoInfantilCentavos||4200);return{m,size,gender,q,s,available,unit,production:!s?.configurado||available<q}}
+function renderManualUniformAvailabilityV120(){const h=$('#manualUniformAvailabilityV120');if(!h)return;const i=manualUniformInfoV120();h.innerHTML=`<div class="alert ${i.production?'warn':''}">${i.production?'<strong>Sem disponibilidade imediata.</strong> O pedido seguirá para produção.':`<strong>${i.available} unidade(s) disponível(is).</strong>`}<br>Preço: ${fmt(i.unit)} por unidade.</div>${!i.production?`<div class="fg" style="margin-top:12px"><label>Atendimento</label><select id="manualUniformActionV120" class="fi"><option value="reservar">Reservar para retirada</option><option value="saida_imediata">Entregar agora</option></select></div>`:''}`}
+async function saveUniformOrder(){const id=$('#uniformStudentId').value;if(!id)return alert('Selecione o aluno.');const a=state.students.find(x=>x.id===id),i=manualUniformInfoV120(),action=i.production?'producao':($('#manualUniformActionV120')?.value||'reservar'),status=action==='producao'?'aguardando_producao':action==='reservar'?'reservado_estoque':'entregue',ref=db.collection('pedidos_farda').doc();try{await db.runTransaction(async tx=>{await applyUniformInventoryTxV120(tx,[{modeloFardaId:i.m.id,tamanho:i.size,modelo:i.gender,quantidade:i.q,statusAtendimento:status,estoqueAcao:action}],{origem:'pedido_farda_manual',sourceId:ref.id,alunoId:id});tx.set(ref,{id:ref.id,alunoId:id,alunoNome:a.nome,turma:a.turma,produto:i.m.nome,modeloFardaId:i.m.id,tamanho:i.size,modelo:i.gender,quantidade:i.q,precoUnitarioCentavos:i.unit,totalCentavos:i.unit*i.q,statusPagamento:$('#uniformPayment').value,statusAtendimento:status,estoqueAcao:action,estoqueReservado:action==='reservar',estoqueBaixado:action==='saida_imediata',criadoPor:state.user.id,criadoEm:nowIso(),atualizadoEm:nowIso()})});await audit('pedido_farda_criado',{pedidoId:ref.id,alunoId:id});await refreshStockStateV120();closeModal();renderFardas();toast('Pedido de farda salvo.')}catch(e){alert(e.message)}}
+async function updateUniformStatus(id){const s=await db.collection('pedidos_farda').doc(id).get(),r=s.data();openModal('Alterar estado da farda',`<p><strong>${esc(r.alunoNome||'-')}</strong> — ${esc(r.tamanho||'-')} ${esc(r.modelo||'')}</p><div class="fg"><label>Estado</label><select id="newUniformStatus" class="fi">${['aguardando_pagamento','reservado_estoque','aguardando_producao','enviado_fabrica','em_producao','pronto_retirada','entregue','cancelado'].map(x=>`<option value="${x}" ${x===r.statusAtendimento?'selected':''}>${statusLabelV120(x)}</option>`).join('')}</select></div><button class="btn btn-primary" style="width:100%" onclick="saveUniformStatus('${id}')">Salvar estado</button>`)}
+async function saveUniformStatus(id){const newStatus=$('#newUniformStatus').value,ref=db.collection('pedidos_farda').doc(id);try{await db.runTransaction(async tx=>{const snap=await tx.get(ref),r=snap.data();if(!r)throw new Error('Pedido não encontrado.');const sref=db.collection('estoques').doc(uniformStockIdV120(r.modeloFardaId||'camisa_padrao',r.tamanho,r.modelo||''));let stock=null;if(r.estoqueReservado&&(newStatus==='entregue'||newStatus==='cancelado')){const ss=await tx.get(sref);stock=ss.data();if(stock){const q=Number(r.quantidade||1),reserved=Math.max(0,Number(stock.quantidadeReservada||0)-q);if(newStatus==='entregue'){if(Number(stock.quantidadeFisica||0)<q)throw new Error('Estoque físico insuficiente para concluir a entrega.');tx.set(sref,{quantidadeFisica:Number(stock.quantidadeFisica||0)-q,quantidadeReservada:reserved,atualizadoEm:nowIso()},{merge:true})}else tx.set(sref,{quantidadeReservada:reserved,atualizadoEm:nowIso()},{merge:true});const mov=db.collection('movimentos_estoque').doc();tx.set(mov,{id:mov.id,produtoId:'camisa_farda',modeloFardaId:r.modeloFardaId||'camisa_padrao',variacaoKey:stock.variacaoKey,tamanho:r.tamanho,modelo:r.modelo||'',tipo:newStatus==='entregue'?'entrega_reserva':'liberacao_reserva',quantidade:newStatus==='entregue'?-q:q,origem:'pedido_farda',sourceId:id,alunoId:r.alunoId||null,usuarioId:state.user.id,dataChave:dateKey(),criadoEm:nowIso()})}}
+      tx.set(ref,{statusAtendimento:newStatus,estoqueReservado:r.estoqueReservado&&(newStatus!=='entregue'&&newStatus!=='cancelado'),estoqueBaixado:r.estoqueBaixado||newStatus==='entregue',atualizadoEm:nowIso(),alteradoPor:state.user.id},{merge:true})});await audit('pedido_farda_estado',{pedidoId:id,status:newStatus});await refreshStockStateV120();closeModal();renderFardas();toast('Estado atualizado.')}catch(e){alert(e.message)}}
+
+/* =========================
+   Portal do responsável — loja e farda
+   ========================= */
+async function renderParentPortal(){
+  const a=state.parentStudent,acc=await getAccount(a.id);await refreshStockStateV120();$('#userPill').textContent='Responsável · '+a.nome.split(' ')[0];$('#userPill').classList.remove('hidden');$('#switchUserBtn').classList.remove('hidden');const [ms,fs]=await Promise.all([db.collection('movimentos_conta').where('alunoId','==',a.id).get(),db.collection('pedidos_farda').where('alunoId','==',a.id).get().catch(()=>({docs:[]}))]);const moves=ms.docs.map(d=>d.data()).sort((x,y)=>String(y.criadoEm).localeCompare(String(x.criadoEm))).slice(0,80),fardas=fs.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>String(y.criadoEm).localeCompare(String(x.criadoEm))).slice(0,8);
+  $('#parentScreen').innerHTML=`<div class="parent-wrap"><div class="parent-hero"><img src="${BRAND_V120.icon}" alt="Escola Piaget" style="width:76px;max-height:54px;object-fit:contain;background:#fff;border-radius:14px;padding:8px;margin-bottom:14px"><h2>${esc(a.nome)}</h2><p>${esc(a.turma)} · Matrícula ${esc(a.matricula)}</p></div><div class="parent-actions-v120"><button class="parent-action-v120" onclick="openParentOrder()"><div class="ico">◉</div><strong>Pedir lanche</strong><span>Pedido avulso, semanal ou mensal.</span></button><button class="parent-action-v120" onclick="openParentUniformStoreV120()"><div class="ico">◇</div><strong>Comprar farda</strong><span>Veja tamanhos disponíveis ou produção.</span></button><button class="parent-action-v120" onclick="startCheckout('quitar_divida')" ${acc.dividaCentavos<=0?'disabled':''}><div class="ico">R$</div><strong>Pagar em aberto</strong><span>${acc.dividaCentavos>0?fmt(acc.dividaCentavos):'Nenhum valor em aberto'}</span></button><button class="parent-action-v120" onclick="askCreditAmount()"><div class="ico">＋</div><strong>Adicionar crédito</strong><span>Valor para novas compras na cantina.</span></button></div><div class="grid g3"><div class="kpi green"><div class="kpi-label">Crédito disponível</div><div class="kpi-value">${fmt(acc.saldoCreditoCentavos)}</div></div><div class="kpi orange"><div class="kpi-label">Valor em aberto</div><div class="kpi-value">${fmt(acc.dividaCentavos)}</div></div><div class="kpi"><div class="kpi-label">Limite autorizado</div><div class="kpi-value">${fmt(acc.limiteFiadoCentavos)}</div></div></div><div class="grid g2" style="margin-top:14px"><div class="card"><div class="card-head"><div class="card-title">Compra sem saldo</div></div><div class="card-body"><div class="switch-line"><div><strong>${acc.autorizadoSemSaldo?'Autorizada':'Bloqueada'}</strong><div class="muted">Permitir que o aluno compre na cantina sem crédito pré-pago.</div></div><div class="switch ${acc.autorizadoSemSaldo?'on':''}" onclick="parentToggleAuthorization(${!acc.autorizadoSemSaldo})"></div></div><div class="fg" style="margin-top:13px"><label>Limite escolhido — máximo R$ 50</label><input id="parentLimit" type="number" min="0" max="50" step="1" class="fi" value="${Number(acc.limiteFiadoCentavos||0)/100}"></div><button class="btn btn-primary" onclick="saveParentLimit()">Salvar limite</button></div></div><div class="card"><div class="card-head"><div class="card-title">Meus pedidos de farda</div></div>${fardas.length?`<div class="table-wrap" style="border:0"><table><thead><tr><th>Pedido</th><th>Status</th></tr></thead><tbody>${fardas.map(r=>`<tr><td><strong>${esc(r.produto||'Farda')}</strong><br><span class="muted">${esc(r.tamanho||'')} ${esc(r.modelo||'')}</span></td><td><span class="badge b-blue">${esc(statusLabelV120(r.statusAtendimento))}</span><br><span class="muted">${esc(statusLabelV120(r.statusPagamento))}</span></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nenhum pedido de farda.</div>'}</div></div><div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">Lançamentos da conta</div></div>${moves.length?`<div class="table-wrap" style="border:0"><table><thead><tr><th>Data</th><th>Tipo</th><th>Detalhes</th><th style="text-align:right">Valor</th></tr></thead><tbody>${moves.map(m=>`<tr><td>${humanDate(m.criadoEm)}</td><td>${esc(statusLabelV120(m.tipo))}</td><td>${(m.itens||[]).map(x=>`${x.quantidade}× ${esc(x.nome)}`).join(', ')||'-'}</td><td class="money">${fmt(m.valorCentavos)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nenhum lançamento.</div>'}</div><button class="btn btn-outline" style="width:100%;margin-top:12px" onclick="renderParentLogin()">Sair da conta</button></div>`
+}
+async function openParentOrder(){await refreshStockStateV120();const available=state.products.filter(p=>p.ativo&&(p.vendaResponsavel??p.portal)&&productAvailabilityV120(p).sellable);if(!available.length)return alert('Não há produtos disponíveis para pedido no momento.');openModal('Novo pedido antecipado',`<div class="tabs"><button class="tab active" onclick="setOrderMode('avulso',this)">Avulso</button><button class="tab" onclick="setOrderMode('semanal',this)">Semanal</button><button class="tab" onclick="setOrderMode('mensal',this)">Mensal</button></div><input type="hidden" id="orderMode" value="avulso"><div id="orderModeFields"></div><div class="fg"><label>Produto disponível</label><select id="orderProduct" class="fi" onchange="showParentProductAvailabilityV120()">${available.map(p=>`<option value="${p.id}">${esc(p.nome)} — ${fmt(productPrice(p))}</option>`).join('')}</select></div><div id="parentProductAvailabilityV120"></div><div class="fg" style="margin-top:12px"><label>Quantidade por dia</label><input id="orderQty" type="number" min="1" value="1" class="fi"></div><button class="btn btn-primary" style="width:100%" onclick="submitParentOrder()">Revisar e pagar</button>`);setOrderMode('avulso');showParentProductAvailabilityV120()}
+function showParentProductAvailabilityV120(){const p=productById($('#orderProduct')?.value),i=productAvailabilityV120(p),h=$('#parentProductAvailabilityV120');if(h)h.innerHTML=`<div class="alert">${availabilityBadgeV120(i)} <span style="margin-left:6px">${esc(stockStatusTextV120(i))}</span></div>`}
+async function submitParentOrder(){const mode=$('#orderMode').value,p=productById($('#orderProduct').value),qty=Math.max(1,Number($('#orderQty').value||1));let dates=datesForOrder(mode).filter(d=>orderDateAllowed(d,state.parentStudent));if(!dates.length)return alert('Não há datas disponíveis para esse pedido.');await refreshStockStateV120();const info=productAvailabilityV120(p),need=dates.length*qty;if(info.configured===false||!info.sellable)return alert('Este produto não está disponível no momento.');if(Number.isFinite(info.available)&&need>info.available)return alert(`A quantidade total do pedido (${need}) ultrapassa o disponível (${info.available}).`);const items=dates.map(d=>({dataChave:d,produtoId:p.id,quantidade:qty})),total=dates.length*qty*productPrice(p);if(!confirm(`${dates.length} dia(s) · ${qty} × ${p.nome} por dia · Total ${fmt(total)}. Continuar para o pagamento?`))return;await startCheckout('pedido',0,{modalidade:mode,itens:items,produtoId:p.id,quantidadeTotal:need,estoqueVerificadoEm:nowIso()})}
+async function openParentUniformStoreV120(){await refreshStockStateV120();const models=(state.uniformModels||[]).filter(m=>m.ativo!==false&&m.portal!==false);if(!models.length)return alert('Nenhum modelo de farda disponível.');openModal('Comprar farda',`<div class="fg"><label>Modelo</label><select id="parentUniformModelV120" class="fi" onchange="renderParentUniformOptionsV120()">${models.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('')}</select></div><div id="parentUniformOptionsV120"></div>`);renderParentUniformOptionsV120()}
+function renderParentUniformOptionsV120(){const m=uniformModelByIdV120($('#parentUniformModelV120')?.value);if(!m)return;const sizes=[...(m.tamanhosInfantis||[]),...(m.tamanhosAdultos||[])];$('#parentUniformOptionsV120').innerHTML=`<div class="form-row"><div class="fg"><label>Tamanho</label><select id="parentUniformSizeV120" class="fi" onchange="renderParentUniformStatusV120()">${sizes.map(x=>`<option>${x}</option>`).join('')}</select></div><div class="fg"><label>Variação</label><select id="parentUniformGenderV120" class="fi" onchange="renderParentUniformStatusV120()"><option value="">Modelo único</option><option value="masculino">Masculino</option><option value="feminino">Feminino</option></select></div></div><div class="fg"><label>Quantidade</label><input id="parentUniformQtyV120" type="number" min="1" value="1" class="fi" oninput="renderParentUniformStatusV120()"></div><div id="parentUniformStatusV120"></div><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="submitParentUniformV120()">Continuar para pagamento</button>`;renderParentUniformStatusV120()}
+function parentUniformInfoV120(){const m=uniformModelByIdV120($('#parentUniformModelV120')?.value),size=$('#parentUniformSizeV120')?.value,adult=(m?.tamanhosAdultos||[]).includes(size);if($('#parentUniformGenderV120')){$('#parentUniformGenderV120').disabled=!adult||!m?.generoAdulto;if(!adult||!m?.generoAdulto)$('#parentUniformGenderV120').value='';else if(!$('#parentUniformGenderV120').value)$('#parentUniformGenderV120').value='masculino'}const gender=adult&&m?.generoAdulto?($('#parentUniformGenderV120')?.value||'masculino'):'';const q=Math.max(1,Number($('#parentUniformQtyV120')?.value||1)),s=uniformStockDocV120(m?.id,size,gender),available=s?.configurado?stockAvailableV120(s):0,unit=adult?Number(m?.precoAdultoCentavos||4700):Number(m?.precoInfantilCentavos||4200);return{m,size,gender,q,s,available,unit,production:!s?.configurado||available<q}}
+function renderParentUniformStatusV120(){const h=$('#parentUniformStatusV120');if(!h)return;const i=parentUniformInfoV120();h.innerHTML=`<div class="alert ${i.production?'warn':''}">${i.production?'<strong>Produção necessária.</strong> Este tamanho não está disponível para entrega imediata. Após a compra, o pedido será encaminhado para produção.':`<strong>Disponível para atendimento.</strong> ${i.available} unidade(s) livre(s) no momento.`}<br><span class="muted">Total: ${fmt(i.unit*i.q)}</span></div>`}
+async function submitParentUniformV120(){const i=parentUniformInfoV120(),a=state.parentStudent;if(!i.m)return;const ref=db.collection('pedidos_farda').doc(),statusPosPagamento=i.production?'aguardando_producao':'reservado_estoque',total=i.unit*i.q;await ref.set({id:ref.id,alunoId:a.id,alunoNome:a.nome,turma:a.turma,produto:i.m.nome,modeloFardaId:i.m.id,tamanho:i.size,modelo:i.gender,quantidade:i.q,precoUnitarioCentavos:i.unit,totalCentavos:total,statusPagamento:'aguardando_pagamento',statusAtendimento:'aguardando_pagamento',statusPosPagamento,estoqueAcao:i.production?'producao':'reservar_apos_pagamento',estoqueReservado:false,solicitadoVia:'portal_responsavel',notificarSecretaria:true,criadoEm:nowIso(),atualizadoEm:nowIso()});closeModal();try{await startCheckout('farda',total,{pedidoFardaId:ref.id,modeloFardaId:i.m.id,tamanho:i.size,modelo:i.gender,quantidade:i.q,statusAtendimento:statusPosPagamento})}catch(e){await ref.set({checkoutErro:e.message,atualizadoEm:nowIso()},{merge:true});alert('O pedido foi registrado como aguardando pagamento, mas o checkout ainda não está disponível neste endereço.')}}
+
+/* =========================
+   Pequenos refinamentos de disponibilidade
+   ========================= */
+function addToCart(id){const p=productById(id),i=productAvailabilityV120(p);if(!i.sellable)return alert(`${p.nome} não está disponível. ${stockStatusTextV120(i)}.`);const row=state.cart.find(x=>x.productId===id);const next=(row?.qty||0)+1;if(Number.isFinite(i.available)&&next>i.available)return alert(`Disponível: ${i.available}.`);if(row)row.qty++;else state.cart.push({productId:id,qty:1});renderCashCart()}
+
+/* Initialize visual layer after the original script has registered its handlers. */
+window.addEventListener('DOMContentLoaded',()=>{applyBrandingV120()});
+window.addEventListener('load',()=>{applyBrandingV120();setTimeout(applyBrandingV120,400)});
+
+/* Pagamento guiado: abre diretamente na forma escolhida pelo atendente. */
+function openPaymentV110(method='dinheiro'){
+  const rem=remainingSaleV110();if(rem<=0)return alert('A venda já está totalmente coberta.');
+  const chosen=['dinheiro','cartao','pix'].includes(method)?method:'dinheiro';
+  openModal('Adicionar pagamento',`<div class="fg"><label>Forma</label><select id="v110PayMethod" class="fi" onchange="renderPaymentFieldsV110()"><option value="dinheiro" ${chosen==='dinheiro'?'selected':''}>Dinheiro</option><option value="cartao" ${chosen==='cartao'?'selected':''}>Cartão</option><option value="pix" ${chosen==='pix'?'selected':''}>Pix</option></select></div><div class="fg"><label>Valor aplicado nesta venda</label><input id="v110PayAmount" class="fi" value="${(rem/100).toFixed(2).replace('.',',')}" inputmode="decimal" oninput="renderPaymentFieldsV110()"></div><div id="v110PayFields"></div><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="confirmPaymentV110()">Adicionar pagamento</button>`);renderPaymentFieldsV110()
+}
+
+async function checkParentOrderAvailabilityV120(p,dates,qty){
+  const comps=productComponents(p,qty);
+  for(const c of comps){const cp=productById(c.produtoId);if(!cp)continue;const mode=productControlV120(cp);
+    if(mode==='unitario'){const s=stockDocV120(cp.id);if(!s?.configurado)return{ok:false,error:`O estoque de ${cp.nome} ainda não foi configurado.`};const need=Number(c.quantidade||0)*dates.length,available=stockAvailableV120(s);if(need>available)return{ok:false,error:`O pedido precisa de ${need} unidade(s) de ${cp.nome}, mas há ${available} disponível(is).`}}
+    if(mode==='capacidade_diaria'){const snaps=await Promise.all(dates.map(d=>db.collection('disponibilidade_salgados').doc(d).get().catch(()=>({exists:false,data:()=>({})}))));for(let i=0;i<dates.length;i++){const doc=snaps[i].exists?snaps[i].data():{quantidadePlanejada:Number(state.config?.quantidadePadraoSalgados||30),vendidoDinheiro:0,vendidoAvulso:0,consumoConta:0,pedidosConfirmados:0,reservas:{}};const planned=Number(doc.quantidadePlanejada||state.config?.quantidadePadraoSalgados||30),used=Number(doc.vendidoDinheiro||0)+Number(doc.vendidoAvulso||0)+Number(doc.consumoConta||0)+Number(doc.pedidosConfirmados||0)+activeReservationTotal(doc.reservas),available=Math.max(0,planned-used),need=Number(c.quantidade||0);if(need>available)return{ok:false,error:`Em ${dates[i]}, há apenas ${available} salgado(s) disponível(is) para este pedido.`}}}
+  }
+  return{ok:true}
+}
+async function submitParentOrder(){
+  const mode=$('#orderMode').value,p=productById($('#orderProduct').value),qty=Math.max(1,Number($('#orderQty').value||1));let dates=datesForOrder(mode).filter(d=>orderDateAllowed(d,state.parentStudent));if(!dates.length)return alert('Não há datas disponíveis para esse pedido.');await refreshStockStateV120();const check=await checkParentOrderAvailabilityV120(p,dates,qty);if(!check.ok)return alert(check.error);const items=dates.map(d=>({dataChave:d,produtoId:p.id,quantidade:qty})),total=dates.length*qty*productPrice(p);if(!confirm(`${dates.length} dia(s) · ${qty} × ${p.nome} por dia · Total ${fmt(total)}. Continuar para o pagamento?`))return;await startCheckout('pedido',0,{modalidade:mode,itens:items,produtoId:p.id,quantidadeTotal:dates.length*qty,estoqueVerificadoEm:nowIso()})
+}
+
 </script>
 </body>
 </html>
