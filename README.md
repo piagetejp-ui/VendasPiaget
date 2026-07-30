@@ -1,35 +1,46 @@
-# Escola Piaget — Sistema de Vendas V1.3.2
+# Sistema de Vendas Piaget — V1.3.3
 
-Versão focada na correção do acesso do responsável após redefinição de senha.
+Versão focada em segurança do acesso do responsável.
 
 ## Correção principal
 
-Na V1.3.1, o link de redefinição podia salvar a nova senha e atualizar o topo como “Responsável”, mas não abrir a página do aluno. A auditoria encontrou uma recursão na função `renderParentPortal`, causada por captura incorreta da própria função durante o patch V1.3.0.
+Na V1.3.2, após o responsável criar senha, ainda era possível entrar pelo fluxo de validação inicial com matrícula + data de nascimento/iniciais. Isso contrariava a regra definida para segurança.
 
-A V1.3.2 substitui esse ponto por uma renderização autônoma do portal do responsável. O fluxo corrigido é:
+Na V1.3.3:
 
-1. Secretaria/gestão gera link temporário.
-2. Responsável abre o link.
-3. Cria nova senha.
-4. O token é validado e marcado como usado.
-5. A senha é salva no acesso do aluno.
-6. A sessão do responsável é aberta.
-7. O portal do aluno é renderizado imediatamente.
+- se a matrícula já tiver senha ativa, o fluxo de primeiro acesso é bloqueado;
+- matrícula + data de nascimento/iniciais só funciona quando ainda não existe senha ativa para aquela conta;
+- se o responsável esquecer a senha, ele deve falar com a secretaria;
+- secretaria/gestão gera link temporário de redefinição;
+- o botão de reset para primeiro acesso foi removido do fluxo normal de gestão do acesso do responsável;
+- a tentativa de usar primeiro acesso após senha criada gera auditoria.
+
+## Regra vigente do responsável
+
+1. Primeiro acesso: matrícula + validação inicial.
+2. Depois que criar senha: matrícula + senha.
+3. Esqueci minha senha: não redefine sozinho.
+4. Secretaria/gestão libera novo acesso por link temporário.
+5. Link temporário: uso único e validade curta.
+
+## Atualização
+
+Suba a pasta completa:
+
+- `index.html`
+- `obrigado.html`
+- `assets/`
+
+Não apague o Firestore e não reinicialize a base.
 
 ## Teste recomendado
 
-1. Entre como Lucas ou secretaria.
-2. Abra **Usuários e acessos**.
-3. Busque um aluno.
-4. Gere um link temporário de redefinição.
-5. Abra o link em aba anônima.
-6. Crie uma nova senha.
-7. Confirme se a página do aluno abre imediatamente.
-8. Saia da conta.
-9. Entre novamente por matrícula + senha.
-
-## Observações
-
-- Não é necessário apagar dados do Firestore.
-- Suba a pasta completa, pois o sistema usa a pasta `assets/`.
-- Esta versão não altera checkout InfinitePay, caixa, estoque ou vendas.
+1. Escolha um aluno sem senha ativa.
+2. Entre no portal por primeiro acesso.
+3. Crie uma senha.
+4. Saia.
+5. Tente entrar de novo por primeiro acesso usando data de nascimento/iniciais.
+6. O sistema deve bloquear e exigir senha.
+7. Entre com matrícula + senha.
+8. Deve abrir normalmente a página do aluno.
+9. Teste o link temporário de redefinição pela secretaria/gestão.
