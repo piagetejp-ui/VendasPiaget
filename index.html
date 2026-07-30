@@ -2257,5 +2257,101 @@ window.addEventListener('load',()=>setTimeout(patchBootV141,2200));
 })();
 </script>
 
+
+<style>
+.v142-ledger-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-weight:800;font-size:.82rem}.v142-ledger-badge.in{background:#f0fdf4;color:#166534}.v142-ledger-badge.out{background:#fff7ed;color:#9a3412}.v142-buyer-card .grid{align-items:end}.v142-receipt-link{font-weight:800;color:#123a7a;text-decoration:none}.v142-return-note{margin:10px 0;padding:10px 12px;border-radius:14px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}
+</style>
+<script>
+/* Escola Piaget — V1.4.2: comprovante, retorno automático e extrato humanizado */
+(function(){
+const V142_VERSION='1.4.2-checkout-comprovante';
+function centsV142(v){return Math.round(Number(v||0));}
+function savedParentV142(){try{return localStorage.getItem('vp_parent_student')||''}catch(e){return ''}}
+function movementTypeLabelV142(m={}){
+  const key=String(m.subtipo||m.tipo||'').toLowerCase();
+  const map={
+    pagamento_checkout_infinitepay:'Crédito via InfinitePay',
+    entrada_conta_aluno:'Entrada na conta do aluno',
+    pagamento_presencial:'Pagamento presencial',
+    consumo_cantina:'Consumo na cantina',
+    consumo:'Consumo na cantina',
+    venda_conta:'Compra lançada na conta',
+    compra_farda:'Compra de farda',
+    ajuste_manual:'Ajuste manual',
+    estorno:'Estorno',
+    credito_convertido:'Crédito convertido'
+  };
+  return map[key]||String(m.subtipo||m.tipo||'Lançamento').replace(/_/g,' ');
+}
+function movementMethodLabelV142(m={}){
+  const method=m.formaPagamento||m.origem||'';
+  if(typeof paymentMethodLabelV141==='function')return paymentMethodLabelV141(method);
+  const map={dinheiro:'Dinheiro',pix_manual:'Pix manual',maquininha:'Maquininha',checkout_infinitepay:'InfinitePay',cantina:'Cantina'};
+  return map[method]||method||'-';
+}
+function movementDescriptionV142(m={}){
+  if(m.observacao)return esc(m.observacao);
+  if(m.orderNsu)return `NSU: ${esc(m.orderNsu)}`;
+  if(Array.isArray(m.itens)&&m.itens.length)return m.itens.map(x=>`${x.quantidade||1}× ${esc(x.nome||x.descricao||'item')}`).join(', ');
+  if(typeof movementDetailsV141==='function')return movementDetailsV141(m);
+  return '-';
+}
+function movementSignedValueV142(m={}){
+  if(typeof movementValueV141==='function')return movementValueV141(m);
+  const v=centsV142(m.valorCentavos);return ['consumo','venda_conta','compra_farda'].includes(m.tipo)?-Math.abs(v):v;
+}
+function ledgerTableV142(moves=[],opts={}){
+  if(!moves.length)return '<div class="empty">Nenhum lançamento.</div>';
+  const showActions=opts.actions!==false;
+  return `<div class="table-wrap" style="border:0"><table><thead><tr><th>Data</th><th>Movimento</th><th>Forma</th><th>Detalhes</th><th style="text-align:right">Valor</th><th style="text-align:right">Saldo</th>${showActions?'<th>Ações</th>':''}</tr></thead><tbody>${moves.map(m=>{const val=movementSignedValueV142(m);return `<tr><td>${humanDate(m.criadoEm)}</td><td><span class="v142-ledger-badge ${val>=0?'in':'out'}">${esc(movementTypeLabelV142(m))}</span></td><td>${esc(movementMethodLabelV142(m))}</td><td>${movementDescriptionV142(m)}</td><td class="money">${fmtSignedV141(val)}</td><td class="money">${m.saldoDepoisCentavos!==undefined?fmtSignedV141(m.saldoDepoisCentavos):'-'}</td>${showActions?`<td>${m.orderNsu?`<button class="btn btn-light" onclick="openReceiptV142('${esc(m.orderNsu)}')">Comprovante</button>`:'-'}</td>`:''}</tr>`}).join('')}</tbody></table></div>`;
+}
+window.openReceiptV142=function(orderNsu){if(!orderNsu)return;window.open(`/obrigado.html?order_nsu=${encodeURIComponent(orderNsu)}&origem=sistema`,'_blank')};
+window.saveBuyerFromPortalV142=async function(alunoId){
+  const a=(state.students||[]).find(x=>x.id===alunoId);if(!a)return alert('Aluno não encontrado.');
+  const customer={};
+  const name=String($('#v142BuyerName')?.value||'').trim(),phone=String($('#v142BuyerPhone')?.value||'').trim(),email=String($('#v142BuyerEmail')?.value||'').trim().toLowerCase();
+  if(name)customer.name=name;if(phone)customer.phone_number=phone;if(email)customer.email=email;
+  await db.collection('dados_pagamento_responsavel').doc(alunoId).set({alunoId,alunoNome:a.nome,matricula:a.matricula||null,customer,atualizadoEm:nowIso(),atualizadoPorId:'portal_responsavel',atualizadoPorNome:a.responsavelFinanceiro||'Responsável',atualizadoPorPerfil:'responsavel'},{merge:true});
+  await audit('dados_comprador_atualizados',{alunoId,descricao:'Responsável atualizou os dados do comprador para próximos pagamentos.'}).catch(()=>{});
+  toast('Dados do comprador salvos.');
+};
+async function buyerCardHtmlV142(a){
+  const buyer=await getSavedBuyerV141(a.id).catch(()=>({}));
+  return `<div class="card v142-buyer-card" style="margin-top:14px"><div class="card-head"><div class="card-title">Dados do comprador</div></div><div class="card-body"><p class="muted">Esses dados são opcionais e servem para facilitar os próximos pagamentos. O sistema não armazena cartão.</p><div class="grid g3"><div class="fg"><label>Nome</label><input id="v142BuyerName" class="fi" value="${esc(buyer.name||a.responsavelFinanceiro||'')}"></div><div class="fg"><label>Telefone</label><input id="v142BuyerPhone" class="fi" value="${esc(buyer.phone_number||a.celularResponsavel||'')}"></div><div class="fg"><label>E-mail</label><input id="v142BuyerEmail" class="fi" value="${esc(buyer.email||'')}"></div></div><button class="btn btn-primary" onclick="saveBuyerFromPortalV142('${a.id}')">Salvar dados para próximas compras</button></div></div>`;
+}
+async function renderParentPortalV142(){
+  const a=state.parentStudent;if(!a)return renderParentLogin();
+  const acc=await getAccount(a.id);
+  $('#userPill').textContent='Responsável · '+a.nome.split(' ')[0];$('#userPill').classList.remove('hidden');$('#switchUserBtn').classList.remove('hidden');
+  const snap=await db.collection('movimentos_conta').where('alunoId','==',a.id).get().catch(()=>({docs:[]}));
+  const moves=snap.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>String(y.criadoEm).localeCompare(String(x.criadoEm))).slice(0,80);
+  const pending=await pendingCheckoutsV141(a.id),net=accountNetV141(acc),min=net<0?Math.abs(net):cfgV141().valorMinimoCheckoutPositivoCentavos;
+  const buyerCard=await buyerCardHtmlV142(a);
+  const returned=new URLSearchParams(location.search).get('retornoCheckout');
+  $('#parentScreen').innerHTML=`<div class="parent-wrap"><div class="parent-hero"><h2>${esc(a.nome)}</h2><p>${esc(a.turma)} · Matrícula ${esc(a.matricula)}</p></div>${returned?'<div class="v142-return-note"><strong>Você voltou do pagamento.</strong><br>Confira abaixo o saldo e os lançamentos da conta do aluno.</div>':''}${balanceSummaryHtmlV141(acc)}${accountStatusHtmlV141(acc)}${pending.length?`<div class="v141-alert-inline"><strong>Existe pagamento aguardando confirmação.</strong><br>Você pode gerar um novo link, mas se os dois forem pagos, os dois valores serão adicionados ao saldo do aluno.</div>`:''}<div class="grid g2" style="margin-top:14px"><div class="card"><div class="card-head"><div class="card-title">Compra sem saldo</div></div><div class="card-body"><div class="switch-line"><div><strong>${acc.autorizadoSemSaldo?'Autorizada':'Bloqueada'}</strong><div class="muted">Permitir que o aluno compre na cantina sem crédito pré-pago, dentro do limite configurado.</div></div><div class="switch ${acc.autorizadoSemSaldo?'on':''}" onclick="parentToggleAuthorization(${!acc.autorizadoSemSaldo})"></div></div><div class="fg" style="margin-top:13px"><label>Limite escolhido — máximo ${fmt(cfgV141().limiteMaximoFiadoCentavos)}</label><input id="parentLimit" type="number" min="0" max="${cfgV141().limiteMaximoFiadoCentavos/100}" step="1" class="fi" value="${Number(acc.limiteFiadoCentavos||0)/100}"></div><button class="btn btn-primary" onclick="saveParentLimit()">Salvar limite</button></div></div><div class="card"><div class="card-head"><div class="card-title">${net<0?'Regularizar saldo':'Adicionar crédito'}</div></div><div class="card-body"><div class="alert">${net<0?`O valor mínimo para regularizar é ${fmt(min)}. Você pode pagar mais e deixar crédito para novas compras.`:`Escolha um valor para adicionar à conta do aluno. Mínimo de teste: ${fmt(min)}.`}</div><button class="btn btn-green" style="width:100%;margin-top:12px" onclick="openAccountPaymentV141('${a.id}','responsavel')">${net<0?'Regularizar saldo':'Adicionar crédito'}</button></div></div></div>${buyerCard}<div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">Pedidos antecipados</div><button class="btn btn-primary" onclick="openParentOrder()">Novo pedido</button></div><div class="card-body"><p class="muted">Pedidos avulsos, semanais e mensais continuam separados. Nesta versão, o checkout ativo é para entrada na conta do aluno.</p></div></div><div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">Extrato da conta</div></div>${ledgerTableV142(moves,{actions:true})}</div><button class="btn btn-outline" style="width:100%;margin-top:12px" onclick="renderParentLogin()">Sair da conta</button></div>`;
+}
+window.renderParentPortal=renderParentPortal=renderParentPortalV142;window.renderParentPortalV142=renderParentPortalV142;try{window.renderParentPortalV132=renderParentPortalV132=renderParentPortalV142}catch(e){window.renderParentPortalV132=renderParentPortalV142}
+async function openStudentDetailsV142(id){
+  const a=state.students.find(x=>x.id===id),acc=await getAccount(id);if(!a)return;
+  const ms=await db.collection('movimentos_conta').where('alunoId','==',id).get().catch(()=>({docs:[]}));
+  const moves=ms.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>String(y.criadoEm).localeCompare(String(x.criadoEm))).slice(0,50);
+  const pending=await pendingCheckoutsV141(id),canManage=canStaffManageV141();
+  openModal('Conta do aluno',`<div class="status-panel"><div class="small">${esc(a.turma)} · Matrícula ${esc(a.matricula)}</div><div class="big">${esc(a.nome)}</div><div class="small">Responsável: ${esc(a.responsavelFinanceiro)}</div></div>${balanceSummaryHtmlV141(acc)}${accountStatusHtmlV141(acc)}${pending.length?`<div class="v141-alert-inline"><strong>${pending.length} pagamento(s) pendente(s).</strong><br>É permitido gerar outro link, mas se mais de um for pago, todos os valores entram no saldo do aluno.</div>`:''}<div class="switch-line"><div><strong>Compra sem saldo</strong><div class="muted">${acc.autorizadoSemSaldo?'Autorizada pelo responsável':'Bloqueada pelo responsável'}</div></div><span class="badge ${acc.autorizadoSemSaldo?'b-green':'b-red'}">${acc.autorizadoSemSaldo?'liberada':'bloqueada'}</span></div>${canManage?`<div class="actions" style="margin:12px 0"><button class="btn btn-primary" onclick="openAccountPaymentV141('${id}','staff')">Gerar link InfinitePay</button><button class="btn btn-green" onclick="registerManualPaymentV141('${id}')">Registrar pagamento presencial</button><button class="btn btn-outline" onclick="toggleManualBlock('${id}',${!acc.bloqueioManual})">${acc.bloqueioManual?'Remover bloqueio manual':'Bloquear conta'}</button><button class="btn btn-light" onclick="generateReport('${id}')">Relatório PDF / imagem</button></div>`:''}<div class="card-title" style="margin:15px 0 8px">Extrato recente</div>${ledgerTableV142(moves,{actions:true})}`);
+}
+window.openStudentDetails=openStudentDetails=openStudentDetailsV142;window.openStudentDetailsV142=openStudentDetailsV142;
+function checkoutTableV142(rows){if(!rows.length)return '<div class="empty">Nenhum link gerado ainda.</div>';return `<div class="table-wrap" style="border:0;border-radius:0"><table><thead><tr><th>Data</th><th>Aluno</th><th>Status</th><th style="text-align:right">Valor</th><th>NSU</th><th>Ações</th></tr></thead><tbody>${rows.map(p=>`<tr><td>${humanDate(p.criadoEm)}</td><td><strong>${esc(p.alunoNome||'-')}</strong><div class="muted">${esc(p.matricula||'')}</div></td><td><span class="badge ${p.status==='pago'?'b-green':p.status==='aguardando_pagamento'?'b-yellow':'b-red'}">${paymentStatusLabelV141(p.status||'aguardando_pagamento')}</span></td><td class="money">${fmt(p.totalCentavos)}</td><td>${esc(p.orderNsu||p.id)}</td><td><div class="actions">${p.checkoutUrl?`<button class="btn btn-light" onclick="window.open('${esc(p.checkoutUrl)}','_blank')">Abrir</button>`:''}<button class="btn btn-primary" onclick="verifyCheckoutPaymentV141('${esc(p.orderNsu||p.id)}')">Verificar</button>${p.status==='pago'?`<button class="btn btn-green" onclick="openReceiptV142('${esc(p.orderNsu||p.id)}')">Comprovante</button>`:''}</div></td></tr>`).join('')}</tbody></table></div>`}
+try{window.checkoutTableV141=checkoutTableV141=checkoutTableV142}catch(e){window.checkoutTableV141=checkoutTableV142}
+async function renderParentFromQueryV142(){
+  const qs=new URLSearchParams(location.search);const wantsParent=qs.get('modo')==='pai'||qs.get('retornoCheckout')==='1'||qs.get('retorno')==='checkout';
+  if(!wantsParent)return false;
+  const saved=savedParentV142();const a=(state.students||[]).find(x=>x.id===saved);
+  if(a){state.user=null;state.parentStudent=a;state.parentChallenge=null;try{localStorage.removeItem('vp_profile')}catch(e){};show('parentScreen');await renderParentPortalV142();return true;}
+  enterParent();return true;
+}
+window.renderParentFromQuery=renderParentFromQuery=renderParentFromQueryV142;
+window.addEventListener('load',()=>setTimeout(()=>{try{db?.collection('configuracoes')?.doc('sistema')?.set({versao:V142_VERSION,checkoutComprovanteAtivo:true,retornoResponsavelAutomatico:true,extratoHumanizado:true,dadosCompradorNoPerfil:true,atualizadoEm:nowIso()},{merge:true}).catch(()=>{})}catch(e){console.warn('v142 boot',e)}},2600));
+})();
+</script>
+
 </body>
 </html>

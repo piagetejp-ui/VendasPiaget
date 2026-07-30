@@ -105,3 +105,20 @@ https://vendas-piaget.vercel.app/api/webhook-infinitepay
 - Cartão não é armazenado no sistema da escola.
 - Dados opcionais do comprador são apenas nome, telefone e e-mail.
 - Se houver link pendente, o sistema permite gerar outro, mas avisa. Se dois links forem pagos, os dois valores entram no saldo.
+
+## V1.4.2 — Como testar os ajustes
+
+1. Gere um pagamento pelo portal do responsável.
+2. Pague pelo checkout da InfinitePay.
+3. Na página `obrigado.html`, verifique se aparece o resumo do pagamento.
+4. Teste os botões:
+   - Verificar novamente;
+   - Imprimir / salvar PDF;
+   - Baixar comprovante em imagem;
+   - Voltar ao sistema.
+5. Ao voltar ao sistema, o portal do responsável deve abrir automaticamente se a sessão local ainda estiver salva no navegador.
+6. No portal do responsável, confira:
+   - saldo atualizado;
+   - extrato com nomes humanizados;
+   - campo “Dados do comprador”.
+7. Em Cobranças e saldos, confira o botão “Comprovante” nos pagamentos confirmados.

@@ -280,6 +280,35 @@ function isPaidResponse(data){
   const hasTransaction = Boolean(data.transaction_nsu || data.transactionNsu || data.transaction_id || data.receipt_url || data.receiptUrl);
   return paidFlag || paidStatus || (hasTransaction && data.paid !== false && data.success !== false);
 }
+async function buildReceiptInfo(db, orderNsu){
+  const snap=await db.collection('pagamentos_checkout').doc(orderNsu).get().catch(()=>null);
+  if(!snap || !snap.exists) return null;
+  const c={id:snap.id, ...snap.data()};
+  return {
+    id:c.id || orderNsu,
+    orderNsu:c.orderNsu || orderNsu,
+    tipo:c.tipo || 'entrada_conta_aluno',
+    descricao:c.descricao || 'Pagamento Escola Piaget',
+    alunoId:c.alunoId || null,
+    alunoNome:c.alunoNome || null,
+    turma:c.turma || null,
+    matricula:c.matricula || null,
+    responsavelFinanceiro:c.responsavelFinanceiro || null,
+    totalCentavos:c.totalCentavos || c.amountCentavos || c.paidAmountCentavos || 0,
+    status:c.status || 'aguardando_pagamento',
+    statusAplicacao:c.statusAplicacao || 'pendente',
+    saldoNoMomentoCentavos:c.saldoNoMomentoCentavos || 0,
+    saldoEmAbertoNoMomentoCentavos:c.saldoEmAbertoNoMomentoCentavos || 0,
+    transactionNsu:c.transactionNsu || '',
+    invoiceSlug:c.invoiceSlug || '',
+    receiptUrl:c.receiptUrl || '',
+    captureMethod:c.captureMethod || '',
+    criadoEm:c.criadoEm || null,
+    pagamentoConfirmadoEm:c.pagamentoConfirmadoEm || null,
+    confirmadoEm:c.confirmadoEm || null,
+    customer:c.customer || null
+  };
+}
 async function confirmWithInfinitePay(db, params){
   const handle=normalizeHandle();
   const orderNsu=String(params.order_nsu || params.orderNsu || '').trim();
@@ -296,7 +325,8 @@ async function confirmWithInfinitePay(db, params){
   }else{
     await safeSet(db.collection('pagamentos_checkout').doc(orderNsu), { ultimoPaymentCheckEm:nowIso(), ultimoPaymentCheckPayload:data, atualizadoEm:nowIso() });
   }
-  return { paid, infinitepay:data };
+  const receipt=await buildReceiptInfo(db, orderNsu);
+  return { paid, infinitepay:data, receipt };
 }
 async function applyAccountPaymentTx(tx, db, checkout, paymentData={}){
   const accRef=db.collection('contas_alunos').doc(checkout.alunoId);
@@ -415,6 +445,7 @@ module.exports = {
   audit,
   notify,
   getConfig,
+  buildReceiptInfo,
   accountNet,
   splitNet
 };

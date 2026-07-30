@@ -32,3 +32,16 @@
 - Adicionado painel de pagamentos InfinitePay em Cobranças e saldos.
 - Adicionada página `obrigado.html` para retorno e verificação manual.
 - Adicionado aviso de pagamentos pendentes antes de gerar novo link.
+
+## V1.4.2 — Checkout: comprovante, retorno automático e extrato
+
+- Adicionada tela de comprovante em `obrigado.html` com resumo do pagamento.
+- Adicionado botão para imprimir/salvar PDF pelo navegador.
+- Adicionado botão para baixar comprovante em imagem PNG.
+- Adicionado botão para abrir comprovante/recibo da InfinitePay quando a API retornar URL.
+- Ajustado retorno ao sistema para voltar ao portal do responsável usando a sessão salva no navegador (`/?modo=pai&retornoCheckout=1`).
+- Adicionada restauração automática do responsável no retorno do checkout, quando houver sessão local ativa.
+- Melhorado extrato da conta do aluno: movimento, forma, detalhes, valor e saldo após lançamento.
+- Adicionado botão de comprovante nos lançamentos vinculados ao NSU do checkout.
+- Adicionado campo “Dados do comprador” no perfil do responsável: nome, telefone e e-mail para próximos pagamentos.
+- Mantida a regra de conta corrente: saldo negativo exige pagamento mínimo para zerar; crédito só entra após confirmação.
