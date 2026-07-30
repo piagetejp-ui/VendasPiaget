@@ -1629,5 +1629,156 @@ async function submitParentResetPasswordV130(){
 window.addEventListener('load',()=>{db?.collection('configuracoes')?.doc('sistema')?.set({versao:V131_VERSION,ajusteResetResponsavelV131:true,atualizadoEm:nowIso()},{merge:true}).catch(()=>{})});
 </script>
 
+
+<script id="piaget-v132-parent-access-stability-patch">
+/* =========================================================
+   Escola Piaget — Patch V1.3.2
+   Auditoria e correção definitiva do portal do responsável
+   após criação/redefinição de senha.
+
+   Causa encontrada na V1.3.1:
+   o patch V1.3.0 declarava novamente renderParentPortal()
+   no mesmo bloco em que tentava capturar window.renderParentPortal.
+   Por hoisting, a captura podia apontar para a própria função,
+   causando recursão e impedindo a renderização do portal.
+   ========================================================= */
+const V132_VERSION='1.3.2-dev';
+
+function parentHeroLogoV132(){return (typeof BRAND_V122!=='undefined'&&BRAND_V122?.dark)||(typeof BRAND_V120!=='undefined'&&BRAND_V120.icon)||''}
+function setParentSessionV132(a){
+  state.user=null;
+  state.parentStudent=a;
+  state.parentChallenge=null;
+  try{localStorage.removeItem('vp_profile')}catch(e){}
+  try{localStorage.setItem('vp_parent_student',a.id)}catch(e){}
+  const pill=$('#userPill'),sw=$('#switchUserBtn');
+  if(pill){pill.textContent='Responsável · '+String(a.nome||'Aluno').split(' ')[0];pill.classList.remove('hidden')}
+  if(sw){sw.textContent='Sair';sw.classList.remove('hidden')}
+  show('parentScreen');
+}
+
+async function parentAccessStatusCardV132(a){
+  let ac=null;
+  try{const snap=await parentAccessDocV131(a.id).get();ac=snap?.exists?snap.data():null}catch(e){console.warn('parentAccessStatusCardV132',e)}
+  const ativa=!!(ac?.ativo&&ac?.senhaHash);
+  return `<div id="parentAccessCardV130" class="card parent-access-v130"><div class="card-head"><div class="card-title">Senha de acesso do responsável</div>${ativa?'<span class="badge b-green">Senha ativa</span>':'<span class="badge b-yellow">Senha não criada</span>'}</div><div class="card-body"><p class="muted">A senha facilita os próximos acessos. Por segurança, se esquecer a senha, a redefinição precisa ser liberada pela secretaria.</p><button class="btn ${ativa?'btn-light':'btn-primary'}" onclick="openParentCreatePasswordV130()">${ativa?'Alterar minha senha':'Criar senha de acesso'}</button></div></div>`;
+}
+
+/* Renderização autônoma: não depende mais de wrappers/capturas anteriores. */
+async function renderParentPortalV132(){
+  const a=state.parentStudent;
+  if(!a){return renderParentLogin()}
+  setParentSessionV132(a);
+  let acc={saldoCreditoCentavos:0,dividaCentavos:0,limiteFiadoCentavos:0,autorizadoSemSaldo:false};
+  try{acc=await getAccount(a.id)}catch(e){console.warn('getAccount parent',e)}
+  try{await refreshStockStateV120()}catch(e){console.warn('refreshStockStateV120 parent',e)}
+  const [ms,fs,accessCard]=await Promise.all([
+    db.collection('movimentos_conta').where('alunoId','==',a.id).get().catch(()=>({docs:[]})),
+    db.collection('pedidos_farda').where('alunoId','==',a.id).get().catch(()=>({docs:[]})),
+    parentAccessStatusCardV132(a)
+  ]);
+  const moves=ms.docs.map(d=>d.data()).sort((x,y)=>String(y.criadoEm||'').localeCompare(String(x.criadoEm||''))).slice(0,80);
+  const fardas=fs.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>String(y.criadoEm||'').localeCompare(String(x.criadoEm||''))).slice(0,8);
+  $('#parentScreen').innerHTML=`<div class="parent-wrap"><div class="parent-hero"><img src="${parentHeroLogoV132()}" class="v122-parent-icon" alt="Símbolo Escola Piaget"><h2>${esc(a.nome)}</h2><p>${esc(a.turma)} · Matrícula ${esc(a.matricula)}</p></div><div class="parent-actions-v120"><button class="parent-action-v120" onclick="openParentOrder()"><div class="ico">◉</div><strong>Pedir lanche</strong><span>Pedido avulso, semanal ou mensal.</span></button><button class="parent-action-v120" onclick="openParentUniformStoreV120()"><div class="ico">◇</div><strong>Comprar farda</strong><span>Veja tamanhos disponíveis ou produção.</span></button><button class="parent-action-v120" onclick="startCheckout('quitar_divida')" ${Number(acc.dividaCentavos||0)<=0?'disabled':''}><div class="ico">R$</div><strong>Pagar em aberto</strong><span>${Number(acc.dividaCentavos||0)>0?fmt(acc.dividaCentavos):'Nenhum valor em aberto'}</span></button><button class="parent-action-v120" onclick="askCreditAmount()"><div class="ico">＋</div><strong>Adicionar crédito</strong><span>Valor para novas compras na cantina.</span></button></div><div class="grid g3"><div class="kpi green"><div class="kpi-label">Crédito disponível</div><div class="kpi-value">${fmt(acc.saldoCreditoCentavos)}</div></div><div class="kpi orange"><div class="kpi-label">Valor em aberto</div><div class="kpi-value">${fmt(acc.dividaCentavos)}</div></div><div class="kpi"><div class="kpi-label">Limite autorizado</div><div class="kpi-value">${fmt(acc.limiteFiadoCentavos)}</div></div></div><div class="grid g2" style="margin-top:14px"><div class="card"><div class="card-head"><div class="card-title">Compra sem saldo</div></div><div class="card-body"><div class="switch-line"><div><strong>${acc.autorizadoSemSaldo?'Autorizada':'Bloqueada'}</strong><div class="muted">Permitir que o aluno compre na cantina sem crédito pré-pago.</div></div><div class="switch ${acc.autorizadoSemSaldo?'on':''}" onclick="parentToggleAuthorization(${!acc.autorizadoSemSaldo})"></div></div><div class="fg" style="margin-top:13px"><label>Limite escolhido — máximo R$ 50</label><input id="parentLimit" type="number" min="0" max="50" step="1" class="fi" value="${Number(acc.limiteFiadoCentavos||0)/100}"></div><button class="btn btn-primary" onclick="saveParentLimit()">Salvar limite</button></div></div><div class="card"><div class="card-head"><div class="card-title">Meus pedidos de farda</div></div>${fardas.length?`<div class="table-wrap" style="border:0"><table><thead><tr><th>Pedido</th><th>Status</th></tr></thead><tbody>${fardas.map(r=>`<tr><td><strong>${esc(r.produto||'Farda')}</strong><br><span class="muted">${esc(r.tamanho||'')} ${esc(r.modelo||'')}</span></td><td><span class="badge b-blue">${esc(statusLabelV120(r.statusAtendimento))}</span><br><span class="muted">${esc(statusLabelV120(r.statusPagamento))}</span></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nenhum pedido de farda.</div>'}</div></div>${accessCard}<div class="card" style="margin-top:14px"><div class="card-head"><div class="card-title">Lançamentos da conta</div></div>${moves.length?`<div class="table-wrap" style="border:0"><table><thead><tr><th>Data</th><th>Tipo</th><th>Detalhes</th><th style="text-align:right">Valor</th></tr></thead><tbody>${moves.map(m=>`<tr><td>${humanDate(m.criadoEm)}</td><td>${esc(statusLabelV120(m.tipo))}</td><td>${(m.itens||[]).map(x=>`${x.quantidade}× ${esc(x.nome)}`).join(', ')||'-'}</td><td class="money">${fmt(m.valorCentavos)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Nenhum lançamento.</div>'}</div><button class="btn btn-outline" style="width:100%;margin-top:12px" onclick="parentLogoutV132()">Sair da conta</button></div>`;
+  applyBrandingV122?.();
+}
+window.renderParentPortal=renderParentPortal=renderParentPortalV132;
+window.setParentSessionV131=setParentSessionV132;
+
+function parentLogoutV132(){
+  state.parentStudent=null;state.parentChallenge=null;
+  try{localStorage.removeItem('vp_parent_student')}catch(e){}
+  renderParentLogin();
+}
+window.parentLogoutV131=parentLogoutV132;
+
+function startParentChallenge(){
+  const mat=normalizeMatriculaV131($('#parentMatricula')?.value||''),candidates=findStudentsByMatriculaV131(mat);
+  const msg=$('#parentMsg');
+  if(!candidates.length){if(msg)msg.innerHTML='<div class="alert danger" style="margin-top:12px">Matrícula não encontrada.</div>';return}
+  const lock=Number(sessionStorage.getItem('vp_parent_lock')||0);
+  if(Date.now()<lock){if(msg)msg.innerHTML='<div class="alert danger" style="margin-top:12px">Muitas tentativas. Aguarde alguns minutos.</div>';return}
+  let type='birth';
+  if(candidates.some(a=>!a.dataNascimento)||new Set(candidates.map(a=>a.dataNascimento)).size<candidates.length)type='initials';
+  const correct=candidates.map(a=>type==='birth'?a.dataNascimento:initials(a.responsavelFinanceiro));
+  const all=state.students.map(a=>type==='birth'?a.dataNascimento:initials(a.responsavelFinanceiro));
+  const opts=[...new Set([...correct,...randomUnique(all,4-correct.length,correct)])].sort(()=>Math.random()-.5).slice(0,4);
+  state.parentChallenge={mat,candidates,type,attempts:0};
+  $('#parentScreen').innerHTML=`<div class="parent-wrap"><div class="parent-hero"><img src="${parentHeroLogoV132()}" class="v122-parent-icon" alt="Símbolo Escola Piaget"><h2>Confirmação rápida</h2><p>${type==='birth'?'Qual é a data de nascimento do aluno?':'Quais são as iniciais do responsável financeiro?'}</p></div><div class="card"><div class="card-body"><div class="choice-grid">${opts.map(o=>`<button class="choice" onclick="answerParentChallenge('${esc(o)}')">${esc(o)}</button>`).join('')}</div><div id="challengeMsg"></div></div></div></div>`;
+  applyBrandingV122?.();
+}
+window.startParentChallenge=startParentChallenge;
+
+function answerParentChallenge(answer){
+  const c=state.parentChallenge;if(!c)return renderParentLogin();
+  const found=c.candidates.find(a=>(c.type==='birth'?a.dataNascimento:initials(a.responsavelFinanceiro))===answer);
+  if(found){setParentSessionV132(found);audit('login_responsavel_validacao',{alunoId:found.id,tipo:c.type,versao:'v1.3.2'});return renderParentPortalV132()}
+  c.attempts++;
+  if(c.attempts>=3){sessionStorage.setItem('vp_parent_lock',String(Date.now()+5*60*1000));renderParentLogin();return}
+  $('#challengeMsg').innerHTML=`<div class="alert danger" style="margin-top:12px">Resposta incorreta. Restam ${3-c.attempts} tentativa(s).</div>`;
+}
+window.answerParentChallenge=answerParentChallenge;
+
+async function parentPasswordLoginV130(){
+  const mat=normalizeMatriculaV131($('#parentMatricula')?.value),pass=$('#parentPasswordV130')?.value||'',msg=$('#parentMsg');
+  if(!mat||!pass)return alert('Informe matrícula e senha.');
+  const candidates=findStudentsByMatriculaV131(mat);
+  if(!candidates.length){if(msg)msg.innerHTML='<div class="alert danger" style="margin-top:12px">Matrícula não encontrada.</div>';return}
+  let hasPassword=false,blocked=false;
+  for(const a of candidates){
+    const ref=parentAccessDocV131(a.id),snap=await ref.get().catch(()=>null);if(!snap?.exists)continue;
+    const ac=snap.data()||{};
+    if(ac.bloqueadoAte&&new Date(ac.bloqueadoAte)>new Date()){blocked=true;continue}
+    if(ac.ativo&&ac.senhaHash&&ac.salt){
+      hasPassword=true;
+      const h=await hashParentPasswordV130(pass,ac.salt);
+      if(h===ac.senhaHash){
+        await ref.set({tentativasInvalidas:0,bloqueadoAte:null,ultimoAcessoEm:nowIso(),ultimoAcessoMetodo:'senha',atualizadoEm:nowIso()},{merge:true});
+        setParentSessionV132(a);
+        await audit('login_responsavel_senha',{alunoId:a.id,matricula:a.matricula,origem:'portal_responsavel',versao:'v1.3.2'});
+        return renderParentPortalV132();
+      }
+    }
+  }
+  if(blocked){if(msg)msg.innerHTML='<div class="alert danger" style="margin-top:12px">Acesso temporariamente bloqueado por tentativas inválidas. Fale com a secretaria.</div>';return}
+  const now=nowIso();
+  for(const a of candidates){
+    const ref=parentAccessDocV131(a.id),snap=await ref.get().catch(()=>null),n=Number(snap?.data()?.tentativasInvalidas||0)+1;
+    await ref.set({alunoId:a.id,alunoNome:a.nome,matricula:a.matricula,tentativasInvalidas:n,bloqueadoAte:n>=5?new Date(Date.now()+15*60*1000).toISOString():null,ultimaTentativaInvalidaEm:now,atualizadoEm:now},{merge:true}).catch(()=>{});
+  }
+  if(msg)msg.innerHTML=`<div class="alert danger" style="margin-top:12px">${hasPassword?'Senha incorreta.':'Ainda não há senha ativa para esta matrícula ou o acesso foi resetado.'}<br>Após muitas tentativas, o acesso é bloqueado temporariamente.</div>`;
+}
+window.parentPasswordLoginV130=parentPasswordLoginV130;
+
+async function submitParentResetPasswordV130(){
+  const p1=$('#resetParentPass1V130')?.value||'',p2=$('#resetParentPass2V130')?.value||'',ctx=state.pendingParentResetV130,msg=$('#resetParentMsgV131'),btn=$('#submitResetParentBtnV131');
+  if(!ctx)return alert('Sessão de redefinição não encontrada. Abra novamente o link enviado pela secretaria.');
+  if(p1!==p2)return alert('As senhas não conferem.');
+  if(!passwordOkV130(p1))return alert('A senha precisa ter pelo menos 6 caracteres.');
+  if(btn){btn.disabled=true;btn.textContent='Salvando senha...'}
+  try{
+    const found=await findParentResetTokenV131(ctx);
+    if(!found){if(msg)msg.innerHTML='<div class="alert danger" style="margin-top:12px">Link inválido, expirado ou já utilizado. Solicite novo link à secretaria.</div>';return}
+    const a=state.students.find(x=>x.id===ctx.alunoId);
+    if(!a)throw new Error('Aluno não encontrado para este link.');
+    const salt=await randomTokenV130(12),hash=await hashParentPasswordV130(p1,salt),now=nowIso(),batch=db.batch();
+    batch.set(parentAccessDocV131(ctx.alunoId),{alunoId:ctx.alunoId,alunoNome:a.nome,matricula:a.matricula,turma:a.turma,ativo:true,salt,senhaHash:hash,senhaCriadaEm:now,senhaRedefinidaEm:now,ultimoAcessoEm:now,ultimoAcessoMetodo:'reset_link',tentativasInvalidas:0,bloqueadoAte:null,atualizadoEm:now},{merge:true});
+    batch.set(found.ref,{status:'usado',usadoEm:now,usadoPorAlunoId:ctx.alunoId},{merge:true});
+    const reqs=await db.collection(PARENT_RESET_REQUESTS_V130).where('alunoId','==',ctx.alunoId).get().catch(()=>({docs:[]}));
+    for(const d of reqs.docs){const r=d.data()||{};if((r.status||'aberto')==='aberto')batch.set(d.ref,{status:'atendido',atendidoEm:now,resetId:found.id},{merge:true})}
+    await batch.commit();
+    setParentSessionV132(a);
+    await audit('senha_responsavel_redefinida_link',{alunoId:a.id,resetId:found.id,versao:'v1.3.2'});
+    history.replaceState({},'',location.pathname);
+    toast('Senha redefinida. Acesso liberado.');
+    await renderParentPortalV132();
+  }catch(e){console.error(e);if(msg)msg.innerHTML=`<div class="alert danger" style="margin-top:12px">Não foi possível concluir o acesso: ${esc(e.message||e)}</div>`}
+  finally{if(btn){btn.disabled=false;btn.textContent='Criar nova senha e entrar'}}
+}
+window.submitParentResetPasswordV130=submitParentResetPasswordV130;
+
+window.addEventListener('load',()=>{setTimeout(()=>{db?.collection('configuracoes')?.doc('sistema')?.set({versao:V132_VERSION,ajustePortalResponsavelV132:true,atualizadoEm:nowIso()},{merge:true}).catch(()=>{})},1200)});
+</script>
+
 </body>
 </html>

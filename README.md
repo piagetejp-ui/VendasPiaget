@@ -1,44 +1,35 @@
-# Sistema de Vendas Escola Piaget — V1.3.1
+# Escola Piaget — Sistema de Vendas V1.3.2
 
-Versão de correção focada no acesso do responsável após redefinição de senha.
+Versão focada na correção do acesso do responsável após redefinição de senha.
 
-## Problema corrigido
+## Correção principal
 
-Na V1.3.0, o link temporário era gerado e a tela de redefinição aparecia, mas o fluxo podia não liberar corretamente o acesso posterior do responsável pelo portal.
+Na V1.3.1, o link de redefinição podia salvar a nova senha e atualizar o topo como “Responsável”, mas não abrir a página do aluno. A auditoria encontrou uma recursão na função `renderParentPortal`, causada por captura incorreta da própria função durante o patch V1.3.0.
 
-## Correção aplicada
+A V1.3.2 substitui esse ponto por uma renderização autônoma do portal do responsável. O fluxo corrigido é:
 
-A V1.3.1 endurece o fluxo:
-
-1. A secretaria/gestão gera um link com `resetId`, `resetAluno` e `resetToken`.
-2. O responsável abre o link e cria nova senha.
-3. O sistema valida o documento exato do reset.
-4. O token é marcado como usado.
-5. A senha é gravada no documento `acessos_responsaveis/{alunoId}`.
-6. A sessão do responsável é criada imediatamente.
-7. O portal do aluno é aberto após a redefinição.
-
-A versão continua aceitando links antigos da V1.3.0 que ainda tenham apenas `resetAluno` e `resetToken`.
-
-## Como atualizar
-
-Suba a pasta completa da V1.3.1 na Vercel, incluindo:
-
-- `index.html`
-- `obrigado.html`
-- `assets/`
-
-Depois abra com `Ctrl + F5`.
-
-Não apague nem reinicialize o Firestore.
+1. Secretaria/gestão gera link temporário.
+2. Responsável abre o link.
+3. Cria nova senha.
+4. O token é validado e marcado como usado.
+5. A senha é salva no acesso do aluno.
+6. A sessão do responsável é aberta.
+7. O portal do aluno é renderizado imediatamente.
 
 ## Teste recomendado
 
-1. Entrar como Lucas ou secretaria.
-2. Ir em Usuários e acessos.
-3. Buscar um aluno.
-4. Gerar link temporário de redefinição.
-5. Abrir o link em aba anônima ou outro navegador.
-6. Criar nova senha.
-7. Confirmar se o portal do responsável abre imediatamente.
-8. Sair e entrar novamente por matrícula + senha.
+1. Entre como Lucas ou secretaria.
+2. Abra **Usuários e acessos**.
+3. Busque um aluno.
+4. Gere um link temporário de redefinição.
+5. Abra o link em aba anônima.
+6. Crie uma nova senha.
+7. Confirme se a página do aluno abre imediatamente.
+8. Saia da conta.
+9. Entre novamente por matrícula + senha.
+
+## Observações
+
+- Não é necessário apagar dados do Firestore.
+- Suba a pasta completa, pois o sistema usa a pasta `assets/`.
+- Esta versão não altera checkout InfinitePay, caixa, estoque ou vendas.
