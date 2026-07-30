@@ -1,33 +1,44 @@
-# Escola Piaget — Sistema de Vendas V1.3.0
+# Sistema de Vendas Escola Piaget — V1.3.1
 
-Versão focada em acessos internos, permissões e senha do responsável.
+Versão de correção focada no acesso do responsável após redefinição de senha.
 
-## O que mudou
+## Problema corrigido
 
-- Adicionado Firebase Authentication no front-end para login interno por e-mail e senha.
-- Criada tela **Usuários e acessos** para perfis internos.
-- Perfis iniciais: Lucas/admin, Daniele/secretaria manhã, Evanda/secretaria tarde, Ruan/cantina manhã e tarde.
-- A seleção provisória por cartões foi substituída por tela de login.
-- Mantido modo implantação como acesso temporário de Lucas para configurar e-mails. Depois de validar o login real, desative esse modo na tela Usuários e acessos.
-- Responsável continua podendo fazer primeiro acesso por matrícula + validação.
-- Responsável pode criar senha dentro do portal.
-- Depois que a senha existe, o reset não é automático: deve ser liberado por secretaria/gestão.
-- Secretaria/gestão consegue gerar link temporário de redefinição, válido por 2 horas e uso único.
-- Incluído bloqueio por tentativas inválidas de senha do responsável.
+Na V1.3.0, o link temporário era gerado e a tela de redefinição aparecia, mas o fluxo podia não liberar corretamente o acesso posterior do responsável pelo portal.
 
-## Passos no Firebase
+## Correção aplicada
 
-1. Acesse Firebase Console → Authentication.
-2. Ative o método **E-mail/senha**.
-3. Crie os usuários internos, por exemplo os e-mails reais de Lucas, Daniele, Evanda e Ruan.
-4. Publique esta versão.
-5. Entre pelo modo implantação como Lucas.
-6. Abra **Usuários e acessos** e preencha o e-mail de cada perfil exatamente igual ao cadastrado no Firebase Auth.
-7. Teste o login real de cada usuário.
-8. Desative o modo implantação.
+A V1.3.1 endurece o fluxo:
 
-## Observação de segurança
+1. A secretaria/gestão gera um link com `resetId`, `resetAluno` e `resetToken`.
+2. O responsável abre o link e cria nova senha.
+3. O sistema valida o documento exato do reset.
+4. O token é marcado como usado.
+5. A senha é gravada no documento `acessos_responsaveis/{alunoId}`.
+6. A sessão do responsável é criada imediatamente.
+7. O portal do aluno é aberto após a redefinição.
 
-Esta versão prepara a transição para regras fechadas do Firestore. Enquanto o modo implantação e as regras de desenvolvimento estiverem ativos, o sistema ainda deve ser tratado como ambiente controlado de teste.
+A versão continua aceitando links antigos da V1.3.0 que ainda tenham apenas `resetAluno` e `resetToken`.
 
-O acesso dos responsáveis com senha foi estruturado no Firestore para a V1.3.0. Para segurança máxima em produção, a etapa futura recomendada é mover validação de senha/reset para backend/API e emitir token customizado.
+## Como atualizar
+
+Suba a pasta completa da V1.3.1 na Vercel, incluindo:
+
+- `index.html`
+- `obrigado.html`
+- `assets/`
+
+Depois abra com `Ctrl + F5`.
+
+Não apague nem reinicialize o Firestore.
+
+## Teste recomendado
+
+1. Entrar como Lucas ou secretaria.
+2. Ir em Usuários e acessos.
+3. Buscar um aluno.
+4. Gerar link temporário de redefinição.
+5. Abrir o link em aba anônima ou outro navegador.
+6. Criar nova senha.
+7. Confirmar se o portal do responsável abre imediatamente.
+8. Sair e entrar novamente por matrícula + senha.

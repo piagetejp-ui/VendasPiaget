@@ -1467,5 +1467,167 @@ async function submitParentResetPasswordV130(){const p1=$('#resetParentPass1V130
 window.addEventListener('load',()=>{db?.collection('configuracoes')?.doc('sistema')?.set({versao:V130_VERSION,acessoInterno:'firebase_email_senha',responsavelSenha:true,atualizadoEm:nowIso()},{merge:true}).catch(()=>{});setTimeout(()=>{if(!state.user&&!state.parentStudent&&!$('#roleScreen').classList.contains('hidden'))renderAccessLandingV130()},900)});
 </script>
 
+
+<script>
+/* =========================================================
+   Escola Piaget — Patch V1.3.1
+   Correção do acesso do responsável após redefinição de senha.
+   ========================================================= */
+const V131_VERSION='1.3.1-dev';
+
+function normalizeMatriculaV131(v){return String(v||'').replace(/\D/g,'').trim()}
+function findStudentsByMatriculaV131(mat){const m=normalizeMatriculaV131(mat);return (state.students||[]).filter(a=>normalizeMatriculaV131(a.matricula)===m)}
+function parentAccessDocV131(alunoId){return db.collection(PARENT_ACCESS_V130).doc(alunoId)}
+
+function setParentSessionV131(a){
+  state.user=null;
+  state.parentStudent=a;
+  state.parentChallenge=null;
+  localStorage.removeItem('vp_profile');
+  localStorage.setItem('vp_parent_student',a.id);
+  $('#userPill').textContent='Responsável · '+String(a.nome||'Aluno').split(' ')[0];
+  $('#userPill').classList.remove('hidden');
+  $('#switchUserBtn').textContent='Sair';
+  $('#switchUserBtn').classList.remove('hidden');
+  show('parentScreen');
+}
+
+function parentLogoutV131(){
+  state.parentStudent=null;
+  state.parentChallenge=null;
+  localStorage.removeItem('vp_parent_student');
+  renderParentLogin();
+}
+
+/* Reforça a tela de login do responsável para usar matrícula normalizada e mensagem clara. */
+function renderParentLogin(){
+  const qs=new URLSearchParams(location.search),mat=qs.get('matricula')||'';
+  show('parentScreen');
+  $('#parentScreen').innerHTML=`<div class="parent-wrap"><div class="parent-hero"><img src="${BRAND_V122?.dark||BRAND_V120.icon}" class="v122-parent-icon" alt="Símbolo Escola Piaget"><h2>Portal do responsável</h2><p>Pedidos, conta da cantina, autorização e pagamentos.</p></div><div class="card"><div class="card-body"><div class="login-tabs-v130"><button class="btn btn-primary" onclick="showParentPasswordLoginV130()">Entrar com senha</button><button class="btn btn-outline" onclick="showParentFirstAccessV130()">Primeiro acesso</button></div><div id="parentLoginBoxV130"></div><button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="logoutProfile()">Voltar</button><div id="parentMsg"></div></div></div></div>`;
+  showParentPasswordLoginV130(mat);
+  applyBrandingV122?.();
+}
+
+function showParentPasswordLoginV130(mat=''){
+  const box=$('#parentLoginBoxV130');
+  if(!box)return;
+  box.innerHTML=`<div class="fg"><label>Matrícula do aluno</label><input id="parentMatricula" class="fi" value="${esc(normalizeMatriculaV131(mat))}" inputmode="numeric" placeholder="Digite a matrícula"></div><div class="fg"><label>Senha criada pelo responsável</label><input id="parentPasswordV130" class="fi" type="password" autocomplete="current-password" placeholder="Senha"></div><button class="btn btn-orange" style="width:100%" onclick="parentPasswordLoginV130()">Entrar</button><button class="btn btn-light" style="width:100%;margin-top:8px" onclick="requestParentResetV130()">Esqueci minha senha</button><div class="tiny-v130" style="margin-top:9px">Depois que a senha é criada, a redefinição não é automática. A secretaria precisa liberar um novo acesso.</div>`;
+}
+
+function showParentFirstAccessV130(){
+  const mat=normalizeMatriculaV131($('#parentMatricula')?.value||'');
+  $('#parentLoginBoxV130').innerHTML=`<div class="alert">Use esta opção no primeiro acesso ou quando a secretaria resetar/liberar novamente o acesso.</div><div class="fg" style="margin-top:12px"><label>Matrícula do aluno</label><input id="parentMatricula" class="fi" value="${esc(mat)}" inputmode="numeric" placeholder="Digite a matrícula"></div><button class="btn btn-primary" style="width:100%" onclick="startParentChallenge()">Continuar com validação</button>`;
+}
+
+/* Login por senha: busca por matrícula normalizada, lê o doc exato do aluno e informa melhor o motivo de falha. */
+async function parentPasswordLoginV130(){
+  const mat=normalizeMatriculaV131($('#parentMatricula')?.value),pass=$('#parentPasswordV130')?.value||'';
+  const msg=$('#parentMsg');
+  if(!mat||!pass)return alert('Informe matrícula e senha.');
+  const candidates=findStudentsByMatriculaV131(mat);
+  if(!candidates.length){if(msg)msg.innerHTML='<div class="alert danger" style="margin-top:12px">Matrícula não encontrada.</div>';return}
+
+  let hasPassword=false, blocked=false;
+  for(const a of candidates){
+    const ref=parentAccessDocV131(a.id),snap=await ref.get().catch(()=>null);
+    if(!snap?.exists)continue;
+    const ac=snap.data()||{};
+    if(ac.bloqueadoAte&&new Date(ac.bloqueadoAte)>new Date()){blocked=true;continue}
+    if(ac.ativo&&ac.senhaHash&&ac.salt){
+      hasPassword=true;
+      const h=await hashParentPasswordV130(pass,ac.salt);
+      if(h===ac.senhaHash){
+        await ref.set({tentativasInvalidas:0,bloqueadoAte:null,ultimoAcessoEm:nowIso(),ultimoAcessoMetodo:'senha',atualizadoEm:nowIso()},{merge:true});
+        setParentSessionV131(a);
+        await audit('login_responsavel_senha',{alunoId:a.id,matricula:a.matricula,origem:'portal_responsavel'});
+        await renderParentPortal();
+        return;
+      }
+    }
+  }
+
+  if(blocked){if(msg)msg.innerHTML='<div class="alert danger" style="margin-top:12px">Acesso temporariamente bloqueado por tentativas inválidas. Fale com a secretaria.</div>';return}
+
+  const now=nowIso();
+  for(const a of candidates){
+    const ref=parentAccessDocV131(a.id),snap=await ref.get().catch(()=>null),n=Number(snap?.data()?.tentativasInvalidas||0)+1;
+    await ref.set({alunoId:a.id,alunoNome:a.nome,matricula:a.matricula,tentativasInvalidas:n,bloqueadoAte:n>=5?new Date(Date.now()+15*60*1000).toISOString():null,ultimaTentativaInvalidaEm:now,atualizadoEm:now},{merge:true}).catch(()=>{});
+  }
+  if(msg)msg.innerHTML=`<div class="alert danger" style="margin-top:12px">${hasPassword?'Senha incorreta.':'Ainda não há senha ativa para esta matrícula ou o acesso foi resetado.'}<br>Após muitas tentativas, o acesso é bloqueado temporariamente.</div>`;
+}
+
+/* Link agora leva resetId + token. O resetId evita ambiguidade e dispensa consultas compostas. */
+async function generateParentResetLinkV130(alunoId){
+  const a=state.students.find(x=>x.id===alunoId);
+  if(!a)return alert('Aluno não encontrado.');
+  const token=await randomTokenV130(24),tokenHash=await sha256V130(token),ref=db.collection(PARENT_RESET_V130).doc(),expires=new Date(Date.now()+2*60*60*1000).toISOString(),now=nowIso();
+  await ref.set({id:ref.id,alunoId,alunoNome:a.nome,matricula:a.matricula,tokenHash,status:'ativo',usoUnico:true,criadoPorId:state.user?.id||'sistema',criadoPorNome:state.user?.nome||'Sistema',criadoEm:now,expiraEm:expires,versao:'v1.3.1'});
+  await audit('link_reset_responsavel_gerado',{alunoId,resetId:ref.id,expiraEm:expires});
+  const url=`${location.origin}${location.pathname}?resetId=${encodeURIComponent(ref.id)}&resetAluno=${encodeURIComponent(alunoId)}&resetToken=${encodeURIComponent(token)}`;
+  $('#parentResetLinkHostV130').innerHTML=`<div class="reset-link-box-v130">${esc(url)}</div><div class="actions" style="margin-top:8px"><button class="btn btn-light" onclick="navigator.clipboard.writeText('${esc(url)}');toast('Link copiado.')">Copiar link</button></div><div class="tiny-v130" style="margin-top:8px">Válido por 2 horas e uso único. Envie apenas ao responsável confirmado.</div>`;
+}
+
+async function findParentResetTokenV131(ctx){
+  const tokenHash=await sha256V130(ctx.token);
+  if(ctx.resetId){
+    const snap=await db.collection(PARENT_RESET_V130).doc(ctx.resetId).get().catch(()=>null);
+    if(snap?.exists){
+      const x=snap.data()||{};
+      if(x.alunoId===ctx.alunoId&&x.status==='ativo'&&x.tokenHash===tokenHash&&new Date(x.expiraEm)>new Date())return {id:snap.id,ref:snap.ref,...x};
+    }
+    return null;
+  }
+  /* Compatibilidade com links gerados na V1.3.0, que ainda não tinham resetId na URL. */
+  const snaps=await db.collection(PARENT_RESET_V130).where('alunoId','==',ctx.alunoId).get().catch(()=>({docs:[]}));
+  for(const d of snaps.docs){
+    const x=d.data()||{};
+    if(x.status==='ativo'&&x.tokenHash===tokenHash&&new Date(x.expiraEm)>new Date())return {id:d.id,ref:d.ref,...x};
+  }
+  return null;
+}
+
+async function renderParentResetFromQueryV130(){
+  const qs=new URLSearchParams(location.search),resetId=qs.get('resetId'),alunoId=qs.get('resetAluno'),token=qs.get('resetToken');
+  if(!alunoId||!token)return false;
+  const a=state.students.find(x=>x.id===alunoId);
+  show('parentScreen');
+  if(!a){$('#parentScreen').innerHTML='<div class="parent-wrap"><div class="alert danger">Link inválido: aluno não encontrado.</div></div>';return true}
+  state.user=null;
+  state.pendingParentResetV130={resetId,alunoId,token};
+  $('#parentScreen').innerHTML=`<div class="parent-wrap"><div class="parent-hero"><img src="${BRAND_V122?.dark||BRAND_V120.icon}" class="v122-parent-icon" alt="Símbolo Escola Piaget"><h2>Redefinir senha</h2><p>${esc(a.nome)} · Matrícula ${esc(a.matricula)}</p></div><div class="card"><div class="card-body"><div class="alert">Este link foi liberado pela secretaria. Ele é temporário, de uso único, e dará acesso imediato ao portal depois da troca da senha.</div><div class="fg" style="margin-top:12px"><label>Nova senha</label><input id="resetParentPass1V130" class="fi" type="password" autocomplete="new-password"></div><div class="fg"><label>Confirmar senha</label><input id="resetParentPass2V130" class="fi" type="password" autocomplete="new-password"></div><button id="submitResetParentBtnV131" class="btn btn-primary" style="width:100%" onclick="submitParentResetPasswordV130()">Criar nova senha e entrar</button><div id="resetParentMsgV131"></div></div></div></div>`;
+  applyBrandingV122?.();
+  return true;
+}
+
+async function submitParentResetPasswordV130(){
+  const p1=$('#resetParentPass1V130')?.value||'',p2=$('#resetParentPass2V130')?.value||'',ctx=state.pendingParentResetV130,msg=$('#resetParentMsgV131'),btn=$('#submitResetParentBtnV131');
+  if(!ctx)return alert('Sessão de redefinição não encontrada. Abra novamente o link enviado pela secretaria.');
+  if(p1!==p2)return alert('As senhas não conferem.');
+  if(!passwordOkV130(p1))return alert('A senha precisa ter pelo menos 6 caracteres.');
+  if(btn){btn.disabled=true;btn.textContent='Salvando senha...'}
+  try{
+    const found=await findParentResetTokenV131(ctx);
+    if(!found){if(msg)msg.innerHTML='<div class="alert danger" style="margin-top:12px">Link inválido, expirado ou já utilizado. Solicite novo link à secretaria.</div>';return}
+    const a=state.students.find(x=>x.id===ctx.alunoId);
+    if(!a)throw new Error('Aluno não encontrado para este link.');
+    const salt=await randomTokenV130(12),hash=await hashParentPasswordV130(p1,salt),now=nowIso(),batch=db.batch();
+    batch.set(parentAccessDocV131(ctx.alunoId),{alunoId:ctx.alunoId,alunoNome:a.nome,matricula:a.matricula,turma:a.turma,ativo:true,salt,senhaHash:hash,senhaCriadaEm:now,senhaRedefinidaEm:now,ultimoAcessoEm:now,ultimoAcessoMetodo:'reset_link',tentativasInvalidas:0,bloqueadoAte:null,atualizadoEm:now},{merge:true});
+    batch.set(found.ref,{status:'usado',usadoEm:now,usadoPorAlunoId:ctx.alunoId},{merge:true});
+    const reqs=await db.collection(PARENT_RESET_REQUESTS_V130).where('alunoId','==',ctx.alunoId).get().catch(()=>({docs:[]}));
+    for(const d of reqs.docs){const r=d.data()||{};if((r.status||'aberto')==='aberto')batch.set(d.ref,{status:'atendido',atendidoEm:now,resetId:found.id},{merge:true})}
+    await batch.commit();
+    setParentSessionV131(a);
+    await audit('senha_responsavel_redefinida_link',{alunoId:a.id,resetId:found.id,versao:'v1.3.1'});
+    history.replaceState({},'',location.pathname);
+    toast('Senha redefinida. Acesso liberado.');
+    await renderParentPortal();
+  }catch(e){console.error(e);if(msg)msg.innerHTML=`<div class="alert danger" style="margin-top:12px">Não foi possível salvar a nova senha: ${esc(e.message||e)}</div>`}
+  finally{if(btn){btn.disabled=false;btn.textContent='Criar nova senha e entrar'}}
+}
+
+/* Atualiza a versão do sistema sem mexer nas regras de negócio. */
+window.addEventListener('load',()=>{db?.collection('configuracoes')?.doc('sistema')?.set({versao:V131_VERSION,ajusteResetResponsavelV131:true,atualizadoEm:nowIso()},{merge:true}).catch(()=>{})});
+</script>
+
 </body>
 </html>

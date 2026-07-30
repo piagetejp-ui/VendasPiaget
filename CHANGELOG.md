@@ -1,35 +1,25 @@
-# CHANGELOG — V1.3.0
+# CHANGELOG — V1.3.1
 
-## Adicionado
+## Correção focada
 
-- Firebase Authentication compat SDK no `index.html`.
-- Login interno por e-mail e senha.
-- Coleções novas previstas:
-  - `usuarios_acesso`
-  - `usuarios_auth`
-  - `responsaveis_acesso`
-  - `reset_senha_responsavel`
-  - `solicitacoes_reset_responsavel`
-- Tela **Usuários e acessos**.
-- Perfis e permissões por papel.
-- Modo implantação temporário para Lucas.
-- Primeiro acesso do responsável com matrícula + validação mantido.
-- Login do responsável com matrícula + senha.
-- Criação de senha pelo responsável dentro do portal.
-- Solicitação de reset pelo responsável sem redefinição automática.
-- Link temporário de redefinição gerado por secretaria/gestão.
-- Bloqueio por tentativas inválidas.
+Esta versão corrige o fluxo de redefinição de senha do responsável identificado nos testes da V1.3.0.
 
-## Mantido
+### Ajustes realizados
 
-- Vendas da secretaria.
-- Sessões independentes de caixa.
-- Identidade visual V1.2.2.
-- Relatórios sem QR Code.
-- Estoque/capacidade/farda já existentes.
+- O link de redefinição agora inclui `resetId` além de `resetAluno` e `resetToken`.
+- A validação do token passou a buscar o documento exato do reset quando o `resetId` existe.
+- Mantida compatibilidade com links antigos da V1.3.0, que não tinham `resetId`.
+- Após redefinir a senha, o sistema cria a sessão do responsável e abre imediatamente o portal do aluno.
+- O login por senha passou a normalizar a matrícula, evitando falha por espaço, ponto, hífen ou formatação.
+- Mensagens de erro foram melhoradas para diferenciar senha incorreta, senha inexistente e acesso temporariamente bloqueado.
+- Solicitações abertas de reset do aluno são marcadas como atendidas quando o link é usado com sucesso.
 
-## Pendente
+### O que não foi alterado
 
-- Configuração e teste do checkout InfinitePay.
-- Regras finais fechadas do Firestore.
-- Backend definitivo para autenticação customizada dos responsáveis.
+- Checkout InfinitePay.
+- Perfis internos.
+- Regras do caixa.
+- Estoque.
+- Vendas.
+- Relatórios.
+- Regras Firestore.
