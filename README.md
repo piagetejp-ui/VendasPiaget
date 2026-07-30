@@ -1,79 +1,107 @@
-# Escola Piaget — Sistema de Vendas, Cantina e Atendimento
-## V1.3.4 — Notificações e Auditoria Humanizada
+# Escola Piaget — Sistema de Vendas V1.4.1 Checkout Oficial
 
-Esta versão parte da V1.3.3 e adiciona duas camadas operacionais importantes:
+Esta versão foi gerada a partir da V1.3.4 aprovada. A V1.4.0 anterior foi descartada e não deve ser usada como base.
 
-1. **Central de notificações**, para mostrar o que exige ação da secretaria, cantina ou gestão.
-2. **Auditoria humanizada**, para transformar registros técnicos em uma linha do tempo legível.
+## O que entrou nesta versão
 
-## Arquivos principais
+### Conta corrente do aluno
 
-- `index.html` — aplicação principal.
-- `obrigado.html` — página de retorno/obrigado.
-- `assets/` — identidade visual da Escola Piaget.
-- `firestore.rules.v1.3.draft` — rascunho de regras da versão de acesso.
-- `CHANGELOG.md` — resumo das mudanças.
+O sistema passa a tratar crédito e saldo em aberto como uma conta corrente única:
 
-## Como atualizar
+- saldo positivo = crédito disponível;
+- saldo zero = conta regular;
+- saldo negativo = saldo em aberto.
 
-1. Suba a pasta completa da V1.3.4 para o deploy.
-2. Não apague o Firestore.
-3. Não reinicialize alunos, contas ou produtos.
-4. Abra o sistema com `Ctrl + F5`.
-5. Entre com um perfil interno e verifique o sino de notificações no topo.
+Por compatibilidade com os dados já existentes, o sistema ainda mantém os campos `saldoCreditoCentavos` e `dividaCentavos`, mas também passa a gravar `saldoContaCentavos` como o saldo líquido.
 
-## Teste sugerido
+### Checkout InfinitePay
 
-### Teste de notificação de reset
-1. Entre no portal do responsável.
-2. Use matrícula + senha incorreta ou clique em **Esqueci minha senha**.
-3. Solicite novo acesso.
-4. Entre como Lucas ou secretaria.
-5. Verifique o sino de notificações.
-6. Abra a notificação e gere o link temporário.
-7. Confirme que a notificação relacionada foi resolvida.
+Checkout ativo nesta versão:
 
-### Teste de auditoria
-1. Acesse **Auditoria**.
-2. Confirme que ações aparecem em linguagem humana.
-3. Use os filtros de categoria e severidade.
-4. Abra **Detalhes** para conferir o JSON técnico.
+- entrada na conta do aluno;
+- regularização de saldo negativo;
+- adição de crédito quando a conta estiver zerada ou positiva.
 
-## Coleções novas ou reforçadas
+O pagamento só aplica efeito depois de confirmação por:
 
-### `notificacoes`
-Registra ações que exigem atenção.
+1. webhook da InfinitePay; ou
+2. botão manual “Verificar pagamento”.
 
-Campos principais:
-- `tipo`;
-- `titulo`;
-- `mensagem`;
-- `prioridade`;
-- `status`;
-- `destinatariosPerfis`;
-- `destinatariosUsuarios`;
-- `alunoId`;
-- `caixaId`;
-- `vendaId`;
-- `pedidoId`;
-- `resetId`;
-- `requestId`;
-- `acaoPrincipal`;
-- `criadoEm`;
-- `lidoPor`;
-- `resolvidoEm`;
-- `resolvidoPorNome`.
+### Regra de valor mínimo
 
-### `historico_auditoria`
-Mantém compatibilidade com os campos antigos e adiciona campos de leitura humana:
-- `acaoTecnica`;
-- `tituloHumano`;
-- `descricaoHumana`;
-- `categoria`;
-- `severidade`;
-- `icone`;
-- `usuarioPerfil`.
+- Se o aluno estiver com saldo negativo, o valor mínimo do checkout é o necessário para zerar o saldo.
+- Se o aluno estiver com saldo zero ou positivo, o mínimo inicial é R$ 1,00, configurável em Configurações.
 
-## Próximo passo recomendado
+### Bloqueio semanal
 
-Depois de validar as notificações e a auditoria, o próximo bloco recomendado é iniciar a configuração do checkout InfinitePay, já com origem, usuário, venda, aluno e status bem amarrados ao sistema.
+Regra oficial:
+
+- toda sexta-feira, no fechamento semanal, alunos com saldo negativo são bloqueados;
+- ao regularizar para saldo zero ou positivo, o desbloqueio é automático.
+
+### Perfis que podem gerar pagamento
+
+- Responsável: pode gerar pagamento para o próprio aluno no portal;
+- Secretaria: pode gerar link e registrar pagamento presencial;
+- Gestão/Administração: acesso completo;
+- Cantina: não gera link nesta versão.
+
+### Pagamento presencial
+
+A secretaria/gestão pode registrar pagamento presencial em:
+
+- dinheiro;
+- Pix manual;
+- maquininha;
+- Pix banco;
+- Pix Rede / Laranjinha;
+- Cartão Rede / Laranjinha.
+
+Esse lançamento entra na mesma conta corrente do aluno e não usa link InfinitePay.
+
+## Variáveis de ambiente necessárias na Vercel
+
+Já devem estar cadastradas no projeto Vercel:
+
+```txt
+INFINITEPAY_HANDLE=piaget
+PUBLIC_BASE_URL=https://vendas-piaget.vercel.app
+FIREBASE_PROJECT_ID=vendaspiaget
+FIREBASE_CLIENT_EMAIL=...
+FIREBASE_PRIVATE_KEY=...
+```
+
+## Endpoints incluídos
+
+```txt
+/api/criar-checkout
+/api/verificar-pagamento
+/api/webhook-infinitepay
+```
+
+URLs finais:
+
+```txt
+Redirect URL:
+https://vendas-piaget.vercel.app/obrigado.html
+
+Webhook URL:
+https://vendas-piaget.vercel.app/api/webhook-infinitepay
+```
+
+## Como testar
+
+1. Subir este pacote na Vercel.
+2. Entrar no portal do responsável ou na área de Alunos e Contas.
+3. Abrir um aluno.
+4. Clicar em “Adicionar crédito” ou “Gerar link InfinitePay”.
+5. Usar valor de teste, como R$ 1,00 se o saldo estiver regular.
+6. Confirmar o pagamento na InfinitePay.
+7. Voltar para o sistema e conferir se o saldo foi atualizado.
+8. Na tela Cobranças e saldos, usar “Verificar pagamento” se o webhook demorar.
+
+## Observações
+
+- Cartão não é armazenado no sistema da escola.
+- Dados opcionais do comprador são apenas nome, telefone e e-mail.
+- Se houver link pendente, o sistema permite gerar outro, mas avisa. Se dois links forem pagos, os dois valores entram no saldo.
