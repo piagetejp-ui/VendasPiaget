@@ -1,21 +1,54 @@
-# Changelog — V1.3.3
+# Escola Piaget — Sistema de Vendas
+## V1.3.4 — Notificações e Auditoria Humanizada
 
-## Corrigido
+Data: 30/07/2026
 
-- Bloqueado o acesso por validação inicial quando a conta do responsável já possui senha ativa.
-- Reforçada a mensagem de segurança no fluxo de primeiro acesso.
-- Corrigida a lógica para impedir que matrícula + data de nascimento/iniciais continuem valendo depois da criação da senha.
+## Entregas principais
 
-## Alterado
+### 1. Central de notificações
+- Adicionado sino de notificações no topo do sistema.
+- Adicionada página própria **Notificações** no menu dos perfis internos.
+- Notificações filtradas por perfil: administração/gestão, secretaria e cantina.
+- Filtros por status, prioridade e busca textual.
+- Ações diretas nas notificações, como abrir acesso do responsável, caixas, fardas e configurações.
 
-- O gestor/secretaria não vê mais, no fluxo normal, o botão de resetar senha para primeiro acesso.
-- A redefinição passa a ser orientada preferencialmente por link temporário gerado pela secretaria/gestão.
-- Tentativas de primeiro acesso em conta com senha ativa agora geram auditoria.
+### 2. Solicitação de reset do responsável
+- Quando o responsável clica em **Esqueci minha senha**, o sistema agora cria:
+  - solicitação em `solicitacoes_reset_responsavel`;
+  - notificação para secretaria/gestão;
+  - auditoria humanizada.
+- Quando a secretaria/gestão gera o link temporário, as notificações relacionadas são marcadas como resolvidas.
+- As solicitações abertas do mesmo aluno são marcadas como `link_gerado`.
 
-## Mantido
+### 3. Auditoria humanizada
+- A página de auditoria foi redesenhada como linha do tempo.
+- Ações técnicas, como `link_reset_responsavel_gerado`, passaram a aparecer em linguagem humana.
+- Adicionados filtros por categoria, severidade e busca.
+- Adicionado botão **Detalhes** com a leitura humana e o JSON técnico para conferência gerencial.
 
-- Login por senha do responsável.
-- Link temporário de redefinição.
-- Login interno por Firebase Authentication.
-- Perfis e permissões da equipe.
-- Caixa, vendas, estoque, relatórios e identidade visual sem alteração funcional nesta versão.
+### 4. Auditoria enriquecida
+Novos registros de auditoria gravam campos como:
+- `tituloHumano`;
+- `descricaoHumana`;
+- `categoria`;
+- `severidade`;
+- `icone`;
+- `usuarioPerfil`;
+- vínculos com aluno, caixa, venda, pedido ou reset quando disponíveis.
+
+### 5. Notificações geradas automaticamente
+Nesta versão, os seguintes eventos passam a criar notificações:
+- solicitação de reset de senha do responsável;
+- link temporário de reset gerado;
+- fechamento de caixa com divergência;
+- novo pedido de farda;
+- alterações sensíveis em perfil, produto, preço ou configuração.
+
+## O que não foi alterado
+- Checkout InfinitePay ainda não foi configurado nesta versão.
+- Fluxos de venda, caixa, estoque e farda foram preservados.
+- Regras do Firestore não foram substituídas automaticamente.
+- Authentication interno continua conforme V1.3.0–V1.3.3.
+
+## Observação
+A V1.3.4 é incremental. Não é necessário apagar dados do Firestore nem reinicializar a base.

@@ -1,46 +1,79 @@
-# Sistema de Vendas Piaget — V1.3.3
+# Escola Piaget — Sistema de Vendas, Cantina e Atendimento
+## V1.3.4 — Notificações e Auditoria Humanizada
 
-Versão focada em segurança do acesso do responsável.
+Esta versão parte da V1.3.3 e adiciona duas camadas operacionais importantes:
 
-## Correção principal
+1. **Central de notificações**, para mostrar o que exige ação da secretaria, cantina ou gestão.
+2. **Auditoria humanizada**, para transformar registros técnicos em uma linha do tempo legível.
 
-Na V1.3.2, após o responsável criar senha, ainda era possível entrar pelo fluxo de validação inicial com matrícula + data de nascimento/iniciais. Isso contrariava a regra definida para segurança.
+## Arquivos principais
 
-Na V1.3.3:
+- `index.html` — aplicação principal.
+- `obrigado.html` — página de retorno/obrigado.
+- `assets/` — identidade visual da Escola Piaget.
+- `firestore.rules.v1.3.draft` — rascunho de regras da versão de acesso.
+- `CHANGELOG.md` — resumo das mudanças.
 
-- se a matrícula já tiver senha ativa, o fluxo de primeiro acesso é bloqueado;
-- matrícula + data de nascimento/iniciais só funciona quando ainda não existe senha ativa para aquela conta;
-- se o responsável esquecer a senha, ele deve falar com a secretaria;
-- secretaria/gestão gera link temporário de redefinição;
-- o botão de reset para primeiro acesso foi removido do fluxo normal de gestão do acesso do responsável;
-- a tentativa de usar primeiro acesso após senha criada gera auditoria.
+## Como atualizar
 
-## Regra vigente do responsável
+1. Suba a pasta completa da V1.3.4 para o deploy.
+2. Não apague o Firestore.
+3. Não reinicialize alunos, contas ou produtos.
+4. Abra o sistema com `Ctrl + F5`.
+5. Entre com um perfil interno e verifique o sino de notificações no topo.
 
-1. Primeiro acesso: matrícula + validação inicial.
-2. Depois que criar senha: matrícula + senha.
-3. Esqueci minha senha: não redefine sozinho.
-4. Secretaria/gestão libera novo acesso por link temporário.
-5. Link temporário: uso único e validade curta.
+## Teste sugerido
 
-## Atualização
+### Teste de notificação de reset
+1. Entre no portal do responsável.
+2. Use matrícula + senha incorreta ou clique em **Esqueci minha senha**.
+3. Solicite novo acesso.
+4. Entre como Lucas ou secretaria.
+5. Verifique o sino de notificações.
+6. Abra a notificação e gere o link temporário.
+7. Confirme que a notificação relacionada foi resolvida.
 
-Suba a pasta completa:
+### Teste de auditoria
+1. Acesse **Auditoria**.
+2. Confirme que ações aparecem em linguagem humana.
+3. Use os filtros de categoria e severidade.
+4. Abra **Detalhes** para conferir o JSON técnico.
 
-- `index.html`
-- `obrigado.html`
-- `assets/`
+## Coleções novas ou reforçadas
 
-Não apague o Firestore e não reinicialize a base.
+### `notificacoes`
+Registra ações que exigem atenção.
 
-## Teste recomendado
+Campos principais:
+- `tipo`;
+- `titulo`;
+- `mensagem`;
+- `prioridade`;
+- `status`;
+- `destinatariosPerfis`;
+- `destinatariosUsuarios`;
+- `alunoId`;
+- `caixaId`;
+- `vendaId`;
+- `pedidoId`;
+- `resetId`;
+- `requestId`;
+- `acaoPrincipal`;
+- `criadoEm`;
+- `lidoPor`;
+- `resolvidoEm`;
+- `resolvidoPorNome`.
 
-1. Escolha um aluno sem senha ativa.
-2. Entre no portal por primeiro acesso.
-3. Crie uma senha.
-4. Saia.
-5. Tente entrar de novo por primeiro acesso usando data de nascimento/iniciais.
-6. O sistema deve bloquear e exigir senha.
-7. Entre com matrícula + senha.
-8. Deve abrir normalmente a página do aluno.
-9. Teste o link temporário de redefinição pela secretaria/gestão.
+### `historico_auditoria`
+Mantém compatibilidade com os campos antigos e adiciona campos de leitura humana:
+- `acaoTecnica`;
+- `tituloHumano`;
+- `descricaoHumana`;
+- `categoria`;
+- `severidade`;
+- `icone`;
+- `usuarioPerfil`.
+
+## Próximo passo recomendado
+
+Depois de validar as notificações e a auditoria, o próximo bloco recomendado é iniciar a configuração do checkout InfinitePay, já com origem, usuário, venda, aluno e status bem amarrados ao sistema.
