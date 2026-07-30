@@ -1,33 +1,33 @@
-# Escola Piaget — Sistema de Vendas V1.2.2
+# Escola Piaget — Sistema de Vendas V1.3.0
 
-Atualização focada exclusivamente em identidade visual da interface e no relatório da conta do aluno.
+Versão focada em acessos internos, permissões e senha do responsável.
 
 ## O que mudou
 
-### Marca no sistema
-- O arquivo `logo-piaget-icon.png` agora é realmente o símbolo simples oficial, sem o nome da escola embutido.
-- Cabeçalho fixo: símbolo simples + texto `Escola Piaget` + subtítulo do sistema.
-- Tela de escolha de acesso: símbolo simples em escala legível + nome do sistema; removida a assinatura completa reduzida.
-- Telas de setup/carregamento: símbolo simples em escala adequada.
-- Portal do responsável em fundo azul: usa a variação branca com detalhe laranja, sem caixa branco.
-- Foram adicionadas variações de símbolo para contraste:
-  - `assets/logo-piaget-icon.png`
-  - `assets/logo-piaget-icon-white-orange.png`
-  - `assets/logo-piaget-icon-blue-white.png`
-  - `assets/logo-piaget-icon-white.png`
+- Adicionado Firebase Authentication no front-end para login interno por e-mail e senha.
+- Criada tela **Usuários e acessos** para perfis internos.
+- Perfis iniciais: Lucas/admin, Daniele/secretaria manhã, Evanda/secretaria tarde, Ruan/cantina manhã e tarde.
+- A seleção provisória por cartões foi substituída por tela de login.
+- Mantido modo implantação como acesso temporário de Lucas para configurar e-mails. Depois de validar o login real, desative esse modo na tela Usuários e acessos.
+- Responsável continua podendo fazer primeiro acesso por matrícula + validação.
+- Responsável pode criar senha dentro do portal.
+- Depois que a senha existe, o reset não é automático: deve ser liberado por secretaria/gestão.
+- Secretaria/gestão consegue gerar link temporário de redefinição, válido por 2 horas e uso único.
+- Incluído bloqueio por tentativas inválidas de senha do responsável.
 
-### Relatório da conta
-- QR Code removido do PDF e da imagem para WhatsApp.
-- O link para abrir a conta do aluno ganhou destaque visual.
-- Incluídas instruções claras de consulta:
-  1. tocar ou copiar o link;
-  2. abrir no navegador do celular;
-  3. conferir lançamentos, saldo e opções disponíveis.
-- A identidade visual institucional dos documentos foi preservada.
+## Passos no Firebase
 
-## Escopo preservado
-Esta versão não altera regras de venda, caixa, estoque, Firestore, pedidos ou pagamentos.
+1. Acesse Firebase Console → Authentication.
+2. Ative o método **E-mail/senha**.
+3. Crie os usuários internos, por exemplo os e-mails reais de Lucas, Daniele, Evanda e Ruan.
+4. Publique esta versão.
+5. Entre pelo modo implantação como Lucas.
+6. Abra **Usuários e acessos** e preencha o e-mail de cada perfil exatamente igual ao cadastrado no Firebase Auth.
+7. Teste o login real de cada usuário.
+8. Desative o modo implantação.
 
-## Atualização
-Suba a pasta completa para a Vercel, preservando a pasta `assets/`.
-Não é necessário apagar ou migrar dados do Firestore.
+## Observação de segurança
+
+Esta versão prepara a transição para regras fechadas do Firestore. Enquanto o modo implantação e as regras de desenvolvimento estiverem ativos, o sistema ainda deve ser tratado como ambiente controlado de teste.
+
+O acesso dos responsáveis com senha foi estruturado no Firestore para a V1.3.0. Para segurança máxima em produção, a etapa futura recomendada é mover validação de senha/reset para backend/API e emitir token customizado.
