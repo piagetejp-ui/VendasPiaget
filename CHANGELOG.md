@@ -45,3 +45,16 @@
 - Adicionado botão de comprovante nos lançamentos vinculados ao NSU do checkout.
 - Adicionado campo “Dados do comprador” no perfil do responsável: nome, telefone e e-mail para próximos pagamentos.
 - Mantida a regra de conta corrente: saldo negativo exige pagamento mínimo para zerar; crédito só entra após confirmação.
+
+
+## V1.4.3 — Auditoria e correção do portal do responsável
+
+- Corrigido bug crítico da V1.4.2 no login do responsável: o topo indicava responsável logado, mas o perfil não era exibido e a tela ficava no login.
+- Causa encontrada: funções auxiliares da V1.4.1 eram chamadas pela V1.4.2 fora do escopo em que foram declaradas, gerando erro de renderização depois da autenticação.
+- Adicionada camada de compatibilidade global para helpers do checkout, saldo, bloqueio, status, comprador, pendências e extrato.
+- Refeito o render do portal do responsável com fallback seguro.
+- Refeito o render do perfil/conta do aluno na secretaria/gestão com extrato humanizado.
+- Corrigido retorno automático do checkout para o portal do responsável quando houver sessão local salva no mesmo navegador.
+- Ajustado botão Sair da conta para limpar a sessão local do responsável.
+- Removido arquivo temporário de patch do pacote final.
+- Mantidas as regras já validadas: conta corrente unificada, saldo negativo com mínimo para zerar, bloqueio semanal de sexta e comprovante do checkout.

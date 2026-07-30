@@ -122,3 +122,8 @@ https://vendas-piaget.vercel.app/api/webhook-infinitepay
    - extrato com nomes humanizados;
    - campo “Dados do comprador”.
 7. Em Cobranças e saldos, confira o botão “Comprovante” nos pagamentos confirmados.
+
+
+## Nota V1.4.3
+
+Esta versão substitui a V1.4.2. A correção principal está no portal do responsável, que agora renderiza corretamente após login e após retorno do checkout. Também foi adicionada uma camada de compatibilidade para evitar erro quando componentes novos chamarem funções do checkout adicionadas em versões anteriores.
