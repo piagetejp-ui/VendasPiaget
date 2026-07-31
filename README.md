@@ -1,23 +1,18 @@
-# Escola Piaget — Sistema de Vendas V1.5.0-dev4-clean
+# Escola Piaget — Sistema de Vendas 1.5.0-dev4.1.1-hotfix
 
-Revisão da base modular limpa, com foco em checkout, uso opcional do saldo e navegação mobile interna.
+Esta versão mantém integralmente o hotfix financeiro da V1.5.0-dev4.1 e acrescenta atualização nativa de arquivos no navegador.
 
-## Destaques
+## Atualização automática
 
-- Uso do saldo positivo opcional e desativado por padrão em Cantina, Fardamento e Secretaria.
-- Saldo negativo exige regularização junto com a compra.
-- Menu mobile estático no cabeçalho para perfis internos.
-- Tentativa de checkout idempotente para evitar links e pedidos duplicados.
-- Status `preparando_link` só muda para `aguardando_pagamento` quando a URL existe.
-- Área Pagamentos pendentes no portal, com retomada do checkout.
-- Reserva de cantina continua em 5 minutos.
-- Medição de tempo da preparação interna e da chamada à InfinitePay.
-- Timeout controlado sem alterar o payload oficial da InfinitePay.
+- `index.html`, `obrigado.html` e `version.json` são entregues sem cache.
+- Todos os arquivos locais de CSS e JavaScript usam `?v=1.5.0-dev4.1.1-hotfix`.
+- O sistema consulta `version.json` ao abrir, voltar para a aba e a cada 60 segundos.
+- Quando não existe operação em andamento, a nova versão é carregada automaticamente.
+- Se houver formulário, carrinho ou modal aberto, aparece o aviso **Nova versão disponível**, evitando perda do trabalho.
+- O número da versão aparece no cabeçalho do sistema.
 
-## Implantação
+## Publicação
 
-Suba o conteúdo completo deste diretório para um Preview da Vercel, mantendo as mesmas Environment Variables da versão validada. Não substitua a produção antes do roteiro de testes.
+Suba o conteúdo deste pacote na Vercel normalmente. Não é necessário limpar cache nos aparelhos. Após esta versão ser carregada uma vez, as próximas versões serão detectadas automaticamente, desde que cada pacote futuro atualize `version.json` e o parâmetro `?v=`.
 
-## Pasta de identidade visual
-
-O pacote mantém as referências já existentes à pasta `assets/`. Ao aplicar esta versão sobre o projeto, preserve a pasta `assets/` atualmente usada na Vercel/Git, pois os arquivos de logo não estavam incluídos nos materiais-base desta conversa.
+> Observação: uma aba que já estava executando uma versão anterior a este mecanismo pode precisar ser reaberta uma única vez após o primeiro deploy. A partir daí, a detecção fica incorporada ao sistema.

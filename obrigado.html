@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pagamento — Escola Piaget V1.5.0-dev4-clean</title>
+<meta name="application-version" content="1.5.0-dev4.1.1-hotfix">
+<title>Pagamento — Escola Piaget V1.5.0-dev4.1-hotfix</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -17,12 +18,12 @@
 <div class="card">
   <div class="top"><div class="bar"></div><h1>Pagamento InfinitePay</h1><p class="muted">Confirmação rápida do pagamento e atualização do pedido.</p></div>
   <div class="body">
-    <div id="status" class="status warn"><strong>Verificando...</strong><br>Se o pagamento já foi aprovado, o crédito será aplicado automaticamente na conta do aluno.</div>
+    <div id="status" class="status warn"><strong>Atualizando...</strong><br>Se o pagamento já foi aprovado, o crédito será aplicado automaticamente na conta do aluno.</div>
     <div id="receipt" class="receipt hide"></div>
     <div id="meta" class="meta"></div>
     <div class="actions">
       <a class="btn primary" id="backBtn" href="/?modo=pai&retornoCheckout=1">Voltar ao sistema</a>
-      <button class="btn light" id="retryBtn" onclick="checkPayment()">Verificar novamente</button>
+      <button class="btn light" id="retryBtn" onclick="checkPayment()">Atualizar pagamento</button>
       <button class="btn orange" id="printBtn" onclick="window.print()" disabled>Imprimir / salvar PDF</button>
       <button class="btn green" id="imgBtn" onclick="downloadReceiptImage()" disabled>Baixar comprovante em imagem</button>
       <a class="btn light hide" id="ipReceiptBtn" href="#" target="_blank" rel="noopener">Comprovante InfinitePay</a>
@@ -37,7 +38,7 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function param(names){const qs=new URLSearchParams(location.search);for(const n of names){const v=qs.get(n);if(v)return v}return ''}
 function fmt(c){return 'R$ '+(Math.round(Number(c||0))/100).toFixed(2).replace('.',',')}
 function humanDate(v){if(!v)return '-';try{return new Date(v).toLocaleString('pt-BR')}catch{return v}}
-function statusLabel(s){const map={aguardando_pagamento:'Aguardando pagamento',pago:'Pago',erro_gerar_link:'Erro ao gerar link',erro_sem_url:'Erro sem URL',cancelado:'Cancelado',confirmado:'Confirmado',revisao:'Em revisão',pago_com_saldo:'Pago com saldo da conta'};return map[s]||String(s||'-').replaceAll('_',' ')}
+function statusLabel(s){const map={aguardando_pagamento:'Aguardando pagamento',pagamento_localizado_processando:'Pagamento localizado — processando',pagamento_localizado_aguardando_processamento:'Pagamento localizado — aguardando processamento',pago:'Pago',erro_gerar_link:'Erro ao gerar link',erro_sem_url:'Erro sem URL',cancelado:'Cancelado',confirmado:'Confirmado',revisao:'Em revisão',pago_com_saldo:'Pago com saldo da conta'};return map[s]||String(s||'-').replaceAll('_',' ')}
 async function fetchWithTimeout(url,options={},timeout=8000){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);try{return await fetch(url,{...options,signal:controller.signal})}finally{clearTimeout(timer)}}
 function buildReceipt(r={},paid=false){
   const status=paid?'Pagamento confirmado':statusLabel(r.status||'aguardando_pagamento');
@@ -53,16 +54,18 @@ async function checkPayment(){
   const slug=param(['slug','invoice_slug','invoiceSlug']);
   $('#meta').innerHTML=`${order_nsu?`<div><strong>NSU do pedido:</strong><br>${esc(order_nsu)}</div>`:''}${transaction_nsu?`<div><strong>NSU da transação:</strong><br>${esc(transaction_nsu)}</div>`:''}${slug?`<div><strong>Fatura:</strong><br>${esc(slug)}</div>`:''}`;
   if(!order_nsu){$('#status').className='status warn';$('#status').innerHTML='<strong>Retorno recebido.</strong><br>Não encontramos o NSU do pedido na URL. Se o pagamento foi aprovado, o webhook ainda pode confirmar automaticamente.';return;}
-  const retry=$('#retryBtn');if(retry){retry.disabled=true;retry.textContent='Verificando...'}
-  $('#status').className='status warn';$('#status').innerHTML='<strong>Verificando pagamento...</strong><br>Esta consulta será encerrada automaticamente se demorar mais de alguns segundos.';
+  const retry=$('#retryBtn');if(retry){retry.disabled=true;retry.textContent='Atualizando...'}
+  $('#status').className='status warn';$('#status').innerHTML='<strong>Atualizando pagamento...</strong><br>Esta consulta será encerrada automaticamente se demorar mais de alguns segundos.';
   try{
     const resp=await fetchWithTimeout('/api/verificar-pagamento',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({order_nsu,transaction_nsu,slug})},8000);
     const data=await resp.json().catch(()=>({}));
     if(!resp.ok)throw new Error(data.error||'Não foi possível consultar o pagamento.');
-    if(data.receipt) buildReceipt(data.receipt, !!data.paid);
-    if(data.paid){$('#status').className='status ok';$('#status').innerHTML='<strong>Pagamento confirmado.</strong><br>O valor foi aplicado na conta do aluno. Você já pode imprimir ou baixar o comprovante.';}
+    const applied=data.receipt?.statusAplicacao==='aplicado'&&!data.applicationPending;
+    if(data.receipt) buildReceipt(data.receipt, !!data.paid&&applied);
+    if(data.paid&&applied){$('#status').className='status ok';$('#status').innerHTML='<strong>Pagamento confirmado.</strong><br>O valor foi aplicado na conta do aluno. Você já pode imprimir ou baixar o comprovante.';}
+    else if(data.paid){$('#printBtn').disabled=true;$('#imgBtn').disabled=true;$('#status').className='status warn';$('#status').innerHTML='<strong>Pagamento localizado.</strong><br>O pedido ainda está sendo processado pelo sistema. Toque em “Atualizar pagamento” novamente em alguns instantes.';}
     else{$('#status').className='status warn';$('#status').innerHTML='<strong>Pagamento ainda não confirmado.</strong><br>Se você acabou de pagar, aguarde alguns instantes. O sistema também receberá a confirmação automática da InfinitePay.';}
-  }catch(e){const timed=e?.name==='AbortError';$('#status').className=timed?'status warn':'status err';$('#status').innerHTML=timed?'<strong>A consulta demorou mais do que o esperado.</strong><br>Você já pode voltar ao sistema. O webhook continuará processando a confirmação em segundo plano.':'<strong>Não conseguimos verificar agora.</strong><br>'+esc(e.message)+'<br><br>O webhook pode confirmar automaticamente assim que a InfinitePay reenviar a informação.';}finally{if(retry){retry.disabled=false;retry.textContent='Verificar novamente'}}
+  }catch(e){const timed=e?.name==='AbortError';$('#status').className=timed?'status warn':'status err';$('#status').innerHTML=timed?'<strong>A consulta demorou mais do que o esperado.</strong><br>Você já pode voltar ao sistema. O webhook continuará processando a confirmação em segundo plano.':'<strong>Não conseguimos atualizar agora.</strong><br>'+esc(e.message)+'<br><br>O webhook pode confirmar automaticamente assim que a InfinitePay reenviar a informação.';}finally{if(retry){retry.disabled=false;retry.textContent='Atualizar pagamento'}}
 }
 function drawLine(ctx,label,value,y){ctx.fillStyle='#64748b';ctx.font='bold 24px Barlow, Arial';ctx.fillText(label,60,y);ctx.fillStyle='#172033';ctx.font='bold 28px Barlow, Arial';wrapText(ctx,String(value||'-'),300,y,640,34);}
 function wrapText(ctx,text,x,y,maxWidth,lineHeight){const words=text.split(' ');let line='';for(let n=0;n<words.length;n++){const test=line+words[n]+' ';if(ctx.measureText(test).width>maxWidth&&n>0){ctx.fillText(line,x,y);line=words[n]+' ';y+=lineHeight}else line=test}ctx.fillText(line,x,y)}
@@ -78,5 +81,6 @@ function downloadReceiptImage(){
 }
 checkPayment();
 </script>
+<div id="checkoutVersion" class="no-print" style="position:fixed;right:10px;bottom:8px;font-size:10px;color:#64748b;opacity:.7">v1.5.0-dev4.1.1-hotfix</div>
 </body>
 </html>

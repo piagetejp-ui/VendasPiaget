@@ -1,64 +1,161 @@
 {
-  "version": "1.5.0-dev4-clean",
-  "source": "1.5.0-dev3-clean",
+  "version": "1.5.0-dev4.1-hotfix",
+  "source": "1.5.0-dev4-clean",
+  "scope": "Hotfix de confirmação InfinitePay/Firestore, recuperação de pagamento e logout",
   "files": {
-    "BUILD-REPORT.json": 212,
-    "CHANGELOG.md": 1179,
-    "README.md": 1011,
-    "TESTES.md": 1035,
-    "VALIDACAO-TECNICA.md": 1235,
-    "api/_utils.js": 67640,
-    "api/criar-checkout.js": 3398,
-    "api/registrar-operacao-presencial.js": 617,
-    "api/verificar-pagamento.js": 561,
-    "api/webhook-infinitepay.js": 768,
-    "css/app.css": 64533,
-    "index.html": 5366,
-    "js/01-core.js": 174691,
-    "js/02-operations.js": 92775,
-    "js/03-cash.js": 61156,
-    "js/04-brand.js": 8099,
-    "js/05-auth.js": 44079,
-    "js/06-notifications-navigation.js": 31893,
-    "js/07-account-checkout.js": 58141,
-    "js/08-orders-agenda.js": 24848,
-    "js/09-portal-sales.js": 65096,
-    "js/11-bootstrap.js": 2398,
-    "obrigado.html": 12736,
-    "package.json": 187
+    "CHANGELOG.md": {
+      "bytes": 1603,
+      "sha256": "a4cebc8ddfce35a3961e47c91f84d880adadd90266bd8e09c4a05ee0ab97189c"
+    },
+    "README.md": {
+      "bytes": 1711,
+      "sha256": "8b1e5c281496593a8e6fe798e8b7fba61f6c04e477425c9e287d96c966bf99ea"
+    },
+    "TESTES.md": {
+      "bytes": 1670,
+      "sha256": "e922593773269943d5f7af75997ee2990d94c4c42154b7c32f656623cfab2e10"
+    },
+    "VALIDACAO-TECNICA.md": {
+      "bytes": 1542,
+      "sha256": "60578f8006beaa9f0d8b38cfb831057e39de6a140b6949b57a0afcc310d251fa"
+    },
+    "api/_utils.js": {
+      "bytes": 70711,
+      "sha256": "bebfd074b1ad31c62f725c11b63a97701a5cf53e7199c21ebc3bf0477624aeac"
+    },
+    "api/criar-checkout.js": {
+      "bytes": 3398,
+      "sha256": "418e8d765d34d8868c467ff9ff114d5a503e18719baf9e82798df0ea79adcb8c"
+    },
+    "api/registrar-operacao-presencial.js": {
+      "bytes": 617,
+      "sha256": "71d916eed2f889476e0fac0927a921adf96e2b7558af883c9e1471b3957592d2"
+    },
+    "api/verificar-pagamento.js": {
+      "bytes": 561,
+      "sha256": "f9ab112b9ab6e062022bae42a5bc19bdee7881834078d154e9a01cfb088a657f"
+    },
+    "api/webhook-infinitepay.js": {
+      "bytes": 768,
+      "sha256": "0d3da91a8899326e5b2ac3cdcc77a89a57556161fc0af425435b937ab7b84d84"
+    },
+    "css/app.css": {
+      "bytes": 64539,
+      "sha256": "bb70990750f593647a426d49ddf7e4c2976e7d96346776e2a3c9bc5fa7342cd6"
+    },
+    "index.html": {
+      "bytes": 5369,
+      "sha256": "76be89f080e5fd1c08dbb67c3222ab8c97511ef1f4f10a65de0a8300a483a443"
+    },
+    "js/01-core.js": {
+      "bytes": 174694,
+      "sha256": "f830f0dec28b69b53e8951a8f5cc9d6f112902a7e90506a1407998246c4aaecf"
+    },
+    "js/02-operations.js": {
+      "bytes": 92775,
+      "sha256": "9820fd13a08b28f4b29f37c6aa7f3950d57a43b2a1c9c34c4e38ce5d29e22d1b"
+    },
+    "js/03-cash.js": {
+      "bytes": 61156,
+      "sha256": "742ff8985bcab46d4b8420aaa4ed6e76be2580e1f8c68f79044ee28c9c181ace"
+    },
+    "js/04-brand.js": {
+      "bytes": 8099,
+      "sha256": "8cbc81ab8e76bca639ec791a6e156de45739b4d127f58ff10211f3dd0abd99c8"
+    },
+    "js/05-auth.js": {
+      "bytes": 45026,
+      "sha256": "a59f3c4405ac12d197d50d5b54fc5d898174bcc6ba4642c6262f260b03c7c454"
+    },
+    "js/06-notifications-navigation.js": {
+      "bytes": 31893,
+      "sha256": "446f2da0579c5540f2e7580125cdf4790ab4beeed847f5ee8e378333f1648aa7"
+    },
+    "js/07-account-checkout.js": {
+      "bytes": 58837,
+      "sha256": "4102384e096cd9bcc331a77b33c93ad19ffa593dbe3d1085822518049d0a5a71"
+    },
+    "js/08-orders-agenda.js": {
+      "bytes": 24854,
+      "sha256": "83822fb639b74455fa23c3ebbac5a6ebc64668fe42fa4352a29d0d41f328aded"
+    },
+    "js/09-portal-sales.js": {
+      "bytes": 65670,
+      "sha256": "ee0d0ea237cf74fda6ee076510e013749ed6ec4dec91561b0c5289f89adb6b41"
+    },
+    "js/11-bootstrap.js": {
+      "bytes": 2404,
+      "sha256": "174b890c898fae6c10926d38df2850af6771401bdfec36e81e4e8459e56d2e45"
+    },
+    "obrigado.html": {
+      "bytes": 13318,
+      "sha256": "f54e21e966e597f523dbf67d893e8e5256f4947f0d7f762443ac97861c8702ac"
+    },
+    "package.json": {
+      "bytes": 190,
+      "sha256": "5ae42aa69a3d655104324a03897e123e2fe2aeddc1b90c51bf9c9c0939f4e98d"
+    }
   },
-  "architecture_checks": {
-    "single_parent_portal": true,
-    "single_boot": true,
-    "single_router": true,
-    "mobile_button_static": true,
-    "preparing_status": true,
-    "idempotent_attempt": true,
-    "optional_balance_default": true,
-    "official_checkout_endpoint_preserved": true
+  "checks": {
+    "javascript_syntax": true,
+    "inline_script_syntax": true,
+    "frontend_smoke": true,
+    "top_logout": true,
+    "firestore_reads_before_writes_uniform": true,
+    "payment_confirmation_idempotent": true,
+    "payment_evidence_preserved_on_failure": true,
+    "manual_payment_recovery_with_identifiers": true,
+    "pending_button_label_updated": true,
+    "return_button_label_updated": true
   },
-  "runtime_smoke": {
-    "ok": true,
-    "loaded": [
-      "01-core.js",
-      "02-operations.js",
-      "03-cash.js",
-      "04-brand.js",
-      "05-auth.js",
-      "06-notifications-navigation.js",
-      "07-account-checkout.js",
-      "08-orders-agenda.js",
-      "09-portal-sales.js",
-      "11-bootstrap.js"
-    ],
-    "portalCards": 9,
-    "parentPortalCanonical": true,
-    "parentLogin": true,
-    "savedSessionRoute": true,
-    "resetRouteGuard": true,
-    "optionalBalanceOff": true,
-    "optionalBalanceOn": true,
-    "debtRegularization": true,
-    "mobileMenu": true
+  "test_results": {
+    "firestore": {
+      "ok": true,
+      "transactionRuns": 1,
+      "checkoutStatus": "pago",
+      "orderStatus": "aplicado",
+      "stockReserved": 1,
+      "movements": 2
+    },
+    "failure_evidence": {
+      "ok": true,
+      "status": "pagamento_localizado_aguardando_processamento",
+      "evidence": "t1",
+      "error": "O pagamento não é suficiente para concluir o pedido de fardamento."
+    },
+    "manual_recovery": {
+      "ok": true,
+      "paid": true,
+      "applicationPending": false,
+      "status": "pago",
+      "application": "aplicado",
+      "transaction": "9006c2e5-6ddf-45f7-b850-041bcd5110c8",
+      "slug": "YxSohBgR30"
+    },
+    "frontend": {
+      "ok": true,
+      "loaded": [
+        "01-core.js",
+        "02-operations.js",
+        "03-cash.js",
+        "04-brand.js",
+        "05-auth.js",
+        "06-notifications-navigation.js",
+        "07-account-checkout.js",
+        "08-orders-agenda.js",
+        "09-portal-sales.js",
+        "11-bootstrap.js"
+      ],
+      "portalCards": 9,
+      "parentPortalCanonical": true,
+      "parentLogin": true,
+      "savedSessionRoute": true,
+      "resetRouteGuard": true,
+      "optionalBalanceOff": true,
+      "optionalBalanceOn": true,
+      "debtRegularization": true,
+      "mobileMenu": true,
+      "topLogout": true
+    }
   }
 }

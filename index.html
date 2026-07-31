@@ -17,11 +17,11 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 
-<link href="/css/app.css" rel="stylesheet"/><meta content="1.5.0-dev4-clean" name="application-version"/></head>
+<link href="/css/app.css?v=1.5.0-dev4.1.1-hotfix" rel="stylesheet"/><meta content="1.5.0-dev4.1.1-hotfix" name="application-version"/></head>
 <body>
 <header class="topbar">
 <div class="brand"><div class="brand-logo">EP</div><div><h1>Vendas Piaget</h1><small>Cantina, secretaria e portal do responsável</small></div></div>
-<div class="top-actions"><button aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu" class="v151-mobile-menu hidden" id="v151MenuBtn" onclick="toggleMobileMenuV151()" type="button">☰</button><span class="pill" id="connectionPill">Conectando...</span><span class="pill hidden" id="userPill"></span><button class="btn btn-orange hidden" id="switchUserBtn" onclick="logoutProfile()">Trocar acesso</button></div>
+<div class="top-actions"><span class="pill app-version-pill" id="appVersionPill">v1.5.0-dev4.1.1-hotfix</span><button aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu" class="v151-mobile-menu hidden" id="v151MenuBtn" onclick="toggleMobileMenuV151()" type="button">☰</button><span class="pill" id="connectionPill">Conectando...</span><span class="pill hidden" id="userPill"></span><button class="btn btn-orange hidden" id="switchUserBtn" onclick="logoutProfile()">Trocar acesso</button></div>
 </header>
 <div class="role-screen" id="bootScreen"><div class="setup"><h2>Carregando o sistema</h2><p class="muted" id="bootText">Conectando ao Firestore...</p><div class="progress"><i id="bootProgress"></i></div><div class="alert danger hidden" id="bootError" style="margin-top:14px"></div><button class="btn btn-primary hidden" id="retryBtn" onclick="boot()" style="margin-top:12px">Tentar novamente</button></div></div>
 <div class="role-screen hidden" id="setupScreen"><div class="setup"><div class="accent"></div><h2>Inicializar a base real</h2><p>O Firestore está vazio. Este botão importará os 217 alunos reais enviados, turmas, produtos, preços, contas zeradas, usuários provisórios e configurações da escola. Nenhum dado existente será sobrescrito.</p><div class="alert warn">Esta etapa exige regras temporárias de leitura e escrita no Firestore enquanto a autenticação ainda não foi ativada.</div><button class="btn btn-primary" onclick="seedDatabase()" style="margin-top:14px">Importar base real</button><p class="muted" id="seedStatus"></p></div></div>
@@ -63,5 +63,5 @@
 
 
 
-<script defer="True" src="/js/01-core.js"></script><script defer="True" src="/js/02-operations.js"></script><script defer="True" src="/js/03-cash.js"></script><script defer="True" src="/js/04-brand.js"></script><script defer="True" src="/js/05-auth.js"></script><script defer="True" src="/js/06-notifications-navigation.js"></script><script defer="True" src="/js/07-account-checkout.js"></script><script defer="True" src="/js/08-orders-agenda.js"></script><script defer="True" src="/js/09-portal-sales.js"></script><script defer="True" src="/js/11-bootstrap.js"></script></body>
+<script defer="True" src="/js/01-core.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/02-operations.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/03-cash.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/04-brand.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/05-auth.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/06-notifications-navigation.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/07-account-checkout.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/08-orders-agenda.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/09-portal-sales.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/11-bootstrap.js?v=1.5.0-dev4.1.1-hotfix"></script></body>
 </html>

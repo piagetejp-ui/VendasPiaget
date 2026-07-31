@@ -108,7 +108,7 @@ async function audit(db, action, data={}){
     pagamentoId: data.pagamentoId || data.orderNsu || null,
     pedidoId: data.pedidoId || null,
     criadoEm: now,
-    versao: '1.5.0-dev4-clean'
+    versao: '1.5.0-dev4.1-hotfix'
   });
 }
 async function notify(db, payload={}){
@@ -207,7 +207,7 @@ async function reserveUniformOrder(db, body, actor, student, customer){
   if(!modelSnap.exists)throw Object.assign(new Error('Modelo de farda não encontrado.'),{status:404});
   const model={id:modelSnap.id,...modelSnap.data()};if(model.ativo===false||model.portal===false)throw Object.assign(new Error('Este modelo não está disponível para compra online.'),{status:400});
   const adult=['P','M','G','GG','XGG'].includes(size),unit=cents(adult?(model.precoAdultoCentavos||4700):(model.precoInfantilCentavos||4200)),total=unit*qty,saldoAtual=accountNet(acc),useBalance=body.usarSaldo===true,creditUsed=useBalance?Math.min(Math.max(0,saldoAtual),total):0,debtRequired=Math.max(0,-saldoAtual),required=total-creditUsed+debtRequired,orderRef=db.collection('pedidos_farda').doc(),now=nowIso();
-  await orderRef.set({id:orderRef.id,tipoPedido:'farda',alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,turno:student.turno||null,matricula:student.matricula||null,responsavelFinanceiro:student.responsavelFinanceiro||null,produto:model.nome||'Camisa de farda',modeloFardaId:model.id,tamanho:size,modelo:adult?(gender||'unissex'):'',quantidade:qty,precoUnitarioCentavos:unit,totalCentavos:total,usarSaldo:useBalance,valorSaldoPrevistoCentavos:creditUsed,valorRegularizacaoPrevistoCentavos:debtRequired,statusPagamento:required>0?'aguardando_pagamento':'pago_com_saldo',statusAtendimento:'aguardando_pagamento',statusAplicacao:'pendente',saldoNoMomentoCentavos:saldoAtual,valorCheckoutPrevistoCentavos:required,customer:customer||null,origem:actor.perfil==='responsavel'?'portal_responsavel':'operacao_interna',criadoPor:actor.id,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.5.0-dev4-clean'});
+  await orderRef.set({id:orderRef.id,tipoPedido:'farda',alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,turno:student.turno||null,matricula:student.matricula||null,responsavelFinanceiro:student.responsavelFinanceiro||null,produto:model.nome||'Camisa de farda',modeloFardaId:model.id,tamanho:size,modelo:adult?(gender||'unissex'):'',quantidade:qty,precoUnitarioCentavos:unit,totalCentavos:total,usarSaldo:useBalance,valorSaldoPrevistoCentavos:creditUsed,valorRegularizacaoPrevistoCentavos:debtRequired,statusPagamento:required>0?'aguardando_pagamento':'pago_com_saldo',statusAtendimento:'aguardando_pagamento',statusAplicacao:'pendente',saldoNoMomentoCentavos:saldoAtual,valorCheckoutPrevistoCentavos:required,customer:customer||null,origem:actor.perfil==='responsavel'?'portal_responsavel':'operacao_interna',criadoPor:actor.id,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.5.0-dev4.1-hotfix'});
   await audit(db,'pedido_farda_criado',{pedidoId:orderRef.id,alunoId:student.id,alunoNome:student.nome,valorCentavos:total,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,descricaoHumana:`${actor.nome} criou um pedido de fardamento para ${student.nome}.`});
   return {pedidoId:orderRef.id,totalCentavos:total,checkoutTotal:required,saldoAtual,useBalance,creditUsed,debtRequired,model,size,gender:adult?(gender||'unissex'):'',qty,unit};
 }
@@ -313,7 +313,7 @@ function normalizeOrderInput(body, productMap, student, cfg){
 }
 async function reserveCantinaOrder(db, body, actor, student, customer, cfg){
   const [productMap,acc]=await Promise.all([loadProductMap(db),getAccount(db,student.id)]),normalized=normalizeOrderInput(body,productMap,student,cfg),saldoAtual=accountNet(acc),useBalance=body.usarSaldo===true,creditUsed=useBalance?Math.min(Math.max(0,saldoAtual),normalized.totalCentavos):0,debtRequired=Math.max(0,-saldoAtual),minCheckout=Math.max(100,cents(cfg.valorMinimoCheckoutPositivoCentavos||100)),required=Math.max(0,normalized.totalCentavos-creditUsed+debtRequired),checkoutTotal=required>0?Math.max(required,minCheckout):0,projectedNet=saldoAtual+checkoutTotal-normalized.totalCentavos,orderRef=db.collection('pedidos').doc(),pedidoId=orderRef.id,minutes=Math.min(10,Math.max(1,cents(cfg.reservaPedidoMinutos||ORDER_RESERVATION_MINUTES_DEFAULT))),expiresAt=new Date(Date.now()+minutes*60*1000).toISOString(),now=nowIso(),capacityRefs=normalized.days.filter(x=>x.quantidadeSalgados>0).map(day=>({day,ref:db.collection('disponibilidade_salgados').doc(day.dataChave)}));
-  await db.runTransaction(async tx=>{const snaps=await Promise.all(capacityRefs.map(x=>tx.get(x.ref)));for(let i=0;i<capacityRefs.length;i++){const {day,ref}=capacityRefs[i],current=snaps[i].exists?snaps[i].data():{},planned=cents(current.quantidadePlanejada||cfg.quantidadePadraoSalgados||30),used=dailyUsed(current);if(used+day.quantidadeSalgados>planned){const err=new Error(`Não há salgados suficientes em ${day.dataChave}. Disponíveis: ${Math.max(0,planned-used)}.`);err.status=409;throw err}const reservas={...(current.reservas||{})};reservas[pedidoId]={pedidoId,alunoId:student.id,alunoNome:student.nome,quantidade:day.quantidadeSalgados,expiraEm:expiresAt,criadoEm:now};tx.set(ref,{dataChave:day.dataChave,quantidadePlanejada:planned,reservas,atualizadoEm:now},{merge:true})}tx.set(orderRef,{id:pedidoId,tipoPedido:'cantina',modalidade:normalized.modalidade,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,turno:student.turno||null,matricula:student.matricula||null,responsavelFinanceiro:student.responsavelFinanceiro||null,dias:normalized.days,observacao:normalized.observacao,totalCentavos:normalized.totalCentavos,usarSaldo:useBalance,valorSaldoPrevistoCentavos:creditUsed,valorRegularizacaoPrevistoCentavos:debtRequired,saldoNoMomentoCentavos:saldoAtual,valorCheckoutPrevistoCentavos:checkoutTotal,saldoProjetadoDepoisCentavos:projectedNet,statusPagamento:checkoutTotal>0?'aguardando_pagamento':'pago_com_saldo',statusPedido:checkoutTotal>0?'aguardando_pagamento':'reservado',statusAplicacao:'pendente',reservaMinutos:minutes,reservaExpiraEm:expiresAt,customer:customer||null,origem:actor.perfil==='responsavel'?'portal_responsavel':'operacao_interna',criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.5.0-dev4-clean'})});
+  await db.runTransaction(async tx=>{const snaps=await Promise.all(capacityRefs.map(x=>tx.get(x.ref)));for(let i=0;i<capacityRefs.length;i++){const {day,ref}=capacityRefs[i],current=snaps[i].exists?snaps[i].data():{},planned=cents(current.quantidadePlanejada||cfg.quantidadePadraoSalgados||30),used=dailyUsed(current);if(used+day.quantidadeSalgados>planned){const err=new Error(`Não há salgados suficientes em ${day.dataChave}. Disponíveis: ${Math.max(0,planned-used)}.`);err.status=409;throw err}const reservas={...(current.reservas||{})};reservas[pedidoId]={pedidoId,alunoId:student.id,alunoNome:student.nome,quantidade:day.quantidadeSalgados,expiraEm:expiresAt,criadoEm:now};tx.set(ref,{dataChave:day.dataChave,quantidadePlanejada:planned,reservas,atualizadoEm:now},{merge:true})}tx.set(orderRef,{id:pedidoId,tipoPedido:'cantina',modalidade:normalized.modalidade,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,turno:student.turno||null,matricula:student.matricula||null,responsavelFinanceiro:student.responsavelFinanceiro||null,dias:normalized.days,observacao:normalized.observacao,totalCentavos:normalized.totalCentavos,usarSaldo:useBalance,valorSaldoPrevistoCentavos:creditUsed,valorRegularizacaoPrevistoCentavos:debtRequired,saldoNoMomentoCentavos:saldoAtual,valorCheckoutPrevistoCentavos:checkoutTotal,saldoProjetadoDepoisCentavos:projectedNet,statusPagamento:checkoutTotal>0?'aguardando_pagamento':'pago_com_saldo',statusPedido:checkoutTotal>0?'aguardando_pagamento':'reservado',statusAplicacao:'pendente',reservaMinutos:minutes,reservaExpiraEm:expiresAt,customer:customer||null,origem:actor.perfil==='responsavel'?'portal_responsavel':'operacao_interna',criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.5.0-dev4.1-hotfix'})});
   await audit(db,'pedido_cantina_reservado',{pedidoId,alunoId:student.id,alunoNome:student.nome,valorCentavos:normalized.totalCentavos,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,descricaoHumana:`${actor.nome} reservou ${normalized.days.length} entrega(s) de cantina para ${student.nome}. A reserva expira em ${minutes} minutos.`});
   return{pedidoId,normalized,saldoAtual,useBalance,creditUsed,debtRequired,checkoutTotal,projectedNet,expiresAt,minutes};
 }
@@ -443,7 +443,7 @@ async function createCheckoutLink(db, req, op, timings={}){
   if(op.tipo==='pedido_cantina'&&cents(op.totalCentavos)===0){try{const result=await confirmCantinaOrderWithoutCheckout(db,op.pedidoId,op.actor);return{sem_checkout:true,pedido_confirmado:result.status==='confirmado',pedido_em_revisao:result.status!=='confirmado',pedido_id:op.pedidoId,total_centavos:0,pedido_total_centavos:op.pedidoTotalCentavos,saldo_depois_centavos:result.saldoDepoisCentavos,tipo:op.tipo,reserva_expira_em:op.reservaExpiraEm,timings}}catch(error){await releasePendingOrder(db,op.pedidoId,'erro_confirmacao_saldo').catch(()=>{});throw error}}
   const handle=normalizeHandle(),baseUrl=getBaseUrl(req),nsuType=op.tipo==='entrada_conta_aluno'?'CONTA':op.tipo==='pedido_cantina'?'PEDIDO':op.tipo==='pedido_farda'?'FARDA':'TESTE',orderNsu=makeOrderNsu(nsuType),redirectUrl=`${baseUrl}/obrigado.html`,webhookUrl=`${baseUrl}/api/webhook-infinitepay`,payload={handle,order_nsu:orderNsu,redirect_url:redirectUrl,webhook_url:webhookUrl,items:op.itensCheckout};if(op.customer)payload.customer=op.customer;
   const checkoutRef=db.collection('pagamentos_checkout').doc(orderNsu),persistStart=Date.now();
-  await checkoutRef.set({id:orderNsu,orderNsu,idTentativa:op.idTentativa||null,handle,tipo:op.tipo,pedidoId:op.pedidoId||null,pedidoTotalCentavos:op.pedidoTotalCentavos||0,reservaExpiraEm:op.reservaExpiraEm||null,reservaMinutos:op.reservaMinutos||null,alunoId:op.alunoId||null,alunoNome:op.alunoNome||null,turma:op.turma||null,turno:op.turno||null,matricula:op.matricula||null,responsavelFinanceiro:op.responsavelFinanceiro||null,descricao:op.descricao,totalCentavos:op.totalCentavos,minimoCentavos:op.minimoCentavos||0,saldoNoMomentoCentavos:op.saldoNoMomentoCentavos||0,saldoEmAbertoNoMomentoCentavos:op.saldoEmAbertoNoMomentoCentavos||0,status:'preparando_link',statusAplicacao:'pendente',payloadOperacional:op.payload||{},itensCheckout:op.itensCheckout,customer:op.customer||null,redirectUrl,webhookUrl,origem:'checkout_infinitepay',criadoPorId:op.actor.id,criadoPorNome:op.actor.nome,criadoPorPerfil:op.actor.perfil,criadoEm:nowIso(),atualizadoEm:nowIso(),versao:'1.5.0-dev4-clean'},{merge:false});
+  await checkoutRef.set({id:orderNsu,orderNsu,idTentativa:op.idTentativa||null,handle,tipo:op.tipo,pedidoId:op.pedidoId||null,pedidoTotalCentavos:op.pedidoTotalCentavos||0,reservaExpiraEm:op.reservaExpiraEm||null,reservaMinutos:op.reservaMinutos||null,alunoId:op.alunoId||null,alunoNome:op.alunoNome||null,turma:op.turma||null,turno:op.turno||null,matricula:op.matricula||null,responsavelFinanceiro:op.responsavelFinanceiro||null,descricao:op.descricao,totalCentavos:op.totalCentavos,minimoCentavos:op.minimoCentavos||0,saldoNoMomentoCentavos:op.saldoNoMomentoCentavos||0,saldoEmAbertoNoMomentoCentavos:op.saldoEmAbertoNoMomentoCentavos||0,status:'preparando_link',statusAplicacao:'pendente',payloadOperacional:op.payload||{},itensCheckout:op.itensCheckout,customer:op.customer||null,redirectUrl,webhookUrl,origem:'checkout_infinitepay',criadoPorId:op.actor.id,criadoPorNome:op.actor.nome,criadoPorPerfil:op.actor.perfil,criadoEm:nowIso(),atualizadoEm:nowIso(),versao:'1.5.0-dev4.1-hotfix'},{merge:false});
   if(op.pedidoId){const collection=op.tipo==='pedido_farda'?'pedidos_farda':'pedidos';await safeSet(db.collection(collection).doc(op.pedidoId),{orderNsu,checkoutId:orderNsu,atualizadoEm:nowIso()})}
   timings.persistenciaCheckoutMs=Date.now()-persistStart;
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000),ipStart=Date.now();let response,text,data={};
@@ -491,27 +491,48 @@ async function buildReceiptInfo(db, orderNsu){
     criadoEm:c.criadoEm || null,
     pagamentoConfirmadoEm:c.pagamentoConfirmadoEm || null,
     confirmadoEm:c.confirmadoEm || null,
-    customer:c.customer || null
+    customer:c.customer || null,
+    resultadoOperacional:c.resultadoOperacional || null,
+    erroAplicacao:c.erroAplicacao || null
   };
 }
 async function confirmWithInfinitePay(db, params){
   const handle=normalizeHandle();
   const orderNsu=String(params.order_nsu || params.orderNsu || '').trim();
   if(!orderNsu) throw new Error('order_nsu ausente.');
+
+  // Salva os identificadores recebidos no retorno, mesmo antes da consulta externa.
+  const supplied={
+    transaction_nsu:params.transaction_nsu||params.transactionNsu||'',
+    slug:params.slug||params.invoice_slug||params.invoiceSlug||'',
+    receipt_url:params.receipt_url||params.receiptUrl||''
+  };
+  const suppliedEvidence=paymentEvidence(supplied);
+  if(suppliedEvidence.transactionNsu||suppliedEvidence.invoiceSlug||suppliedEvidence.receiptUrl){
+    await safeSet(db.collection('pagamentos_checkout').doc(orderNsu),{...suppliedEvidence,ultimoRetornoRecebidoEm:nowIso(),atualizadoEm:nowIso()});
+  }
+
   const payload={ handle, order_nsu:orderNsu };
-  if(params.transaction_nsu || params.transactionNsu) payload.transaction_nsu = params.transaction_nsu || params.transactionNsu;
-  if(params.slug || params.invoice_slug || params.invoiceSlug) payload.slug = params.slug || params.invoice_slug || params.invoiceSlug;
+  if(suppliedEvidence.transactionNsu) payload.transaction_nsu=suppliedEvidence.transactionNsu;
+  if(suppliedEvidence.invoiceSlug) payload.slug=suppliedEvidence.invoiceSlug;
   const response=await fetch(INFINITE_PAYMENT_CHECK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
   const text=await response.text();
   let data={}; try{ data=JSON.parse(text); }catch{ data={raw:text}; }
+  if(!response.ok){
+    await safeSet(db.collection('pagamentos_checkout').doc(orderNsu),{ultimoPaymentCheckEm:nowIso(),ultimoPaymentCheckPayload:data,ultimoPaymentCheckHttpStatus:response.status,atualizadoEm:nowIso()});
+    const error=new Error('A InfinitePay não conseguiu consultar este pagamento agora.');error.status=502;error.details=data;throw error;
+  }
+
   const paid=isPaidResponse(data);
+  let applicationPending=false,applicationError='';
+  const merged={...data,transaction_nsu:suppliedEvidence.transactionNsu||data.transaction_nsu||data.transactionNsu,slug:suppliedEvidence.invoiceSlug||data.slug||data.invoice_slug||data.invoiceSlug,receipt_url:suppliedEvidence.receiptUrl||data.receipt_url||data.receiptUrl};
   if(paid){
-    await applyCheckoutConfirmation(db, orderNsu, { ...data, transaction_nsu: params.transaction_nsu || params.transactionNsu || data.transaction_nsu || data.transactionNsu, slug: params.slug || params.invoice_slug || params.invoiceSlug || data.slug });
+    try{await applyCheckoutConfirmation(db, orderNsu, merged)}catch(error){applicationPending=true;applicationError=String(error?.message||error);console.error('Pagamento localizado, mas aplicação operacional pendente:',orderNsu,error);}
   }else{
     await safeSet(db.collection('pagamentos_checkout').doc(orderNsu), { ultimoPaymentCheckEm:nowIso(), ultimoPaymentCheckPayload:data, atualizadoEm:nowIso() });
   }
   const receipt=await buildReceiptInfo(db, orderNsu);
-  return { paid, infinitepay:data, receipt };
+  return { paid, applicationPending, applicationError, infinitepay:data, receipt };
 }
 async function applyAccountPaymentTx(tx, db, checkout, paymentData={}){
   const accRef=db.collection('contas_alunos').doc(checkout.alunoId);
@@ -621,7 +642,7 @@ async function applyCantinaOrderTx(tx,db,checkout,paymentData={}){
       origem:'pedido_antecipado',
       criadoEm:now,
       atualizadoEm:now,
-      versao:'1.5.0-dev4-clean'
+      versao:'1.5.0-dev4.1-hotfix'
     },{merge:false});
   }
   tx.set(orderRef,{statusPagamento:'pago',statusPedido:'confirmado',statusAplicacao:'aplicado',valorPagoExternoCentavos:externalPayment,valorDebitadoContaCentavos:orderTotal,valorSaldoAnteriorUtilizadoCentavos:order.usarSaldo===true?Math.min(Math.max(oldNet,0),orderTotal):0,saldoAntesCentavos:oldNet,saldoDepoisCentavos:finalNet,pagamentoConfirmadoEm:now,confirmadoEm:now,atualizadoEm:now},{merge:true});
@@ -646,18 +667,40 @@ async function confirmCantinaOrderWithoutCheckout(db,pedidoId,actor={id:'portal_
 }
 
 async function applyUniformOrderTx(tx,db,checkout,paymentData={}){
-  const orderRef=db.collection('pedidos_farda').doc(checkout.pedidoId),orderSnap=await tx.get(orderRef);
+  const orderRef=db.collection('pedidos_farda').doc(checkout.pedidoId);
+  const orderSnap=await tx.get(orderRef);
   if(!orderSnap.exists)throw new Error('Pedido de fardamento não encontrado.');
   const order={id:orderSnap.id,...orderSnap.data()};
   if(order.statusAplicacao==='aplicado')return {status:'confirmado',alreadyApplied:true,saldoDepoisCentavos:order.saldoDepoisCentavos};
-  const accRef=db.collection('contas_alunos').doc(order.alunoId),accSnap=await tx.get(accRef),acc=accSnap.exists?accSnap.data():{};
+
+  // Firestore exige que TODAS as leituras da transação ocorram antes da primeira gravação.
+  const accRef=db.collection('contas_alunos').doc(order.alunoId);
+  const stockRef=db.collection('estoques').doc(uniformStockId(order.modeloFardaId||'camisa_padrao',order.tamanho,order.modelo||''));
+  const accSnap=await tx.get(accRef);
+  const stockSnap=await tx.get(stockRef);
+
+  const acc=accSnap.exists?accSnap.data():{};
   const external=cents(checkout.totalCentavos),total=cents(order.totalCentavos),before=accountNet(acc),afterPayment=before+external,after=afterPayment-total,now=nowIso();
   if(after<0)throw new Error('O pagamento não é suficiente para concluir o pedido de fardamento.');
+
+  let atendimento='aguardando_producao',stockUpdate=null;
+  if(stockSnap.exists){
+    const st=stockSnap.data(),available=Math.max(0,cents(st.quantidadeFisica)-cents(st.quantidadeReservada));
+    if(st.configurado&&available>=cents(order.quantidade)){
+      atendimento='reservado_estoque';
+      stockUpdate={quantidadeReservada:cents(st.quantidadeReservada)+cents(order.quantidade),atualizadoEm:now};
+    }
+  }
+
+  // A partir daqui, somente gravações.
   tx.set(accRef,{...splitNet(after),bloqueioSaldoSemanal:false,bloqueadoPorLimite:false,ultimaRegularizacaoEm:now,atualizadoEm:now},{merge:true});
-  if(external>0){const m=db.collection('movimentos_conta').doc();tx.set(m,{id:m.id,alunoId:order.alunoId,tipo:'entrada_conta_aluno',subtipo:'pagamento_pedido_farda',valorCentavos:external,saldoAntesCentavos:before,saldoDepoisCentavos:afterPayment,formaPagamento:'checkout_infinitepay',orderNsu:checkout.orderNsu||checkout.id,pedidoId:order.id,status:'confirmado',dataChave:dateKey(),criadoEm:now,detalhesPagamento:paymentData});}
-  const purchase=db.collection('movimentos_conta').doc();tx.set(purchase,{id:purchase.id,alunoId:order.alunoId,tipo:'compra',subtipo:'pedido_farda',valorCentavos:-total,valorCompraCentavos:total,saldoAntesCentavos:afterPayment,saldoDepoisCentavos:after,pedidoId:order.id,itens:[{nome:order.produto||'Farda',quantidade:order.quantidade,tamanho:order.tamanho,modelo:order.modelo,precoUnitarioCentavos:order.precoUnitarioCentavos}],origem:'pedido_fardamento',formaPagamento:external>0?(order.usarSaldo===true&&before>0?'saldo_e_checkout':'checkout_infinitepay'):'saldo_conta',status:'confirmado',dataChave:dateKey(),criadoEm:now});
-  const stockRef=db.collection('estoques').doc(uniformStockId(order.modeloFardaId||'camisa_padrao',order.tamanho,order.modelo||'')),stockSnap=await tx.get(stockRef);let atendimento='aguardando_producao';
-  if(stockSnap.exists){const st=stockSnap.data(),available=Math.max(0,cents(st.quantidadeFisica)-cents(st.quantidadeReservada));if(st.configurado&&available>=cents(order.quantidade)){atendimento='reservado_estoque';tx.set(stockRef,{quantidadeReservada:cents(st.quantidadeReservada)+cents(order.quantidade),atualizadoEm:now},{merge:true});}}
+  if(external>0){
+    const m=db.collection('movimentos_conta').doc();
+    tx.set(m,{id:m.id,alunoId:order.alunoId,tipo:'entrada_conta_aluno',subtipo:'pagamento_pedido_farda',valorCentavos:external,saldoAntesCentavos:before,saldoDepoisCentavos:afterPayment,formaPagamento:'checkout_infinitepay',orderNsu:checkout.orderNsu||checkout.id,pedidoId:order.id,status:'confirmado',dataChave:dateKey(),criadoEm:now,detalhesPagamento:paymentData});
+  }
+  const purchase=db.collection('movimentos_conta').doc();
+  tx.set(purchase,{id:purchase.id,alunoId:order.alunoId,tipo:'compra',subtipo:'pedido_farda',valorCentavos:-total,valorCompraCentavos:total,saldoAntesCentavos:afterPayment,saldoDepoisCentavos:after,pedidoId:order.id,itens:[{nome:order.produto||'Farda',quantidade:order.quantidade,tamanho:order.tamanho,modelo:order.modelo,precoUnitarioCentavos:order.precoUnitarioCentavos}],origem:'pedido_fardamento',formaPagamento:external>0?(order.usarSaldo===true&&before>0?'saldo_e_checkout':'checkout_infinitepay'):'saldo_conta',status:'confirmado',dataChave:dateKey(),criadoEm:now});
+  if(stockUpdate)tx.set(stockRef,stockUpdate,{merge:true});
   tx.set(orderRef,{statusPagamento:'pago',statusAtendimento:atendimento,statusAplicacao:'aplicado',valorPagoExternoCentavos:external,valorDebitadoContaCentavos:total,valorSaldoAnteriorUtilizadoCentavos:order.usarSaldo===true?Math.min(Math.max(before,0),total):0,saldoAntesCentavos:before,saldoDepoisCentavos:after,pagamentoConfirmadoEm:now,confirmadoEm:now,atualizadoEm:now},{merge:true});
   return {status:'confirmado',saldoDepoisCentavos:after,statusAtendimento:atendimento};
 }
@@ -669,62 +712,103 @@ async function confirmUniformOrderWithoutCheckout(db,pedidoId,actor={id:'portal_
   await notify(db,{tipo:'pedido_farda_confirmado',titulo:'Novo pedido de fardamento',mensagem:`${order.alunoNome||'Aluno'} realizou um pedido de fardamento.`,alunoId:order.alunoId,alunoNome:order.alunoNome,matricula:order.matricula,pedidoId,destinatariosPerfis:['admin','gestao','secretaria'],acaoPrincipal:'abrir_fardas',acaoLabel:'Ver fardas'});
   return result;
 }
+function paymentEvidence(paymentData={}){
+  return {
+    transactionNsu:paymentData.transaction_nsu||paymentData.transactionNsu||'',
+    invoiceSlug:paymentData.invoice_slug||paymentData.invoiceSlug||paymentData.slug||'',
+    captureMethod:paymentData.capture_method||paymentData.captureMethod||'',
+    receiptUrl:paymentData.receipt_url||paymentData.receiptUrl||'',
+    paidAmountCentavos:cents(paymentData.paid_amount||paymentData.paidAmount||0),
+    amountCentavos:cents(paymentData.amount||0)
+  };
+}
+function compactError(error){return {message:String(error?.message||error||'Erro desconhecido'),name:String(error?.name||'Error'),stack:String(error?.stack||'').slice(0,3000)};}
+async function recordInfinitePayEvent(db,orderNsu,paymentData={},source='confirmacao'){
+  const now=nowIso(),evidence=paymentEvidence(paymentData),ref=db.collection('eventos_checkout_infinitepay').doc();
+  await safeSet(ref,{id:ref.id,orderNsu,source,payload:paymentData,evidence,criadoEm:now,versao:'1.5.0-dev4.1-hotfix'},{merge:false});
+  return evidence;
+}
+
 async function applyCheckoutConfirmation(db, orderNsu, paymentData={}){
   const checkoutRef=db.collection('pagamentos_checkout').doc(orderNsu);
   const snap=await checkoutRef.get();
   if(!snap.exists) throw new Error('Pedido de checkout não encontrado no sistema.');
   const checkout={id:snap.id, ...snap.data(), orderNsu:snap.id};
+  const evidence=await recordInfinitePayEvent(db,orderNsu,paymentData,'confirmacao_pagamento');
+
+  // Preserva os identificadores da InfinitePay antes do processamento operacional.
+  await safeSet(checkoutRef,{
+    ...evidence,
+    status:checkout.statusAplicacao==='aplicado'?'pago':'pagamento_localizado_processando',
+    statusAplicacao:checkout.statusAplicacao==='aplicado'?'aplicado':'processando',
+    ultimoWebhookPayload:paymentData,
+    pagamentoLocalizadoEm:nowIso(),
+    atualizadoEm:nowIso()
+  });
+
   if(checkout.statusAplicacao === 'aplicado'){
-    await checkoutRef.set({ status:'pago', ultimoWebhookPayload:paymentData, atualizadoEm:nowIso() }, { merge:true });
     return { ok:true, alreadyApplied:true };
   }
+
   let operationResult={status:'confirmado'};
-  await db.runTransaction(async tx=>{
-    const fresh=await tx.get(checkoutRef);
-    const c={id:fresh.id, ...fresh.data(), orderNsu:fresh.id};
-    if(c.statusAplicacao === 'aplicado') return;
-    if(c.tipo === 'entrada_conta_aluno') operationResult=await applyAccountPaymentTx(tx, db, c, paymentData);
-    if(c.tipo === 'pedido_cantina') operationResult=await applyCantinaOrderTx(tx,db,c,paymentData);
-    if(c.tipo === 'pedido_farda') operationResult=await applyUniformOrderTx(tx,db,c,paymentData);
-    const payRef=db.collection('pagamentos').doc(orderNsu);
-    tx.set(payRef, {
-      id: orderNsu,
-      orderNsu,
-      pedidoId:c.pedidoId||null,
-      alunoId: c.alunoId || null,
-      alunoNome: c.alunoNome || null,
-      valorBrutoCentavos: c.totalCentavos,
-      pedidoTotalCentavos:c.pedidoTotalCentavos||0,
-      formaPagamento: 'checkout_infinitepay',
-      status: 'confirmado',
-      origem: 'checkout_infinitepay',
-      tipo: c.tipo,
-      transactionNsu: paymentData.transaction_nsu || paymentData.transactionNsu || '',
-      invoiceSlug: paymentData.invoice_slug || paymentData.invoiceSlug || paymentData.slug || '',
-      captureMethod: paymentData.capture_method || paymentData.captureMethod || '',
-      receiptUrl: paymentData.receipt_url || paymentData.receiptUrl || '',
-      paidAmountCentavos: cents(paymentData.paid_amount || paymentData.paidAmount || c.totalCentavos),
-      amountCentavos: cents(paymentData.amount || c.totalCentavos),
-      dataChave: dateKey(),
-      criadoEm: nowIso(),
-      confirmadoEm: nowIso(),
-      payloadInfinitePay: paymentData
-    }, { merge:true });
-    tx.set(checkoutRef, {
-      status:'pago',
-      statusAplicacao:'aplicado',
-      resultadoOperacional:operationResult.status||'confirmado',
-      pagamentoConfirmadoEm:nowIso(),
-      transactionNsu: paymentData.transaction_nsu || paymentData.transactionNsu || '',
-      invoiceSlug: paymentData.invoice_slug || paymentData.invoiceSlug || paymentData.slug || '',
-      captureMethod: paymentData.capture_method || paymentData.captureMethod || '',
-      receiptUrl: paymentData.receipt_url || paymentData.receiptUrl || '',
-      paidAmountCentavos: cents(paymentData.paid_amount || paymentData.paidAmount || c.totalCentavos),
-      amountCentavos: cents(paymentData.amount || c.totalCentavos),
-      ultimoWebhookPayload: paymentData,
-      atualizadoEm: nowIso()
-    }, { merge:true });
-  });
+  try{
+    await db.runTransaction(async tx=>{
+      const fresh=await tx.get(checkoutRef);
+      if(!fresh.exists)throw new Error('Pedido de checkout não encontrado durante o processamento.');
+      const c={id:fresh.id, ...fresh.data(), orderNsu:fresh.id};
+      if(c.statusAplicacao === 'aplicado') return;
+
+      // Cada operação lê todos os documentos necessários antes de iniciar qualquer gravação.
+      if(c.tipo === 'entrada_conta_aluno') operationResult=await applyAccountPaymentTx(tx, db, c, paymentData);
+      if(c.tipo === 'pedido_cantina') operationResult=await applyCantinaOrderTx(tx,db,c,paymentData);
+      if(c.tipo === 'pedido_farda') operationResult=await applyUniformOrderTx(tx,db,c,paymentData);
+
+      const payRef=db.collection('pagamentos').doc(orderNsu),now=nowIso();
+      tx.set(payRef, {
+        id: orderNsu,
+        orderNsu,
+        pedidoId:c.pedidoId||null,
+        alunoId: c.alunoId || null,
+        alunoNome: c.alunoNome || null,
+        valorBrutoCentavos: c.totalCentavos,
+        pedidoTotalCentavos:c.pedidoTotalCentavos||0,
+        formaPagamento: 'checkout_infinitepay',
+        status: 'confirmado',
+        origem: 'checkout_infinitepay',
+        tipo: c.tipo,
+        ...evidence,
+        paidAmountCentavos: evidence.paidAmountCentavos || cents(c.totalCentavos),
+        amountCentavos: evidence.amountCentavos || cents(c.totalCentavos),
+        dataChave: dateKey(),
+        criadoEm: c.pagamentoConfirmadoEm || now,
+        confirmadoEm: now,
+        payloadInfinitePay: paymentData
+      }, { merge:true });
+      tx.set(checkoutRef, {
+        status:'pago',
+        statusAplicacao:'aplicado',
+        resultadoOperacional:operationResult.status||'confirmado',
+        pagamentoConfirmadoEm:now,
+        ...evidence,
+        paidAmountCentavos: evidence.paidAmountCentavos || cents(c.totalCentavos),
+        amountCentavos: evidence.amountCentavos || cents(c.totalCentavos),
+        ultimoWebhookPayload: paymentData,
+        erroAplicacao:null,
+        atualizadoEm:now
+      }, { merge:true });
+    });
+  }catch(error){
+    await safeSet(checkoutRef,{
+      ...evidence,
+      status:'pagamento_localizado_aguardando_processamento',
+      statusAplicacao:'erro_processamento',
+      erroAplicacao:compactError(error),
+      ultimoWebhookPayload:paymentData,
+      atualizadoEm:nowIso()
+    });
+    throw error;
+  }
+
   await audit(db, 'checkout_pagamento_confirmado', {
     orderNsu, pagamentoId:orderNsu, pedidoId:checkout.pedidoId||null, tipo:checkout.tipo, alunoId:checkout.alunoId, alunoNome:checkout.alunoNome,
     valorCentavos:checkout.totalCentavos,
@@ -812,9 +896,9 @@ async function registerInPersonOperation(db,body={}){
     if(salgadoQty>0){const stockRef=db.collection('disponibilidade_salgados').doc(dateKey()),stockSnap=await tx.get(stockRef),stock=stockSnap.exists?stockSnap.data():{},cfg=await getConfig(db),planned=cents(stock.quantidadePlanejada||cfg.quantidadePadraoSalgados||30),used=dailyUsed(stock);if(used+salgadoQty>planned)throw new Error(`Não há salgados suficientes. Disponíveis: ${Math.max(0,planned-used)}.`);const field=method==='dinheiro'?'vendidoDinheiro':'vendidoAvulso';tx.set(stockRef,{dataChave:dateKey(),quantidadePlanejada:planned,[field]:cents(stock[field])+salgadoQty,atualizadoEm:now},{merge:true});}
     tx.set(accRef,{...splitNet(after),bloqueioSaldoSemanal:after<0?Boolean(freshAcc.bloqueioSaldoSemanal):false,bloqueadoPorLimite:after<0&&cents(freshAcc.limiteFiadoCentavos)>0&&Math.abs(after)>=cents(freshAcc.limiteFiadoCentavos),ultimaRegularizacaoEm:after>=0?now:(freshAcc.ultimaRegularizacaoEm||null),atualizadoEm:now},{merge:true});
     if(applied>0){const pm=db.collection('movimentos_conta').doc();tx.set(pm,{id:pm.id,alunoId:student.id,tipo:'entrada_conta_aluno',subtipo:operation==='adicionar_credito'?'credito_secretaria':'pagamento_venda_secretaria',valorCentavos:applied,valorRecebidoCentavos:received,trocoCentavos:dest==='devolver'?troco:0,creditoTrocoCentavos:dest==='credito'?troco:0,saldoAntesCentavos:before,saldoDepoisCentavos:afterPayment,formaPagamento:method,vendaId:operation==='adicionar_credito'?null:saleRef.id,usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,dataChave:dateKey(),criadoEm:now});}
-    if(operation!=='adicionar_credito'){const purchase=db.collection('movimentos_conta').doc();tx.set(purchase,{id:purchase.id,alunoId:student.id,tipo:'compra',subtipo:'venda_secretaria',valorCentavos:-total,valorCompraCentavos:total,saldoAntesCentavos:afterPayment,saldoDepoisCentavos:after,vendaId:saleRef.id,itens:lines,origem:'secretaria',formaPagamento:method,status:'confirmado',dataChave:dateKey(),criadoEm:now});tx.set(saleRef,{id:saleRef.id,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,origem:'secretaria',operadorId:actor.id,operadorNome:actor.nome,formaPagamento:method,valorBrutoCentavos:total,valorRecebidoCentavos:received,trocoCentavos:dest==='devolver'?troco:0,creditoTrocoCentavos:dest==='credito'?troco:0,valorSaldoUtilizadoCentavos:creditUsed,itens:lines,caixaId:cash?.id||null,dataChave:dateKey(),criadoEm:now,status:'confirmada',schemaVersion:3,versao:'1.5.0-dev4-clean'});}
+    if(operation!=='adicionar_credito'){const purchase=db.collection('movimentos_conta').doc();tx.set(purchase,{id:purchase.id,alunoId:student.id,tipo:'compra',subtipo:'venda_secretaria',valorCentavos:-total,valorCompraCentavos:total,saldoAntesCentavos:afterPayment,saldoDepoisCentavos:after,vendaId:saleRef.id,itens:lines,origem:'secretaria',formaPagamento:method,status:'confirmado',dataChave:dateKey(),criadoEm:now});tx.set(saleRef,{id:saleRef.id,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,origem:'secretaria',operadorId:actor.id,operadorNome:actor.nome,formaPagamento:method,valorBrutoCentavos:total,valorRecebidoCentavos:received,trocoCentavos:dest==='devolver'?troco:0,creditoTrocoCentavos:dest==='credito'?troco:0,valorSaldoUtilizadoCentavos:creditUsed,itens:lines,caixaId:cash?.id||null,dataChave:dateKey(),criadoEm:now,status:'confirmada',schemaVersion:3,versao:'1.5.0-dev4.1-hotfix'});}
     tx.set(payRef,{id:payRef.id,vendaId:operation==='adicionar_credito'?null:saleRef.id,alunoId:student.id,alunoNome:student.nome,valorBrutoCentavos:received,valorAplicadoCentavos:applied,trocoCentavos:dest==='devolver'?troco:0,creditoTrocoCentavos:dest==='credito'?troco:0,formaPagamento:method,status:'confirmado',origem:'secretaria_presencial',usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,dataChave:dateKey(),criadoEm:now});
-    for(const line of lines.filter(x=>x.tipo==='farda')){const fr=db.collection('pedidos_farda').doc();tx.set(fr,{id:fr.id,vendaId:saleRef.id,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,produto:line.nome,tamanho:line.tamanho||'',modelo:line.modelo||'',modeloFardaId:line.modeloFardaId||'camisa_padrao',quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:line.statusAtendimento||'aguardando_producao',criadoPor:actor.id,criadoEm:now,atualizadoEm:now,versao:'1.5.0-dev4-clean'});}
+    for(const line of lines.filter(x=>x.tipo==='farda')){const fr=db.collection('pedidos_farda').doc();tx.set(fr,{id:fr.id,vendaId:saleRef.id,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,produto:line.nome,tamanho:line.tamanho||'',modelo:line.modelo||'',modeloFardaId:line.modeloFardaId||'camisa_padrao',quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:line.statusAtendimento||'aguardando_producao',criadoPor:actor.id,criadoEm:now,atualizadoEm:now,versao:'1.5.0-dev4.1-hotfix'});}
     if(cash){const cm=db.collection('movimentos_caixa').doc();tx.set(cm,{id:cm.id,caixaId:cash.id,tipo:'recebimento_venda',vendaId:operation==='adicionar_credito'?null:saleRef.id,valorCentavos:received,alunoId:student.id,usuarioId:actor.id,usuarioNome:actor.nome,dataChave:dateKey(),criadoEm:now});if(dest==='devolver'&&troco>0){const tm=db.collection('movimentos_caixa').doc();tx.set(tm,{id:tm.id,caixaId:cash.id,tipo:'troco_entregue',vendaId:operation==='adicionar_credito'?null:saleRef.id,valorCentavos:-troco,alunoId:student.id,usuarioId:actor.id,usuarioNome:actor.nome,dataChave:dateKey(),criadoEm:now});}}
   });
   await audit(db,'venda_presencial_aluno',{vendaId:operation==='adicionar_credito'?null:saleRef.id,alunoId:student.id,alunoNome:student.nome,valorCentavos:operation==='adicionar_credito'?received:total,usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,descricaoHumana:operation==='adicionar_credito'?`${actor.nome} adicionou ${brl(received)} à conta de ${student.nome}.`:`${actor.nome} registrou uma venda de ${brl(total)} para ${student.nome}.`});
@@ -830,6 +914,7 @@ module.exports = {
   createCheckoutLink,
   confirmWithInfinitePay,
   applyCheckoutConfirmation,
+  recordInfinitePayEvent,
   audit,
   notify,
   getConfig,

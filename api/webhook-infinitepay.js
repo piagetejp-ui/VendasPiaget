@@ -11,6 +11,6 @@ module.exports = async function handler(req, res){
     return json(res, 200, { success:true, message:null });
   }catch(error){
     console.error('webhook-infinitepay:', error);
-    return json(res, 400, { success:false, message:error.message || 'Erro ao processar webhook.' });
+    return json(res, 500, { success:false, message:error.message || 'Erro ao processar webhook.' });
   }
 };

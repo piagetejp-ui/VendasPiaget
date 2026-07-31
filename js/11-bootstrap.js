@@ -1,8 +1,74 @@
 
-/* Escola Piaget — V1.5.0-dev4-clean
+/* Escola Piaget — V1.5.0-dev4.1.1-hotfix
    Inicialização única. Nenhuma função histórica é redirecionada após o login. */
-const APP_VERSION_CLEAN='1.5.0-dev4-clean';
+const APP_VERSION_CLEAN='1.5.0-dev4.1.1-hotfix';
 let appBootedClean=false;
+
+
+/* Atualização nativa do sistema
+   - consulta version.json sem cache;
+   - recarrega automaticamente quando a tela está ociosa;
+   - preserva operações em preenchimento e mostra um aviso para atualização manual. */
+let versionCheckTimerClean=null;
+let updateDetectedClean=false;
+
+function hasWorkInProgressClean(){
+  try{
+    const modal=document.getElementById('modalBack');
+    if(modal&&modal.classList.contains('open'))return true;
+    const active=document.activeElement;
+    if(active&&['INPUT','TEXTAREA','SELECT'].includes(active.tagName))return true;
+    if(Array.isArray(state?.cart)&&state.cart.length)return true;
+    if(state?.secretariaSale){
+      const sale=state.secretariaSale;
+      if((sale.cart||[]).length||(sale.payments||[]).length)return true;
+    }
+  }catch(e){}
+  return false;
+}
+
+function reloadToPublishedVersionClean(version){
+  if(updateDetectedClean)return;
+  updateDetectedClean=true;
+  try{
+    const url=new URL(location.href);
+    url.searchParams.set('app_version',version);
+    url.searchParams.set('_atualizado',Date.now());
+    location.replace(url.toString());
+  }catch(e){ location.reload(); }
+}
+
+function showUpdateNoticeClean(version){
+  if(document.getElementById('piagetUpdateNotice'))return;
+  const box=document.createElement('div');
+  box.id='piagetUpdateNotice';
+  box.className='piaget-update-notice';
+  box.innerHTML=`<div><strong>Nova versão disponível</strong><span>Conclua o que estiver fazendo e atualize o sistema.</span></div><button type="button">Atualizar agora</button>`;
+  box.querySelector('button').addEventListener('click',()=>reloadToPublishedVersionClean(version));
+  document.body.appendChild(box);
+}
+
+async function checkPublishedVersionClean({forceReload=false}={}){
+  try{
+    const response=await fetch(`/version.json?t=${Date.now()}`,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+    if(!response.ok)return;
+    const published=await response.json();
+    const version=String(published.version||'').trim();
+    if(!version||version===APP_VERSION_CLEAN)return;
+    if(forceReload||!hasWorkInProgressClean())reloadToPublishedVersionClean(version);
+    else showUpdateNoticeClean(version);
+  }catch(e){ console.warn('version-check',e?.message||e); }
+}
+
+function installVersionWatcherClean(){
+  const pill=document.getElementById('appVersionPill');
+  if(pill)pill.textContent=`v${APP_VERSION_CLEAN}`;
+  checkPublishedVersionClean({forceReload:true});
+  window.addEventListener('focus',()=>checkPublishedVersionClean());
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkPublishedVersionClean();});
+  clearInterval(versionCheckTimerClean);
+  versionCheckTimerClean=setInterval(()=>checkPublishedVersionClean(),60000);
+}
 
 async function renderParentFromQueryClean(){
   const qs=new URLSearchParams(location.search);
@@ -30,7 +96,7 @@ function installRuntimeGuardClean(){
 }
 
 async function startApplicationClean(){
-  if(appBootedClean)return;appBootedClean=true;installRuntimeGuardClean();
+  if(appBootedClean)return;appBootedClean=true;installRuntimeGuardClean();installVersionWatcherClean();
   try{applyBrandingV122?.();ensureMobileMenuV151?.();}catch(e){console.warn('branding',e)}
   await boot();
   // boot pode ter aberto redefinição de senha, usuário interno ou tela de implantação.

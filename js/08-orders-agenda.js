@@ -1,7 +1,7 @@
 
 (()=>{
 'use strict';
-const V150_VERSION='1.5.0-dev4-clean';
+const V150_VERSION='1.5.0-dev4.1-hotfix';
 const V150_FINAL_STATUSES=['entregue','aluno_ausente','nao_entregue','cancelado'];
 state.v150AgendaDate=state.v150AgendaDate||dateKey();
 state.v150AgendaTurn=state.v150AgendaTurn||'todos';
@@ -76,5 +76,5 @@ async function syncOrderStatusV150(pedidoId){if(!pedidoId)return;let rows=[];try
 async function closeCantinaDayV150(){const day=state.v150AgendaDate||dateKey(),data=await getAgendaDataV150(day),pending=data.rows.filter(x=>!V150_FINAL_STATUSES.includes(x.status));if(pending.length)return alert(`Ainda existem ${pending.length} pedido(s) sem situação final nesta data.`);const actor=state.user||{};await db.collection('fechamentos_cantina').doc(day).set({dataChave:day,status:'encerrado',encerradoPorId:actor.id||null,encerradoPorNome:actor.nome||'Operador da cantina',encerradoEm:nowIso(),atualizadoEm:nowIso()},{merge:true});await audit('encerramento_cantina',{dataChave:day,usuarioId:actor.id,usuarioNome:actor.nome});toast('Atendimento da data encerrado.')}
 window.closeCantinaDayV150=closeCantinaDayV150;
 
-/* atualização de versão herdada removida pela V1.5.0-dev4-clean */
+/* atualização de versão herdada removida pela V1.5.0-dev4.1-hotfix */
 })();

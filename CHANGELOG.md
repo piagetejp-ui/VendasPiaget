@@ -1,26 +1,18 @@
-# Changelog — V1.5.0-dev4-clean
+# Changelog — 1.5.0-dev4.1.1-hotfix
 
-## Conta e compras
-- Saldo positivo passou a ser opcional, desativado por padrão.
-- Resumo de compra mostra saldo usado, regularização obrigatória, pagamento externo e saldo final.
-- Corrigido cálculo presencial quando o aluno possui saldo negativo.
+## Mantido
 
-## Mobile
-- Botão de menu interno passou a existir diretamente no HTML.
-- Menu lateral restaurado para Cantina, Secretaria, Gestão e Administração.
-- Estado aberto/fechado e acessibilidade do botão foram ajustados.
+- Correção financeira do pedido de fardamento.
+- Recuperação idempotente de pagamento já realizado.
+- Correção do logout.
+- Atualização de status e comprovantes.
 
-## Checkout
-- Adicionado identificador idempotente por tentativa.
-- Múltiplos cliques ou repetição da mesma tentativa reutilizam o link existente.
-- Novo status `preparando_link`.
-- `aguardando_pagamento` somente após a InfinitePay devolver URL.
-- Tempos de preparação, persistência e comunicação externa são registrados.
-- Chamada externa possui timeout controlado de 15 segundos.
-- Corrigido vínculo do checkout de farda com `pedidos_farda`.
+## Novo
 
-## Portal do responsável
-- Nova área Pagamentos pendentes.
-- Links válidos podem ser retomados.
-- Pedidos de cantina expirados orientam refazer a programação.
-- Contagem regressiva da reserva de 5 minutos.
+- Cache busting em todos os módulos locais com `?v=1.5.0-dev4.1.1-hotfix`.
+- `version.json` como fonte oficial da versão publicada.
+- `vercel.json` com páginas e arquivo de versão sem cache.
+- Verificação automática ao abrir, focar ou voltar para a aba.
+- Recarregamento automático quando o sistema está ocioso.
+- Aviso de atualização quando existe operação em preenchimento.
+- Identificação visual da versão carregada.

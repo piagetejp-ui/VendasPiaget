@@ -407,3 +407,18 @@ async function openResponsibleAccessManagerV130(alunoId){
 window.openResponsibleAccessManagerV130=openResponsibleAccessManagerV130;
 
 /* atualização de versão herdada removida pela V1.5.0-dev2 */
+
+
+/* V1.5.0-dev4.1-hotfix — logout canônico do botão superior. */
+async function logoutProfile(){
+  try{closeMobileMenuV151?.()}catch(e){}
+  try{if(state.user?.authMode==='firebase'||authObjV130()?.currentUser)await authObjV130()?.signOut()}catch(e){console.warn('logout Firebase',e)}
+  state.user=null;state.parentStudent=null;state.parentChallenge=null;state.selectedStudent=null;
+  try{localStorage.removeItem('vp_profile');localStorage.removeItem('vp_parent_student');localStorage.removeItem('vp_parent_session');sessionStorage.removeItem('vp_parent_lock')}catch(e){}
+  const pill=$('#userPill'),button=$('#switchUserBtn'),menu=$('#v151MenuBtn');
+  pill?.classList.add('hidden');button?.classList.add('hidden');menu?.classList.add('hidden');
+  if(button)button.textContent='Trocar acesso';
+  try{history.replaceState({},'',location.pathname)}catch(e){}
+  renderAccessLandingV130();show('roleScreen');
+}
+window.logoutProfile=logoutProfile;
