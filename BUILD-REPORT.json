@@ -1,0 +1,23 @@
+{
+  "version": "1.5.0-dev3-clean",
+  "index_bytes_before": 724338,
+  "index_bytes_after": 5090,
+  "js_files": {
+    "01-core.js": 174691,
+    "02-operations.js": 92775,
+    "03-cash.js": 61156,
+    "04-brand.js": 8099,
+    "05-auth.js": 44079,
+    "06-notifications-navigation.js": 31823,
+    "07-account-checkout.js": 54687,
+    "08-orders-agenda.js": 27964,
+    "09-portal-sales.js": 58874,
+    "11-bootstrap.js": 2398
+  },
+  "architecture_checks": {
+    "canonical_parent_portal": true,
+    "single_bootstrap_listener": true,
+    "single_router": true,
+    "buyer_data_priority_corrected": true
+  }
+}
