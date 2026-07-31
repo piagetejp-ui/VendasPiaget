@@ -1,6 +1,6 @@
 {
   "name": "vendas-piaget-checkout",
-  "version": "1.5.0-dev3-clean",
+  "version": "1.5.0-dev4-clean",
   "private": true,
   "engines": {
     "node": "20.x"

@@ -1,7 +1,7 @@
 
-/* Escola Piaget — V1.5.0-dev3-clean
+/* Escola Piaget — V1.5.0-dev4-clean
    Inicialização única. Nenhuma função histórica é redirecionada após o login. */
-const APP_VERSION_CLEAN='1.5.0-dev3-clean';
+const APP_VERSION_CLEAN='1.5.0-dev4-clean';
 let appBootedClean=false;
 
 async function renderParentFromQueryClean(){

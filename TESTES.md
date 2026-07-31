@@ -1,39 +1,14 @@
-# Roteiro de validação — V1.5.0-dev3-clean
+# Roteiro de testes — V1.5.0-dev4-clean
 
-## 1. Portal do responsável
-
-1. Entrar com matrícula e senha.
-2. Confirmar que aparece a central compacta com **Pedido da cantina**, **Comprar fardamento**, **Meus pedidos**, **Movimentações**, **Dados do comprador**, **Autorizações e limite** e **Senha de acesso**.
-3. Sair, entrar por primeiro acesso em outro aluno e confirmar a mesma central.
-4. Recarregar a página com a sessão salva e confirmar a mesma central.
-5. Voltar de um checkout e confirmar a mesma central.
-
-## 2. Pedidos
-
-1. Criar pedido semanal.
-2. Abrir Meus pedidos.
-3. Abrir o pedido principal e verificar os registros diários.
-4. Marcar uma data como entregue e outra como ausência na Cantina.
-5. Confirmar os estados e o crédito devolvido no portal.
-
-## 3. Secretaria
-
-1. Abrir **Vendas** e localizar **+ Nova venda**.
-2. Selecionar aluno e conferir saldo/limite.
-3. Registrar pagamento exato.
-4. Registrar dinheiro com troco devolvido.
-5. Repetir deixando o troco como crédito.
-6. Programar lanches e comprar farda.
-
-## 4. InfinitePay
-
-1. Salvar nome, telefone e e-mail em Dados do comprador.
-2. Gerar checkout e conferir os três dados.
-3. Concluir pagamento e voltar pela `obrigado.html`.
-
-## 5. Mobile
-
-1. Abrir o portal em celular.
-2. Confirmar ausência da barra horizontal inferior.
-3. Entrar como equipe e abrir o menu lateral pelo botão no cabeçalho.
-4. Verificar modais em tela cheia e área segura inferior.
+1. Entrar como Ruan em um celular e abrir Menu, Atendimento, Agenda, Caixa e Consulta.
+2. Comprar farda com crédito disponível e a opção de usar saldo desativada: o saldo anterior deve permanecer.
+3. Repetir ativando o saldo: apenas a diferença deve ir para a InfinitePay.
+4. Fazer pedido semanal de cantina com saldo desativado e ativado.
+5. Na secretaria, conferir que Nova venda inicia com uso do saldo desativado.
+6. Testar aluno com saldo negativo: o pagamento mínimo deve incluir dívida e compra.
+7. Durante uma geração lenta, clicar apenas uma vez; atualizar o portal e abrir Pagamentos pendentes.
+8. Confirmar que um checkout com URL tem botão Continuar pagamento.
+9. Confirmar que `preparando_link` não oferece link inexistente.
+10. Confirmar que pedido de cantina expirado não oferece retomada e permite refazer o pedido.
+11. Validar nome, telefone e e-mail preenchidos no checkout InfinitePay.
+12. Confirmar webhook, obrigado.html, comprovante e saldo após pagamento.

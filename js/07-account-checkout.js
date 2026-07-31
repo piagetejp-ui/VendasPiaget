@@ -18,10 +18,10 @@ function canStaffCheckoutV141(){return state.user&&['secretaria','gestao','admin
 function canStaffManageV141(){return state.user&&['secretaria','gestao','admin'].includes(state.user.perfil);}
 function actorV141(){return state.user?{id:state.user.id,nome:state.user.nome,perfil:state.user.perfil}:{id:'portal_responsavel',nome:state.parentStudent?.responsavelFinanceiro||'Responsável',perfil:'responsavel'};}
 function paymentMethodLabelV141(m){const map={dinheiro:'Dinheiro',pix_manual:'Pix manual',pix_banco:'Pix banco',pix_rede:'Pix Rede / Laranjinha',cartao_rede:'Cartão Rede / Laranjinha',maquininha:'Maquininha',checkout_infinitepay:'Checkout InfinitePay'};return map[m]||m||'-';}
-function paymentStatusLabelV141(s){const map={aguardando_pagamento:'Aguardando pagamento',pago:'Pago',erro_gerar_link:'Erro ao gerar link',erro_sem_url:'Erro sem URL',cancelado:'Cancelado'};return map[s]||s||'-';}
+function paymentStatusLabelV141(s){const map={preparando_link:'Preparando link',aguardando_pagamento:'Aguardando pagamento',erro_timeout:'Tempo excedido',pago:'Pago',erro_gerar_link:'Erro ao gerar link',erro_sem_url:'Erro sem URL',cancelado:'Cancelado'};return map[s]||s||'-';}
 function normalizeCheckoutUrlV141(url){return String(url||'').trim();}
 async function getSavedBuyerV141(alunoId){try{const s=await db.collection('dados_pagamento_responsavel').doc(alunoId).get();return s.exists?(s.data().customer||{}):{}}catch(e){return {}}}
-async function pendingCheckoutsV141(alunoId){try{const snap=await db.collection(CHECKOUT_COLLECTION_V141).where('alunoId','==',alunoId).get();return snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>['aguardando_pagamento','erro_gerar_link','erro_sem_url'].includes(x.status||'aguardando_pagamento')).sort((a,b)=>String(b.criadoEm).localeCompare(String(a.criadoEm))).slice(0,10)}catch(e){console.warn('pendingCheckoutsV141',e);return []}}
+async function pendingCheckoutsV141(alunoId){try{const snap=await db.collection(CHECKOUT_COLLECTION_V141).where('alunoId','==',alunoId).get();return snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>['preparando_link','aguardando_pagamento','erro_timeout','erro_gerar_link','erro_sem_url'].includes(x.status||'aguardando_pagamento')).sort((a,b)=>String(b.criadoEm).localeCompare(String(a.criadoEm))).slice(0,10)}catch(e){console.warn('pendingCheckoutsV141',e);return []}}
 async function recentCheckoutsV141(limit=40){try{const snap=await db.collection(CHECKOUT_COLLECTION_V141).get();return snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.criadoEm).localeCompare(String(a.criadoEm))).slice(0,limit)}catch(e){console.warn('recentCheckoutsV141',e);return []}}
 async function ensureAccountSyncV141(alunoId){const ref=db.collection('contas_alunos').doc(alunoId),snap=await ref.get();const acc=snap.exists?snap.data():{alunoId,saldoCreditoCentavos:0,dividaCentavos:0,limiteFiadoCentavos:cfgV141().limiteMaximoFiadoCentavos};const net=accountNetV141(acc);await ref.set({...splitNetV141(net),limiteFiadoCentavos:centsV141(acc.limiteFiadoCentavos||cfgV141().limiteMaximoFiadoCentavos),atualizadoEm:nowIso()},{merge:true});return {...acc,...splitNetV141(net)};}
 window.accountNetV141=accountNetV141;
@@ -59,15 +59,17 @@ async function confirmAccountCheckoutV141(alunoId,context='staff'){
   const amount=parseBRL($('#v141PayAmount').value),net=accountNetV141(acc),min=net<0?Math.abs(net):cfgV141().valorMinimoCheckoutPositivoCentavos;
   if(amount<min)return alert(net<0?`O valor mínimo para regularizar este saldo é ${fmt(min)}.`:`O valor mínimo para adicionar crédito é ${fmt(min)}.`);
   const pending=await pendingCheckoutsV141(alunoId);
-  if(pending.length&&!confirm('Já existe pagamento pendente para este aluno. Deseja gerar outro mesmo assim?'))return;
-  const actor=actorV141(),btn=document.querySelector('#modalBody .btn.btn-green');if(btn){btn.disabled=true;btn.textContent='Gerando link...'}
+  const resumable=pending.filter(x=>x.checkoutUrl&&['preparando_link','aguardando_pagamento'].includes(x.status));
+  if(resumable.length&&!confirm('Já existe pagamento pendente para este aluno. Você pode retomá-lo em Pagamentos pendentes. Deseja gerar outra tentativa mesmo assim?'))return;
+  const actor=actorV141(),btn=document.querySelector('#modalBody .btn.btn-green'),host=$('#v141CheckoutResult');
   try{
-    const resp=await fetch('/api/criar-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tipo:'entrada_conta_aluno',alunoId,valorCentavos:amount,comprador:{nome:$('#v141BuyerName').value,telefone:$('#v141BuyerPhone').value,email:$('#v141BuyerEmail').value},salvarComprador:$('#v141SaveBuyer').checked,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil})});
-    const data=await resp.json().catch(()=>({}));if(!resp.ok)throw new Error(data.error||'Não foi possível gerar o checkout.');
+    const data=await requestCheckoutV154({tipo:'entrada_conta_aluno',alunoId,valorCentavos:amount,comprador:{nome:$('#v141BuyerName').value,telefone:$('#v141BuyerPhone').value,email:$('#v141BuyerEmail').value},salvarComprador:$('#v141SaveBuyer').checked,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil},{button:btn,statusHost:host});
+    if(data.preparando)return;
     const url=normalizeCheckoutUrlV141(data.checkout_url);
+    if(!url)throw new Error('O pagamento foi registrado, mas o link ainda não está disponível. Consulte Pagamentos pendentes.');
     if(context==='responsavel'){location.href=url;return;}
-    $('#v141CheckoutResult').innerHTML=`<div class="v141-payment-link"><strong>Link gerado:</strong><br>${esc(url)}<div class="actions" style="margin-top:8px"><button class="btn btn-light" onclick="navigator.clipboard.writeText('${esc(url)}');toast('Link copiado.')">Copiar link</button><button class="btn btn-primary" onclick="window.open('${esc(url)}','_blank')">Abrir checkout</button></div><div class="v141-mini">NSU: ${esc(data.order_nsu||'')}</div></div>`;toast('Link de pagamento gerado.');
-  }catch(e){alert(e.message)}finally{if(btn){btn.disabled=false;btn.textContent='Gerar pagamento InfinitePay'}}
+    host.innerHTML=`<div class="v141-payment-link"><strong>Link gerado:</strong><br>${esc(url)}<div class="actions" style="margin-top:8px"><button class="btn btn-light" onclick="navigator.clipboard.writeText('${esc(url)}');toast('Link copiado.')">Copiar link</button><button class="btn btn-primary" onclick="window.open('${esc(url)}','_blank')">Abrir checkout</button></div><div class="v141-mini">NSU: ${esc(data.order_nsu||'')}</div></div>`;toast('Link de pagamento gerado.');
+  }catch(e){alert(e.message)}
 }
 window.confirmAccountCheckoutV141=confirmAccountCheckoutV141;
 
@@ -225,13 +227,13 @@ function fmtSignedV143(c){const n=centsV143(c);return (n<0?'-':'')+fmt(Math.abs(
 function isBlockedV143(acc){return Boolean(acc?.bloqueioManual||acc?.bloqueioSaldoSemanal||acc?.bloqueadoPorLimite);}
 function blockedReasonV143(acc){if(acc?.bloqueioManual)return 'Bloqueio manual da secretaria/gestão';if(acc?.bloqueioSaldoSemanal)return 'Bloqueio semanal por saldo em aberto';if(acc?.bloqueadoPorLimite)return 'Limite de saldo em aberto atingido';return 'Conta liberada';}
 function paymentMethodLabelV143(m){const map={dinheiro:'Dinheiro',pix_manual:'Pix manual',pix_banco:'Pix banco',pix_rede:'Pix Rede / Laranjinha',cartao_rede:'Cartão Rede / Laranjinha',maquininha:'Maquininha',checkout_infinitepay:'Checkout InfinitePay',cantina:'Cantina',secretaria_presencial:'Secretaria presencial',checkout:'Checkout'};return map[m]||m||'-';}
-function paymentStatusLabelV143(s){const map={aguardando_pagamento:'Aguardando pagamento',pago:'Pago',confirmado:'Confirmado',erro_gerar_link:'Erro ao gerar link',erro_sem_url:'Erro sem URL',cancelado:'Cancelado',expirado:'Expirado'};return map[s]||s||'-';}
+function paymentStatusLabelV143(s){const map={preparando_link:'Preparando link',aguardando_pagamento:'Aguardando pagamento',erro_timeout:'Tempo excedido',pago:'Pago',confirmado:'Confirmado',erro_gerar_link:'Erro ao gerar link',erro_sem_url:'Erro sem URL',cancelado:'Cancelado',expirado:'Expirado'};return map[s]||s||'-';}
 function movementTypeLabelV143(m={}){const key=String(m.subtipo||m.tipo||'').toLowerCase();const map={pagamento_checkout_infinitepay:'Crédito via InfinitePay',entrada_conta_aluno:'Entrada na conta do aluno',pagamento_presencial:'Pagamento presencial',consumo_cantina:'Consumo na cantina',consumo:'Consumo na cantina',venda_conta:'Compra lançada na conta',compra_farda:'Compra de farda',ajuste_manual:'Ajuste manual',estorno:'Estorno',credito_convertido:'Crédito convertido'};return map[key]||String(m.subtipo||m.tipo||'Lançamento').replace(/_/g,' ');}
 function movementValueV143(m={}){const v=centsV143(m.valorCentavos);if(['consumo','venda_conta','compra_farda'].includes(m.tipo)||m.subtipo==='consumo'||m.subtipo==='consumo_cantina')return -Math.abs(v);return v;}
 function movementDetailsV143(m={}){if(m.observacao)return esc(m.observacao);if(m.orderNsu)return `NSU: ${esc(m.orderNsu)}`;if(m.saldoAntesCentavos!==undefined)return `Saldo: ${fmtSignedV143(m.saldoAntesCentavos)} → ${fmtSignedV143(m.saldoDepoisCentavos)}`;if(Array.isArray(m.itens)&&m.itens.length)return m.itens.map(x=>`${x.quantidade||1}× ${esc(x.nome||x.descricao||'item')}`).join(', ');return '-';}
 function balanceSummaryHtmlV143(acc){const net=netV143(acc),open=Math.max(0,-net),credit=Math.max(0,net);return `<div class="v141-balance-box"><div class="v141-balance-card"><small>Saldo da conta</small><strong>${fmtSignedV143(net)}</strong><div class="v141-mini">positivo = crédito · negativo = saldo em aberto</div></div><div class="v141-balance-card"><small>Saldo em aberto</small><strong>${fmt(open)}</strong><div class="v141-mini">valor mínimo para regularizar quando negativo</div></div><div class="v141-balance-card"><small>Crédito disponível</small><strong>${fmt(credit)}</strong><div class="v141-mini">usado em novas compras</div></div></div>`;}
 function accountStatusHtmlV143(acc){const net=netV143(acc),blocked=isBlockedV143(acc);if(blocked)return `<div class="v141-status blocked"><strong>Conta bloqueada.</strong><br>${esc(blockedReasonV143(acc))}. ${net<0?`Para desbloquear, regularize pelo menos ${fmt(Math.abs(net))}.`:'A conta será liberada ao regularizar a pendência.'}</div>`;if(net<0)return `<div class="v141-status open"><strong>Saldo em aberto.</strong><br>A conta ainda pode operar dentro do limite definido, mas será bloqueada no fechamento semanal de sexta-feira se continuar negativa.</div>`;return `<div class="v141-status"><strong>Conta liberada.</strong><br>Saldo regular para consumo e novos pedidos.</div>`;}
-async function pendingCheckoutsV143(alunoId){try{const snap=await db.collection(CHECKOUT_COLLECTION_V143).where('alunoId','==',alunoId).get();return snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>['aguardando_pagamento','erro_gerar_link','erro_sem_url'].includes(x.status||'aguardando_pagamento')).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||''))).slice(0,10);}catch(e){console.warn('pendingCheckoutsV143',e);return [];}}
+async function pendingCheckoutsV143(alunoId){try{const snap=await db.collection(CHECKOUT_COLLECTION_V143).where('alunoId','==',alunoId).get();return snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>['preparando_link','aguardando_pagamento','erro_timeout','erro_gerar_link','erro_sem_url'].includes(x.status||'aguardando_pagamento')).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||''))).slice(0,10);}catch(e){console.warn('pendingCheckoutsV143',e);return [];}}
 async function recentCheckoutsV143(limit=40){try{const snap=await db.collection(CHECKOUT_COLLECTION_V143).get();return snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||''))).slice(0,limit);}catch(e){console.warn('recentCheckoutsV143',e);return [];}}
 async function getSavedBuyerV143(alunoId){try{const s=await db.collection('dados_pagamento_responsavel').doc(alunoId).get();return s.exists?(s.data().customer||{}):{};}catch(e){return {};}}
 function canStaffManageV143(){return state.user&&['secretaria','gestao','admin','administracao'].includes(state.user.perfil);}
@@ -268,3 +270,49 @@ window.saveParentLimit=saveParentLimit=async function(){const max=cfgV143().limi
 window.parentToggleAuthorization=parentToggleAuthorization=async function(val){const max=cfgV143().limiteMaximoFiadoCentavos;const typed=Math.round(Number(($('#parentLimit')?.value||String(max/100)).replace?.(',','.')||max/100)*100);const limit=val?Math.max(0,Math.min(max,typed)):centsV143((await getAccount(state.parentStudent.id)).limiteFiadoCentavos||0);await db.collection('contas_alunos').doc(state.parentStudent.id).set({autorizadoSemSaldo:val,limiteFiadoCentavos:limit,atualizadoEm:nowIso()},{merge:true});await audit('autorizacao_responsavel',{alunoId:state.parentStudent.id,autorizado:val,limiteCentavos:limit,versao:'v1.4.3'}).catch(()=>{});renderParentPortal();};
 /* atualização de versão herdada removida pela V1.5.0-dev2 */
 })();
+
+
+/* V1.5.0-dev4-clean — tentativa idempotente e feedback de checkout */
+function stableCheckoutStringV154(value){
+  if(Array.isArray(value))return `[${value.map(stableCheckoutStringV154).join(',')}]`;
+  if(value&&typeof value==='object')return `{${Object.keys(value).sort().map(k=>`${JSON.stringify(k)}:${stableCheckoutStringV154(value[k])}`).join(',')}}`;
+  return JSON.stringify(value);
+}
+function checkoutHashV154(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
+function newAttemptIdV154(){try{return crypto.randomUUID()}catch(e){return `piaget-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,10)}`}}
+function checkoutAttemptV154(payload){
+  const fingerprint=checkoutHashV154(stableCheckoutStringV154({...payload,idTentativa:undefined}));
+  const key=`vp_checkout_attempt_${fingerprint}`;let saved=null;
+  try{saved=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}
+  if(!saved||!saved.id||Date.now()-Number(saved.createdAt||0)>15*60*1000){saved={id:newAttemptIdV154(),createdAt:Date.now()};try{localStorage.setItem(key,JSON.stringify(saved))}catch(e){}}
+  return {id:saved.id,key,fingerprint};
+}
+function clearCheckoutAttemptV154(attempt){if(!attempt)return;try{localStorage.removeItem(attempt.key)}catch(e){}}
+async function requestCheckoutV154(payload,{button=null,statusHost=null}={}){
+  const attempt=checkoutAttemptV154(payload);payload={...payload,idTentativa:attempt.id};
+  const original=button?.textContent||'';let phaseTimer=null,controller=new AbortController(),timeout=null;
+  if(button){button.disabled=true;button.textContent='Validando pedido...';phaseTimer=setTimeout(()=>{if(button)button.textContent='Abrindo InfinitePay...'},2200)}
+  if(statusHost)statusHost.innerHTML='<div class="v151-inline-loader">Preparando o pagamento...</div>';
+  try{
+    timeout=setTimeout(()=>controller.abort(),25000);
+    const response=await fetch('/api/criar-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
+    const data=await response.json().catch(()=>({}));
+    if(data.preparando){
+      if(statusHost)statusHost.innerHTML='<div class="alert warn"><strong>O link ainda está sendo preparado.</strong><br>Você pode fechar esta tela e acompanhar em Pagamentos pendentes.</div>';
+      return data;
+    }
+    if(!response.ok){clearCheckoutAttemptV154(attempt);throw new Error(data.error||'Não foi possível gerar o checkout.')}
+    if(data.sem_checkout)clearCheckoutAttemptV154(attempt);
+    return data;
+  }catch(error){
+    if(error?.name==='AbortError'){
+      if(statusHost)statusHost.innerHTML='<div class="alert warn"><strong>A geração está demorando mais que o esperado.</strong><br>Não clique novamente. Consulte Pagamentos pendentes em alguns instantes.</div>';
+      const e=new Error('O link ainda pode estar sendo preparado. Consulte Pagamentos pendentes antes de tentar novamente.');e.checkoutPending=true;throw e;
+    }
+    throw error;
+  }finally{
+    clearTimeout(timeout);clearTimeout(phaseTimer);
+    if(button){button.disabled=false;button.textContent=original||'Continuar'}
+  }
+}
+window.requestCheckoutV154=requestCheckoutV154;

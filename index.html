@@ -17,11 +17,11 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 
-<link href="/css/app.css" rel="stylesheet"/><meta content="1.5.0-dev3-clean" name="application-version"/></head>
+<link href="/css/app.css" rel="stylesheet"/><meta content="1.5.0-dev4-clean" name="application-version"/></head>
 <body>
 <header class="topbar">
 <div class="brand"><div class="brand-logo">EP</div><div><h1>Vendas Piaget</h1><small>Cantina, secretaria e portal do responsável</small></div></div>
-<div class="top-actions"><span class="pill" id="connectionPill">Conectando...</span><span class="pill hidden" id="userPill"></span><button class="btn btn-orange hidden" id="switchUserBtn" onclick="logoutProfile()">Trocar acesso</button></div>
+<div class="top-actions"><button aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu" class="v151-mobile-menu hidden" id="v151MenuBtn" onclick="toggleMobileMenuV151()" type="button">☰</button><span class="pill" id="connectionPill">Conectando...</span><span class="pill hidden" id="userPill"></span><button class="btn btn-orange hidden" id="switchUserBtn" onclick="logoutProfile()">Trocar acesso</button></div>
 </header>
 <div class="role-screen" id="bootScreen"><div class="setup"><h2>Carregando o sistema</h2><p class="muted" id="bootText">Conectando ao Firestore...</p><div class="progress"><i id="bootProgress"></i></div><div class="alert danger hidden" id="bootError" style="margin-top:14px"></div><button class="btn btn-primary hidden" id="retryBtn" onclick="boot()" style="margin-top:12px">Tentar novamente</button></div></div>
 <div class="role-screen hidden" id="setupScreen"><div class="setup"><div class="accent"></div><h2>Inicializar a base real</h2><p>O Firestore está vazio. Este botão importará os 217 alunos reais enviados, turmas, produtos, preços, contas zeradas, usuários provisórios e configurações da escola. Nenhum dado existente será sobrescrito.</p><div class="alert warn">Esta etapa exige regras temporárias de leitura e escrita no Firestore enquanto a autenticação ainda não foi ativada.</div><button class="btn btn-primary" onclick="seedDatabase()" style="margin-top:14px">Importar base real</button><p class="muted" id="seedStatus"></p></div></div>
@@ -34,7 +34,7 @@
 </div></div></div>
 <div class="hidden" id="parentScreen"></div>
 <div class="shell hidden" id="appShell"><aside class="sidebar" id="sidebar"></aside><main class="main" id="mainContent"></main></div>
-<div class="modal-back" id="modalBack"><div class="modal"><div class="modal-head"><strong id="modalTitle">Detalhes</strong><button class="x" onclick="closeModal()">×</button></div><div class="modal-body" id="modalBody"></div></div></div>
+<div class="v151-menu-overlay" id="v151MenuOverlay" onclick="closeMobileMenuV151()"></div><div class="modal-back" id="modalBack"><div class="modal"><div class="modal-head"><strong id="modalTitle">Detalhes</strong><button class="x" onclick="closeModal()">×</button></div><div class="modal-body" id="modalBody"></div></div></div>
 <div class="hidden" id="reportHost"></div><div class="toast" id="toast"></div>
 
 

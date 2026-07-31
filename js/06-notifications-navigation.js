@@ -189,6 +189,7 @@ function buildSidebar(){
   if(p==='gestao'||p==='admin')items=[['dashboard','home','Visão geral'],['notificacoes','bell','Notificações'],['atendimento','food','Cantina'],['alunos','students','Alunos e contas'],['vendas','sales','Vendas'],['cobrancas','billing','Cobranças'],['pedidos','orders','Pedidos'],['caixa','cash','Caixas'],['fardas','uniform','Fardas'],['produtos','products','Produtos e estoque'],['usuarios','settings','Usuários e acessos'],['config','settings','Configurações'],['auditoria','audit','Auditoria']];
   items=items.filter(i=>canPageV130(i[0]));
   $('#sidebar').innerHTML=`<div class="nav-label">Operação</div>${items.map(i=>`<button class="nav-btn" data-page="${i[0]}" onclick="navigate('${i[0]}')">${iconV120(i[1])}<span>${i[2]}</span></button>`).join('')}<div class="nav-foot"><strong>${esc(state.user?.nome||'-')}</strong><br>${roleLabelV130(state.user?.perfil)}${state.user?.authMode==='implantacao'?'<br><span style="color:#ffd8a3">Modo implantação</span>':''}<br><br>${state.user?.authMode==='firebase'?'Login autenticado pelo Firebase.':'Ambiente provisório de implantação.'}</div>`;
+  document.getElementById('v151MenuBtn')?.classList.remove('hidden');
   ensureNotificationBellV134();
 }
 window.buildSidebar=buildSidebar;

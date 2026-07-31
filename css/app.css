@@ -376,6 +376,13 @@ tr:hover td{background:#fafaff}
 @media(max-width:480px){.v151-parent-grid{grid-template-columns:1fr}.v151-catalog{grid-template-columns:1fr}.v151-menu-card{min-height:96px}.v151-sale-steps{gap:4px}.v151-sale-step{padding:6px 8px}.v151-sale-step span{display:none}}
 
 
-/* V1.5.0-dev3-clean: bootstrap e navegação canônicos */
+/* V1.5.0-dev4-clean: bootstrap e navegação canônicos */
 .runtime-error-clean{max-width:760px;margin:20px auto;padding:14px;border:1px solid #fecaca;background:#fff1f1;color:#9d2525;border-radius:14px}
 .parent-access-status-clean{font-size:11px;margin-top:6px;color:var(--muted)}
+
+
+/* V1.5.0-dev4-clean */
+.v154-pending-alert{display:block;width:100%;text-align:left;cursor:pointer;font-family:inherit}
+.v154-payment-card{border:1px solid var(--borda);border-radius:14px;padding:13px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:#fff}
+.v154-countdown{font-size:12px;font-weight:800;color:var(--laranja);margin-top:7px}
+@media(max-width:700px){.v154-payment-card{grid-template-columns:1fr}.v154-payment-card .actions{width:100%}.v154-payment-card .actions .btn{flex:1}}
