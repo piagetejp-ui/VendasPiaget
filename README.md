@@ -1,113 +1,190 @@
-# Escola Piaget — Sistema de Vendas V1.5.0-dev1
+# Escola Piaget — Sistema de Vendas V1.5.0-dev2
 
-Base utilizada: **V1.4.3 — Checkout + Auditoria**.
+Base utilizada: **V1.5.0-dev1**, que por sua vez preserva a V1.4.3 validada para login do responsável, conta corrente do aluno e Checkout InfinitePay.
 
-> **Importante:** este pacote contém apenas os arquivos alterados nesta entrega. Ao aplicar sobre o projeto atual, mantenha a pasta `assets/` e os demais arquivos estáticos já existentes no projeto da V1.4.3.
+Esta entrega é uma versão de desenvolvimento para **deploy de preview**. Não substitua a produção antes de concluir o checklist de testes.
 
-Esta entrega implementa o primeiro ciclo funcional de pedidos antecipados da cantina:
+## Principais alterações
 
-1. o responsável escolhe um dia, uma semana ou um mês;
-2. monta a programação de lanches por data;
-3. o sistema valida e reserva o estoque crítico de salgados por **5 minutos**;
-4. o saldo positivo da conta do aluno é considerado primeiro;
-5. a InfinitePay cobra somente o valor necessário para que pagamento e compra não deixem a conta negativa;
-6. após a confirmação, cada data gera uma obrigação própria na Agenda da Cantina;
-7. o operador registra Entregue, Aluno ausente ou Não entregue;
-8. ausência/não entrega devolve o valor para a conta corrente e libera o salgado daquele dia.
+### Portal do responsável
 
-## Estrutura do pacote
+A página inicial foi reorganizada como uma central compacta, com acessos separados para:
 
-```txt
+- adicionar crédito ou regularizar saldo;
+- fazer pedido da cantina;
+- comprar fardamento;
+- acompanhar pedidos;
+- consultar movimentações;
+- editar dados do comprador;
+- definir autorização e limite.
+
+As informações secundárias passaram para modais, evitando uma página excessivamente longa.
+
+### Pedido principal e entregas diárias
+
+Pedidos avulsos, semanais e mensais aparecem como um pedido principal. O detalhamento mostra cada data gerada e sua situação:
+
+- pendente de entrega;
+- entregue;
+- aluno ausente;
+- não entregue;
+- valor devolvido para a conta.
+
+O resumo calcula quantas entregas foram finalizadas e informa quando o pedido foi concluído com devoluções.
+
+### Fardamento no portal
+
+Foi incluído o fluxo de compra de fardamento pelo responsável:
+
+- modelo;
+- tamanho;
+- variação masculina, feminina ou modelo único;
+- quantidade;
+- uso do saldo positivo;
+- Checkout InfinitePay apenas para o valor necessário;
+- acompanhamento do atendimento pela secretaria.
+
+Quando existe estoque configurado e disponível, o pedido confirmado fica reservado em estoque. Caso contrário, segue como aguardando produção.
+
+### Dados do comprador e InfinitePay
+
+Todos os checkouts passam a combinar:
+
+1. dados informados na operação;
+2. dados do comprador salvos no perfil;
+3. dados básicos do responsável no cadastro do aluno.
+
+Nome, telefone e e-mail são normalizados antes de montar o campo `customer` enviado à InfinitePay.
+
+A confirmação real desses três campos na tela da InfinitePay depende de um teste no ambiente de preview, pois não foi realizado pagamento externo nesta geração.
+
+### Secretaria
+
+A área de vendas agora abre com o botão **+ Nova venda** e utiliza um modal em etapas:
+
+1. aluno;
+2. tipo de operação e itens;
+3. pagamento;
+4. confirmação.
+
+Operações disponíveis:
+
+- venda imediata de cantina;
+- venda de fardamento;
+- programação de lanches por dia, semana ou mês;
+- adição de crédito.
+
+A tela mostra saldo, limite e situação da conta antes da venda. Compras pagas externamente passam pela conta como entrada e saída, mantendo o saldo anterior quando a operação é soma zero.
+
+Em pagamentos com valor maior que a compra, a secretaria escolhe:
+
+- devolver o troco;
+- deixar a diferença como crédito na conta.
+
+Pagamentos em dinheiro exigem caixa da secretaria aberto.
+
+### Produtos e configurações
+
+A gestão de produtos foi dividida em:
+
+- Cantina;
+- Fardas / Fábrica;
+- Combos;
+- Inativos.
+
+Produtos da cantina permitem configurar canais de venda. Modelos de farda permitem editar preços, status e disponibilidade no portal.
+
+As configurações foram reorganizadas em Cantina, Conta Corrente, Fardamento e Checkout.
+
+### Mobile
+
+A barra horizontal inferior foi removida no layout móvel. O menu interno passou a abrir lateralmente pelo botão no cabeçalho, sem disputar espaço com a barra de gestos do celular.
+
+Modais usam a tela inteira no celular e respeitam a área segura inferior.
+
+### Carregamento
+
+Foram removidas várias gravações de versão e inicializações atrasadas herdadas das camadas anteriores. As consultas de pedidos, extrato e dados do comprador agora ocorrem apenas quando o usuário abre a respectiva área.
+
+A página `obrigado.html` encerra a consulta após 8 segundos e informa que o webhook continuará processando a confirmação, evitando loading indefinido.
+
+## Arquivos do pacote
+
+```text
 index.html
 obrigado.html
 package.json
-api/
-  _utils.js
-  criar-checkout.js
-  verificar-pagamento.js
-  webhook-infinitepay.js
+api/_utils.js
+api/criar-checkout.js
+api/verificar-pagamento.js
+api/webhook-infinitepay.js
+api/registrar-operacao-presencial.js
+README.md
+CHANGELOG.md
 ```
 
-## Variáveis de ambiente na Vercel
+A pasta `assets/` não está incluída. Ao aplicar o pacote, mantenha a pasta `assets/` da versão já implantada.
 
-```txt
-INFINITEPAY_HANDLE=piaget
-PUBLIC_BASE_URL=https://vendas-piaget.vercel.app
-FIREBASE_PROJECT_ID=vendaspiaget
-FIREBASE_CLIENT_EMAIL=...
-FIREBASE_PRIVATE_KEY=...
+## Endpoint novo
+
+```text
+POST /api/registrar-operacao-presencial
 ```
 
-## URLs do checkout
+Responsável por registrar operações da secretaria com conta corrente, pagamento, troco, caixa, estoque e pedidos vinculados.
 
-```txt
-Redirect:
-https://vendas-piaget.vercel.app/obrigado.html
+## Checklist de preview
 
-Webhook:
-https://vendas-piaget.vercel.app/api/webhook-infinitepay
-```
+### Portal
 
-## Novas estruturas no Firestore
+1. Entrar como responsável.
+2. Confirmar a nova página compacta.
+3. Salvar nome, telefone e e-mail em Dados do comprador.
+4. Adicionar crédito pela InfinitePay.
+5. Programar lanches de uma semana.
+6. Abrir Meus pedidos e consultar cada dia.
+7. Comprar fardamento.
+8. Testar todos os modais no celular.
 
-### `pedidos`
-Pedido principal da cantina, incluindo modalidade, datas, itens, total, pagamento, reserva e situação operacional.
+### InfinitePay
 
-### `ocorrencias_entrega`
-Uma obrigação de entrega por pedido e por data. É a fonte da Agenda da Cantina.
+1. Verificar se nome, telefone e e-mail aparecem no checkout.
+2. Concluir um pedido da cantina.
+3. Concluir um pedido de fardamento.
+4. Conferir retorno em `obrigado.html`.
+5. Confirmar saldo, pedido e comprovante após webhook.
 
-### `disponibilidade_salgados`
-Mantém capacidade planejada, vendas, consumos, pedidos confirmados e reservas temporárias por data.
+### Secretaria
 
-### `solicitacoes_correcao_pedido`
-Solicitações do operador para corrigir uma obrigação já finalizada.
+1. Abrir o caixa da secretaria.
+2. Fazer venda de R$ 9,00 recebendo R$ 9,00.
+3. Fazer venda de R$ 9,00 recebendo R$ 10,00 e devolver R$ 1,00.
+4. Repetir deixando R$ 1,00 como crédito.
+5. Fazer uma venda sem usar o crédito já existente.
+6. Fazer uma venda usando o crédito existente e pagar a diferença.
+7. Programar lanches semanais com pagamento presencial.
+8. Comprar uma farda e conferir a fila da secretaria.
 
-### `fechamentos_cantina`
-Registro de encerramento operacional de cada data.
+### Cantina
 
-## Conta corrente nos pedidos
+1. Conferir a agenda de uma data futura.
+2. Marcar uma entrega como entregue.
+3. Marcar outra como aluno ausente.
+4. Conferir devolução para a conta e liberação do salgado.
+5. Consultar pendências de dias anteriores.
 
-O pedido passa pela conta corrente do aluno.
+## Validações realizadas na geração
 
-```txt
-saldo final = saldo anterior + pagamento externo - valor dos lanches
-```
+- sintaxe de todos os scripts internos do `index.html`;
+- sintaxe de `obrigado.html`;
+- sintaxe das cinco APIs Node.js;
+- teste em memória de pedido de cantina com saldo negativo;
+- teste em memória de envio combinado dos dados salvos do comprador;
+- teste em memória de pedido de fardamento pago com saldo;
+- teste em memória de reserva de farda em estoque;
+- teste em memória de venda presencial em soma zero;
+- teste em memória de troco devolvido;
+- teste em memória de troco convertido em crédito;
+- teste em memória de programação presencial gerando obrigações diárias.
 
-- saldo positivo pode pagar todo ou parte do pedido;
-- saldo negativo aumenta o valor necessário no checkout;
-- se a diferença for menor que o mínimo operacional, o checkout cobra o mínimo e o excedente permanece como crédito;
-- o pedido online não é confirmado se o resultado deixaria saldo negativo;
-- se o pagamento chegar após a reserva e já não houver estoque, o valor recebido fica na conta do aluno e o pedido vai para revisão.
-
-## Agenda da Cantina
-
-A agenda permite:
-
-- escolher uma data pelo calendário;
-- avançar ou voltar dias;
-- filtrar Todos, Manhã ou Tarde;
-- ver pendências de datas anteriores;
-- registrar Entregue;
-- registrar Aluno ausente;
-- registrar Não entregue com motivo;
-- solicitar correção de uma baixa finalizada;
-- encerrar uma data somente quando não houver pendências.
-
-## Teste recomendado
-
-1. Publicar o pacote na Vercel mantendo as variáveis atuais.
-2. Entrar no portal do responsável.
-3. Abrir **Montar a semana**.
-4. Selecionar um lanche completo em cinco dias.
-5. Revisar o total e continuar.
-6. Conferir a reserva de cinco minutos.
-7. Pagar pela InfinitePay ou testar um pedido integralmente coberto pelo saldo.
-8. Voltar pela `obrigado.html`.
-9. Entrar com o perfil Cantina.
-10. Abrir **Agenda da cantina** e conferir as obrigações por data.
-11. Marcar uma como Entregue e outra como Aluno ausente.
-12. Conferir o crédito da ausência e a disponibilidade diária do salgado.
-
-## Limite desta entrega
-
-Esta versão é a primeira etapa da V1.5.0. A venda presencial completa da secretaria, com pagamento exato, troco devolvido ou troco mantido como crédito, e a reorganização definitiva de Catálogo/Produtos entre Cantina e Fardas permanecem para a próxima etapa.
+Não foram realizados deploy na Vercel, autenticação real, leitura real do Firestore ou pagamento real na InfinitePay.

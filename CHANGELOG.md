@@ -1,47 +1,75 @@
-# Changelog — Sistema de Vendas Escola Piaget
+# Changelog — V1.5.0-dev2
 
-## V1.5.0-dev1 — Pedidos da cantina e agenda operacional
+## Portal do responsável
 
-### Portal do responsável
+- Reformulada a página inicial em formato de central compacta.
+- Adicionados menus para Conta, Cantina, Fardamento, Pedidos, Movimentações, Dados do comprador e Autorizações.
+- Movidos dados secundários para modais.
+- Adicionado detalhamento do pedido principal com entregas diárias.
+- Adicionados status humanizados e devoluções por data.
+- Removidos códigos com underline da apresentação ao responsável.
 
-- Criadas entradas para pedido avulso, programação semanal e programação mensal.
-- Adicionado planejador por data, permitindo alterar produto e quantidade em cada dia.
-- Adicionado resumo de saldo, total dos lanches, pagamento estimado e saldo projetado.
-- Adicionada listagem de pedidos recentes no portal.
+## Fardamento
 
-### Reserva e checkout
+- Adicionada compra de fardamento no portal.
+- Adicionado checkout parcial após uso do saldo positivo.
+- Adicionada confirmação de pedido usando somente saldo.
+- Adicionada reserva de estoque quando a variação está disponível.
+- Adicionado encaminhamento para produção quando não há estoque configurado ou suficiente.
+- Adicionadas notificações para secretaria, gestão e administração.
 
-- Checkout passou a aceitar `pedido_cantina` e o alias legado `pedido`.
-- Reserva temporária de salgados definida em 5 minutos, configurável entre 1 e 10 minutos.
-- Validação de capacidade realizada por data antes de gerar o checkout.
-- Saldo positivo é usado antes do pagamento externo.
-- Saldo negativo é incorporado ao valor necessário para regularizar a conta e pagar o pedido.
-- Pedidos integralmente cobertos pelo saldo são confirmados sem abrir InfinitePay.
-- Pagamento confirmado após expiração tenta revalidar o estoque.
-- Se não houver saldo/estoque no momento da confirmação, o pagamento entra como crédito e o pedido segue para revisão.
+## InfinitePay
 
-### Conta corrente
+- Unificado o preenchimento do comprador em todos os tipos de checkout.
+- Adicionada busca automática dos dados salvos do comprador.
+- Mantido fallback para responsável financeiro e telefone do cadastro do aluno.
+- Incluído e-mail nos pedidos de cantina e fardamento.
 
-- Pagamento do pedido gera movimento positivo na conta.
-- Compra programada gera movimento negativo separado, vinculado ao mesmo pedido.
-- Saldo final é salvo em `saldoContaCentavos`, com compatibilidade para `saldoCreditoCentavos` e `dividaCentavos`.
+## Secretaria
 
-### Agenda da Cantina
+- Criado botão destacado `+ Nova venda`.
+- Criado fluxo em quatro etapas.
+- Adicionada consulta do saldo e limite antes da venda.
+- Adicionada venda imediata de cantina.
+- Adicionada venda de fardamento.
+- Adicionada programação presencial de lanches.
+- Adicionada entrada de crédito.
+- Adicionado uso opcional do crédito existente.
+- Adicionado cálculo de pagamento mínimo e saldo final.
+- Adicionada escolha entre troco entregue e troco como crédito.
+- Adicionado registro de entrada e saída na conta corrente para operações de soma zero.
+- Adicionado endpoint `/api/registrar-operacao-presencial`.
+- Pagamento em dinheiro exige caixa aberto.
 
-- Substituída a visão simples de pedidos do dia por agenda navegável por data.
-- Adicionados filtros Todos, Manhã e Tarde.
-- Adicionado alerta de pendências anteriores.
-- Adicionado resumo de salgados planejados, confirmados e disponíveis.
-- Estados operacionais: Pendente, Entregue, Aluno ausente e Não entregue.
-- Ausência ou não entrega devolve o valor para a conta e libera o salgado.
-- Adicionada solicitação de correção para obrigações já finalizadas.
-- Adicionado encerramento da data, bloqueado enquanto houver pendências.
+## Catálogo e configurações
 
-### Comprovante
+- Separado catálogo em Cantina, Fardas / Fábrica, Combos e Inativos.
+- Adicionada edição de canais de venda dos produtos.
+- Adicionada edição de preços e disponibilidade dos modelos de farda.
+- Reorganizadas configurações por área.
+- Fixada reserva temporária da cantina em cinco minutos.
 
-- `obrigado.html` passou a mostrar o identificador do pedido da cantina e o total dos lanches quando aplicável.
+## Mobile
 
-### Versão
+- Removida barra de navegação horizontal inferior.
+- Adicionado menu lateral pelo cabeçalho.
+- Adicionado overlay e fechamento automático após navegação.
+- Modais passam a ocupar a tela inteira no celular.
+- Adicionado espaçamento para a área segura inferior do aparelho.
 
-- `package.json` atualizado para `1.5.0-dev1`.
-- Auditoria e configuração passam a registrar `1.5.0-dev1`.
+## Desempenho e retorno do checkout
+
+- Removidas gravações atrasadas de versão herdadas de versões anteriores.
+- Consolidadas chamadas de identidade visual.
+- Pedidos, extrato e comprador passam a carregar sob demanda.
+- Adicionado timeout de oito segundos à consulta em `obrigado.html`.
+- Melhorada mensagem quando o webhook continuará processando em segundo plano.
+
+## Backend
+
+- Adicionado tipo `pedido_farda`.
+- Adicionada aplicação transacional de pagamento e compra de farda.
+- Adicionada operação presencial transacional.
+- Adicionado registro de caixa para recebimento e troco.
+- Adicionada programação de cantina presencial com obrigações diárias.
+- Atualizados registros de auditoria para `1.5.0-dev2`.

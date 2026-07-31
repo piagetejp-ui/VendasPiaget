@@ -87,7 +87,10 @@ async function audit(db, action, data={}){
     bloqueio_semanal_saldo:'Bloqueio semanal aplicado',
     pedido_cantina_reservado:'Pedido da cantina reservado',
     pedido_cantina_confirmado:'Pedido da cantina confirmado',
-    pedido_cantina_revisao:'Pedido da cantina enviado para revisão'
+    pedido_cantina_revisao:'Pedido da cantina enviado para revisão',
+    pedido_farda_criado:'Pedido de fardamento criado',
+    pedido_farda_confirmado:'Pedido de fardamento confirmado',
+    venda_presencial_aluno:'Venda presencial registrada'
   };
   await safeAdd(db.collection('historico_auditoria'), {
     acao: action,
@@ -95,9 +98,9 @@ async function audit(db, action, data={}){
     dados: data,
     tituloHumano: titleMap[action] || action,
     descricaoHumana: data.descricaoHumana || data.descricao || '',
-    categoria: action.startsWith('pedido_cantina') ? 'Pedidos da cantina' : 'Pagamentos e conta do aluno',
+    categoria: action.startsWith('pedido_cantina') ? 'Pedidos da cantina' : action.startsWith('pedido_farda') ? 'Pedidos de fardamento' : action==='venda_presencial_aluno' ? 'Vendas da secretaria' : 'Pagamentos e conta do aluno',
     severidade: data.severidade || 'info',
-    icone: data.icone || (action.startsWith('pedido_cantina') ? '🍽️' : '💳'),
+    icone: data.icone || (action.startsWith('pedido_cantina') ? '🍽️' : action.startsWith('pedido_farda') ? '👕' : action==='venda_presencial_aluno' ? '🧾' : '💳'),
     usuarioId: data.usuarioId || data.criadoPorId || 'sistema_checkout',
     usuarioNome: data.usuarioNome || data.criadoPorNome || 'Sistema de pagamento',
     usuarioPerfil: data.usuarioPerfil || data.criadoPorPerfil || 'sistema',
@@ -105,7 +108,7 @@ async function audit(db, action, data={}){
     pagamentoId: data.pagamentoId || data.orderNsu || null,
     pedidoId: data.pedidoId || null,
     criadoEm: now,
-    versao: '1.5.0-dev1'
+    versao: '1.5.0-dev2'
   });
 }
 async function notify(db, payload={}){
@@ -160,6 +163,7 @@ function normalizePaymentType(t){
   const s=String(t||'').trim().toLowerCase();
   if(['entrada_conta_aluno','conta_aluno','adicionar_credito','quitar_divida','regularizar_saldo'].includes(s)) return 'entrada_conta_aluno';
   if(['pedido','pedido_cantina','cantina_pedido','compra_cantina'].includes(s)) return 'pedido_cantina';
+  if(['pedido_farda','farda','compra_farda','fardamento'].includes(s)) return 'pedido_farda';
   if(s==='teste_avulso') return 'teste_avulso';
   return s;
 }
@@ -173,6 +177,56 @@ function buildCustomerFromBody(body={}, student=null){
   if(email) customer.email=email;
   if(phone) customer.phone_number=phone;
   return Object.keys(customer).length ? customer : null;
+}
+
+async function getSavedBuyer(db, alunoId){
+  try{
+    const snap=await db.collection('dados_pagamento_responsavel').doc(alunoId).get();
+    return snap.exists ? (snap.data().customer||{}) : {};
+  }catch(e){ return {}; }
+}
+function mergeCustomer(saved={}, provided=null, student=null){
+  const p=provided||{};
+  const customer={};
+  const name=String(p.name||saved.name||student?.responsavelFinanceiro||'').trim();
+  const email=normalizeEmail(p.email||saved.email||'');
+  const phone=normalizePhone(p.phone_number||p.phone||saved.phone_number||saved.phone||student?.celularResponsavel||'');
+  if(name)customer.name=name;
+  if(email)customer.email=email;
+  if(phone)customer.phone_number=phone;
+  return Object.keys(customer).length?customer:null;
+}
+function uniformStockId(modelId,size,gender=''){
+  const clean=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'')||'unico';
+  return `farda__${clean(modelId)}__${clean(size)}__${clean(gender||'unico')}`;
+}
+async function reserveUniformOrder(db, body, actor, student, customer){
+  const input=body.farda||body.uniforme||body.pedido||{};
+  const modelId=String(input.modeloId||input.modelId||'camisa_padrao').trim();
+  const size=String(input.tamanho||input.size||'').trim().toUpperCase();
+  const gender=String(input.genero||input.modelo||input.gender||'').trim().toLowerCase();
+  const qty=Math.max(1,cents(input.quantidade||input.quantity||1));
+  if(!size)throw Object.assign(new Error('Selecione o tamanho da farda.'),{status:400});
+  const modelSnap=await db.collection('modelos_farda').doc(modelId).get();
+  if(!modelSnap.exists)throw Object.assign(new Error('Modelo de farda não encontrado.'),{status:404});
+  const model={id:modelSnap.id,...modelSnap.data()};
+  if(model.ativo===false||model.portal===false)throw Object.assign(new Error('Este modelo não está disponível para compra online.'),{status:400});
+  const adult=['P','M','G','GG','XGG'].includes(size);
+  const unit=cents(adult?(model.precoAdultoCentavos||4700):(model.precoInfantilCentavos||4200));
+  const total=unit*qty;
+  const acc=await getAccount(db,student.id),saldoAtual=accountNet(acc);
+  const required=Math.max(0,total-saldoAtual);
+  const orderRef=db.collection('pedidos_farda').doc();
+  const now=nowIso();
+  await orderRef.set({
+    id:orderRef.id,tipoPedido:'farda',alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,turno:student.turno||null,matricula:student.matricula||null,
+    responsavelFinanceiro:student.responsavelFinanceiro||null,produto:model.nome||'Camisa de farda',modeloFardaId:model.id,tamanho:size,modelo:adult?(gender||'unissex'):'',quantidade:qty,
+    precoUnitarioCentavos:unit,totalCentavos:total,statusPagamento:required>0?'aguardando_pagamento':'pago_com_saldo',statusAtendimento:'aguardando_pagamento',statusAplicacao:'pendente',
+    saldoNoMomentoCentavos:saldoAtual,valorCheckoutPrevistoCentavos:required,customer:customer||null,origem:actor.perfil==='responsavel'?'portal_responsavel':'operacao_interna',
+    criadoPor:actor.id,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.5.0-dev2'
+  });
+  await audit(db,'pedido_farda_criado',{pedidoId:orderRef.id,alunoId:student.id,alunoNome:student.nome,valorCentavos:total,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,descricaoHumana:`${actor.nome} criou um pedido de fardamento para ${student.nome}.`});
+  return {pedidoId:orderRef.id,totalCentavos:total,checkoutTotal:required,saldoAtual,model,size,gender:adult?(gender||'unissex'):'',qty,unit};
 }
 function isValidDateKey(v){ return /^\d{4}-\d{2}-\d{2}$/.test(String(v||'')); }
 function isActiveReservation(r, now=Date.now()){
@@ -333,7 +387,7 @@ async function reserveCantinaOrder(db, body, actor, student, customer, cfg){
       criadoPorPerfil:actor.perfil,
       criadoEm:now,
       atualizadoEm:now,
-      versao:'1.5.0-dev1'
+      versao:'1.5.0-dev2'
     });
   });
   await audit(db,'pedido_cantina_reservado',{
@@ -380,7 +434,9 @@ async function buildCheckoutOperation(db, body){
   }
   const aluno=await getStudent(db, body.alunoId);
   if(!aluno) throw Object.assign(new Error('Aluno não encontrado para gerar a operação.'),{status:404});
-  const customer=buildCustomerFromBody(body, aluno);
+  const providedCustomer=buildCustomerFromBody(body, aluno);
+  const savedCustomer=await getSavedBuyer(db,aluno.id);
+  const customer=mergeCustomer(savedCustomer,providedCustomer,aluno);
   if(body.salvarComprador && customer){
     await safeSet(db.collection('dados_pagamento_responsavel').doc(aluno.id), {
       alunoId: aluno.id,
@@ -430,6 +486,15 @@ async function buildCheckoutOperation(db, body){
       criadoEm:now
     };
   }
+  if(tipo==='pedido_farda'){
+    const reservation=await reserveUniformOrder(db,body,actor,aluno,customer);
+    const descricao=`Pedido de fardamento - ${aluno.nome}`;
+    return {tipo,actor,totalCentavos:reservation.checkoutTotal,pedidoTotalCentavos:reservation.totalCentavos,minimoCentavos:reservation.checkoutTotal>0?reservation.checkoutTotal:0,descricao,
+      alunoId:aluno.id,alunoNome:aluno.nome,turma:aluno.turma||null,turno:aluno.turno||null,matricula:aluno.matricula||null,responsavelFinanceiro:aluno.responsavelFinanceiro||null,
+      saldoNoMomentoCentavos:reservation.saldoAtual,saldoEmAbertoNoMomentoCentavos:Math.max(0,-reservation.saldoAtual),pedidoId:reservation.pedidoId,
+      itensCheckout:reservation.checkoutTotal>0?[{quantity:1,price:reservation.checkoutTotal,description:descricao}]:[],customer,
+      payload:{pedidoId:reservation.pedidoId,pedidoTotalCentavos:reservation.totalCentavos,tamanho:reservation.size,modelo:reservation.gender,quantidade:reservation.qty},criadoEm:now};
+  }
   if(tipo !== 'entrada_conta_aluno') throw Object.assign(new Error('Tipo de operação não suportado nesta versão.'),{status:400});
   const acc=await getAccount(db, aluno.id);
   const cfg=await getConfig(db);
@@ -457,6 +522,10 @@ async function buildCheckoutOperation(db, body){
   };
 }
 async function createCheckoutLink(db, req, op){
+  if(op.tipo==='pedido_farda' && cents(op.totalCentavos)===0){
+    const result=await confirmUniformOrderWithoutCheckout(db,op.pedidoId,op.actor);
+    return {sem_checkout:true,pedido_confirmado:true,pedido_id:op.pedidoId,total_centavos:0,pedido_total_centavos:op.pedidoTotalCentavos,saldo_depois_centavos:result.saldoDepoisCentavos,tipo:op.tipo};
+  }
   if(op.tipo==='pedido_cantina' && cents(op.totalCentavos)===0){
     try{
       const result=await confirmCantinaOrderWithoutCheckout(db,op.pedidoId,op.actor);
@@ -478,7 +547,7 @@ async function createCheckoutLink(db, req, op){
   }
   const handle=normalizeHandle();
   const baseUrl=getBaseUrl(req);
-  const nsuType=op.tipo==='entrada_conta_aluno'?'CONTA':op.tipo==='pedido_cantina'?'PEDIDO':'TESTE';
+  const nsuType=op.tipo==='entrada_conta_aluno'?'CONTA':op.tipo==='pedido_cantina'?'PEDIDO':op.tipo==='pedido_farda'?'FARDA':'TESTE';
   const orderNsu=makeOrderNsu(nsuType);
   const redirectUrl=`${baseUrl}/obrigado.html`;
   const webhookUrl=`${baseUrl}/api/webhook-infinitepay`;
@@ -518,7 +587,7 @@ async function createCheckoutLink(db, req, op){
     criadoPorPerfil: op.actor.perfil,
     criadoEm: nowIso(),
     atualizadoEm: nowIso(),
-    versao:'1.5.0-dev1'
+    versao:'1.5.0-dev2'
   }, { merge:false });
   if(op.pedidoId){
     await safeSet(db.collection('pedidos').doc(op.pedidoId),{orderNsu,checkoutId:orderNsu,atualizadoEm:nowIso()});
@@ -723,7 +792,7 @@ async function applyCantinaOrderTx(tx,db,checkout,paymentData={}){
       origem:'pedido_antecipado',
       criadoEm:now,
       atualizadoEm:now,
-      versao:'1.5.0-dev1'
+      versao:'1.5.0-dev2'
     },{merge:false});
   }
   tx.set(orderRef,{statusPagamento:'pago',statusPedido:'confirmado',statusAplicacao:'aplicado',valorPagoExternoCentavos:externalPayment,valorDebitadoContaCentavos:orderTotal,valorSaldoAnteriorUtilizadoCentavos:Math.min(Math.max(oldNet,0),orderTotal),saldoAntesCentavos:oldNet,saldoDepoisCentavos:finalNet,pagamentoConfirmadoEm:now,confirmadoEm:now,atualizadoEm:now},{merge:true});
@@ -746,6 +815,31 @@ async function confirmCantinaOrderWithoutCheckout(db,pedidoId,actor={id:'portal_
   }
   return result;
 }
+
+async function applyUniformOrderTx(tx,db,checkout,paymentData={}){
+  const orderRef=db.collection('pedidos_farda').doc(checkout.pedidoId),orderSnap=await tx.get(orderRef);
+  if(!orderSnap.exists)throw new Error('Pedido de fardamento não encontrado.');
+  const order={id:orderSnap.id,...orderSnap.data()};
+  if(order.statusAplicacao==='aplicado')return {status:'confirmado',alreadyApplied:true,saldoDepoisCentavos:order.saldoDepoisCentavos};
+  const accRef=db.collection('contas_alunos').doc(order.alunoId),accSnap=await tx.get(accRef),acc=accSnap.exists?accSnap.data():{};
+  const external=cents(checkout.totalCentavos),total=cents(order.totalCentavos),before=accountNet(acc),afterPayment=before+external,after=afterPayment-total,now=nowIso();
+  if(after<0)throw new Error('O pagamento não é suficiente para concluir o pedido de fardamento.');
+  tx.set(accRef,{...splitNet(after),bloqueioSaldoSemanal:false,bloqueadoPorLimite:false,ultimaRegularizacaoEm:now,atualizadoEm:now},{merge:true});
+  if(external>0){const m=db.collection('movimentos_conta').doc();tx.set(m,{id:m.id,alunoId:order.alunoId,tipo:'entrada_conta_aluno',subtipo:'pagamento_pedido_farda',valorCentavos:external,saldoAntesCentavos:before,saldoDepoisCentavos:afterPayment,formaPagamento:'checkout_infinitepay',orderNsu:checkout.orderNsu||checkout.id,pedidoId:order.id,status:'confirmado',dataChave:dateKey(),criadoEm:now,detalhesPagamento:paymentData});}
+  const purchase=db.collection('movimentos_conta').doc();tx.set(purchase,{id:purchase.id,alunoId:order.alunoId,tipo:'compra',subtipo:'pedido_farda',valorCentavos:-total,valorCompraCentavos:total,saldoAntesCentavos:afterPayment,saldoDepoisCentavos:after,pedidoId:order.id,itens:[{nome:order.produto||'Farda',quantidade:order.quantidade,tamanho:order.tamanho,modelo:order.modelo,precoUnitarioCentavos:order.precoUnitarioCentavos}],origem:'pedido_fardamento',formaPagamento:external>0?'saldo_e_checkout':'saldo_conta',status:'confirmado',dataChave:dateKey(),criadoEm:now});
+  const stockRef=db.collection('estoques').doc(uniformStockId(order.modeloFardaId||'camisa_padrao',order.tamanho,order.modelo||'')),stockSnap=await tx.get(stockRef);let atendimento='aguardando_producao';
+  if(stockSnap.exists){const st=stockSnap.data(),available=Math.max(0,cents(st.quantidadeFisica)-cents(st.quantidadeReservada));if(st.configurado&&available>=cents(order.quantidade)){atendimento='reservado_estoque';tx.set(stockRef,{quantidadeReservada:cents(st.quantidadeReservada)+cents(order.quantidade),atualizadoEm:now},{merge:true});}}
+  tx.set(orderRef,{statusPagamento:'pago',statusAtendimento:atendimento,statusAplicacao:'aplicado',valorPagoExternoCentavos:external,valorDebitadoContaCentavos:total,saldoAntesCentavos:before,saldoDepoisCentavos:after,pagamentoConfirmadoEm:now,confirmadoEm:now,atualizadoEm:now},{merge:true});
+  return {status:'confirmado',saldoDepoisCentavos:after,statusAtendimento:atendimento};
+}
+async function confirmUniformOrderWithoutCheckout(db,pedidoId,actor={id:'portal_responsavel',nome:'Responsável',perfil:'responsavel'}){
+  const pseudo={id:`SALDO-FARDA-${pedidoId}`,orderNsu:`SALDO-FARDA-${pedidoId}`,pedidoId,totalCentavos:0,tipo:'pedido_farda'};let result;
+  await db.runTransaction(async tx=>{result=await applyUniformOrderTx(tx,db,pseudo,{origem:'saldo_conta'});});
+  const snap=await db.collection('pedidos_farda').doc(pedidoId).get(),order=snap.exists?snap.data():{};
+  await audit(db,'pedido_farda_confirmado',{pedidoId,alunoId:order.alunoId,alunoNome:order.alunoNome,valorCentavos:order.totalCentavos,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,descricaoHumana:`Pedido de fardamento de ${order.alunoNome||'aluno'} confirmado.`});
+  await notify(db,{tipo:'pedido_farda_confirmado',titulo:'Novo pedido de fardamento',mensagem:`${order.alunoNome||'Aluno'} realizou um pedido de fardamento.`,alunoId:order.alunoId,alunoNome:order.alunoNome,matricula:order.matricula,pedidoId,destinatariosPerfis:['admin','gestao','secretaria'],acaoPrincipal:'abrir_fardas',acaoLabel:'Ver fardas'});
+  return result;
+}
 async function applyCheckoutConfirmation(db, orderNsu, paymentData={}){
   const checkoutRef=db.collection('pagamentos_checkout').doc(orderNsu);
   const snap=await checkoutRef.get();
@@ -762,6 +856,7 @@ async function applyCheckoutConfirmation(db, orderNsu, paymentData={}){
     if(c.statusAplicacao === 'aplicado') return;
     if(c.tipo === 'entrada_conta_aluno') operationResult=await applyAccountPaymentTx(tx, db, c, paymentData);
     if(c.tipo === 'pedido_cantina') operationResult=await applyCantinaOrderTx(tx,db,c,paymentData);
+    if(c.tipo === 'pedido_farda') operationResult=await applyUniformOrderTx(tx,db,c,paymentData);
     const payRef=db.collection('pagamentos').doc(orderNsu);
     tx.set(payRef, {
       id: orderNsu,
@@ -824,6 +919,10 @@ async function applyCheckoutConfirmation(db, orderNsu, paymentData={}){
       acaoPrincipal:operationResult.status==='confirmado'?'abrir_entregas':'abrir_pedidos',
       acaoLabel:operationResult.status==='confirmado'?'Ver agenda da cantina':'Revisar pedido'
     });
+  }else if(checkout.tipo==='pedido_farda'){
+    const orderSnap=await db.collection('pedidos_farda').doc(checkout.pedidoId).get().catch(()=>null),order=orderSnap&&orderSnap.exists?orderSnap.data():{};
+    await audit(db,'pedido_farda_confirmado',{pedidoId:checkout.pedidoId,orderNsu,alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,valorCentavos:order.totalCentavos||checkout.pedidoTotalCentavos,descricaoHumana:`Pedido de fardamento de ${checkout.alunoNome||'aluno'} confirmado.`});
+    await notify(db,{tipo:'pedido_farda_confirmado',titulo:'Novo pedido de fardamento',mensagem:`${checkout.alunoNome||'Aluno'} realizou um pedido de fardamento.`,alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,matricula:checkout.matricula,pagamentoId:orderNsu,pedidoId:checkout.pedidoId,destinatariosPerfis:['admin','gestao','secretaria'],acaoPrincipal:'abrir_fardas',acaoLabel:'Ver fardas'});
   }else{
     await notify(db, {
       tipo:'checkout_pagamento_confirmado',
@@ -840,6 +939,58 @@ async function applyCheckoutConfirmation(db, orderNsu, paymentData={}){
   return { ok:true, operationResult };
 }
 
+
+async function findOpenCashSession(db,caixaId,point='secretaria'){
+  if(caixaId){const snap=await db.collection('caixas').doc(caixaId).get();if(snap.exists&&snap.data().status==='aberto')return {id:snap.id,...snap.data()};}
+  const snap=await db.collection('caixas').where('status','==','aberto').get();
+  const rows=snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>(x.ponto||'')===point).sort((a,b)=>String(b.abertoEm||'').localeCompare(String(a.abertoEm||'')));
+  return rows[0]||null;
+}
+async function registerInPersonOperation(db,body={}){
+  const actor=actorFromBody(body),student=await getStudent(db,body.alunoId);if(!student)throw Object.assign(new Error('Aluno não encontrado.'),{status:404});
+  const operation=String(body.operacao||body.tipoOperacao||'venda_imediata');
+  if(operation==='pedido_cantina_programado'){
+    const cfg=await getConfig(db),saved=await getSavedBuyer(db,student.id),customer=mergeCustomer(saved,buildCustomerFromBody(body,student),student);
+    const reservation=await reserveCantinaOrder(db,body,actor,student,customer,cfg),total=reservation.normalized.totalCentavos,before=reservation.saldoAtual;
+    const useBalance=body.usarSaldo!==false,creditUsed=useBalance?Math.min(Math.max(0,before),total):0,required=total-creditUsed,received=cents(body.valorRecebidoCentavos||required);
+    if(received<required){await releasePendingOrder(db,reservation.pedidoId,'pagamento_presencial_insuficiente');throw Object.assign(new Error(`O valor recebido precisa ser de pelo menos ${brl(required)}.`),{status:400});}
+    const troco=received-required,dest=String(body.destinoTroco||'devolver'),applied=required+(dest==='credito'?troco:0),method=String(body.formaPagamento||'dinheiro');
+    let cash=null;
+    if(method==='dinheiro'){
+      cash=await findOpenCashSession(db,body.caixaId,'secretaria');
+      if(!cash){await releasePendingOrder(db,reservation.pedidoId,'aguardando_caixa').catch(()=>{});throw Object.assign(new Error('Abra o caixa da secretaria antes de registrar pagamento em dinheiro.'),{status:409});}
+    }
+    const pseudo={id:`PRESENCIAL-${reservation.pedidoId}`,orderNsu:`PRESENCIAL-${reservation.pedidoId}`,pedidoId:reservation.pedidoId,totalCentavos:applied,tipo:'pedido_cantina'};let result;
+    await db.runTransaction(async tx=>{result=await applyCantinaOrderTx(tx,db,pseudo,{origem:'secretaria_presencial',formaPagamento:method});});
+    const pay=db.collection('pagamentos').doc();await pay.set({id:pay.id,pedidoId:reservation.pedidoId,alunoId:student.id,alunoNome:student.nome,valorBrutoCentavos:received,valorAplicadoCentavos:applied,trocoCentavos:dest==='devolver'?troco:0,creditoTrocoCentavos:dest==='credito'?troco:0,formaPagamento:method,status:'confirmado',origem:'secretaria_presencial',usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,dataChave:dateKey(),criadoEm:nowIso()});
+    if(cash){await db.collection('movimentos_caixa').add({caixaId:cash.id,tipo:'recebimento_venda',valorCentavos:received,alunoId:student.id,pedidoId:reservation.pedidoId,usuarioId:actor.id,usuarioNome:actor.nome,dataChave:dateKey(),criadoEm:nowIso()});if(dest==='devolver'&&troco>0)await db.collection('movimentos_caixa').add({caixaId:cash.id,tipo:'troco_entregue',valorCentavos:-troco,alunoId:student.id,pedidoId:reservation.pedidoId,usuarioId:actor.id,usuarioNome:actor.nome,dataChave:dateKey(),criadoEm:nowIso()});}
+    return {ok:true,pedidoId:reservation.pedidoId,totalCentavos:total,valorRecebidoCentavos:received,trocoCentavos:troco,destinoTroco:dest,saldoDepoisCentavos:result.saldoDepoisCentavos};
+  }
+  const productMap=await loadProductMap(db),raw=Array.isArray(body.itens)?body.itens:[];if(!raw.length&&operation!=='adicionar_credito')throw Object.assign(new Error('Adicione ao menos um item.'),{status:400});
+  let total=0;const lines=[],expanded=new Map();
+  for(const item of raw){
+    if(item.tipo==='farda'){const qty=Math.max(1,cents(item.quantidade||1)),unit=cents(item.precoUnitarioCentavos),line=unit*qty;if(unit<=0)throw Object.assign(new Error('Preço de farda inválido.'),{status:400});total+=line;lines.push({...item,quantidade:qty,precoUnitarioCentavos:unit,totalCentavos:line,nome:item.nome||'Camisa de farda'});continue;}
+    const product=productMap.get(String(item.produtoId||''));if(!product||product.ativo===false)throw Object.assign(new Error('Produto inválido ou inativo.'),{status:400});const qty=Math.max(1,cents(item.quantidade||1)),unit=productPrice(product,productMap),line=unit*qty;total+=line;lines.push({tipo:'produto',produtoId:product.id,nome:product.nome,quantidade:qty,precoUnitarioCentavos:unit,totalCentavos:line,categoria:product.categoria||'Cantina'});expandProduct(product,qty,productMap,expanded);
+  }
+  const accRef=db.collection('contas_alunos').doc(student.id),acc=await getAccount(db,student.id),before=accountNet(acc),useBalance=body.usarSaldo!==false,creditUsed=operation==='adicionar_credito'?0:(useBalance?Math.min(Math.max(0,before),total):0),required=operation==='adicionar_credito'?0:Math.max(0,total-creditUsed);
+  const received=cents(body.valorRecebidoCentavos||body.valorCentavos||required),method=String(body.formaPagamento||'dinheiro'),dest=String(body.destinoTroco||'devolver');if(operation==='adicionar_credito'&&received<=0)throw Object.assign(new Error('Informe o valor recebido.'),{status:400});if(operation!=='adicionar_credito'&&received<required)throw Object.assign(new Error(`O valor recebido precisa ser de pelo menos ${brl(required)}.`),{status:400});
+  const troco=operation==='adicionar_credito'?0:Math.max(0,received-required),applied=operation==='adicionar_credito'?received:required+(dest==='credito'?troco:0),afterPayment=before+applied,after=operation==='adicionar_credito'?afterPayment:afterPayment-total;
+  let cash=null;if(method==='dinheiro'){cash=await findOpenCashSession(db,body.caixaId,'secretaria');if(!cash)throw Object.assign(new Error('Abra o caixa da secretaria antes de registrar pagamento em dinheiro.'),{status:409});}
+  const saleRef=db.collection('vendas').doc(),payRef=db.collection('pagamentos').doc(),now=nowIso();
+  await db.runTransaction(async tx=>{
+    const fresh=await tx.get(accRef),freshAcc=fresh.exists?fresh.data():{},freshBefore=accountNet(freshAcc);if(freshBefore!==before)throw new Error('O saldo do aluno mudou. Revise a venda antes de confirmar.');
+    const salgadoQty=[...expanded.values()].filter(x=>x.produtoId==='salgado').reduce((a,x)=>a+cents(x.quantidade),0);
+    if(salgadoQty>0){const stockRef=db.collection('disponibilidade_salgados').doc(dateKey()),stockSnap=await tx.get(stockRef),stock=stockSnap.exists?stockSnap.data():{},cfg=await getConfig(db),planned=cents(stock.quantidadePlanejada||cfg.quantidadePadraoSalgados||30),used=dailyUsed(stock);if(used+salgadoQty>planned)throw new Error(`Não há salgados suficientes. Disponíveis: ${Math.max(0,planned-used)}.`);const field=method==='dinheiro'?'vendidoDinheiro':'vendidoAvulso';tx.set(stockRef,{dataChave:dateKey(),quantidadePlanejada:planned,[field]:cents(stock[field])+salgadoQty,atualizadoEm:now},{merge:true});}
+    tx.set(accRef,{...splitNet(after),bloqueioSaldoSemanal:after<0?Boolean(freshAcc.bloqueioSaldoSemanal):false,bloqueadoPorLimite:after<0&&cents(freshAcc.limiteFiadoCentavos)>0&&Math.abs(after)>=cents(freshAcc.limiteFiadoCentavos),ultimaRegularizacaoEm:after>=0?now:(freshAcc.ultimaRegularizacaoEm||null),atualizadoEm:now},{merge:true});
+    if(applied>0){const pm=db.collection('movimentos_conta').doc();tx.set(pm,{id:pm.id,alunoId:student.id,tipo:'entrada_conta_aluno',subtipo:operation==='adicionar_credito'?'credito_secretaria':'pagamento_venda_secretaria',valorCentavos:applied,valorRecebidoCentavos:received,trocoCentavos:dest==='devolver'?troco:0,creditoTrocoCentavos:dest==='credito'?troco:0,saldoAntesCentavos:before,saldoDepoisCentavos:afterPayment,formaPagamento:method,vendaId:operation==='adicionar_credito'?null:saleRef.id,usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,dataChave:dateKey(),criadoEm:now});}
+    if(operation!=='adicionar_credito'){const purchase=db.collection('movimentos_conta').doc();tx.set(purchase,{id:purchase.id,alunoId:student.id,tipo:'compra',subtipo:'venda_secretaria',valorCentavos:-total,valorCompraCentavos:total,saldoAntesCentavos:afterPayment,saldoDepoisCentavos:after,vendaId:saleRef.id,itens:lines,origem:'secretaria',formaPagamento:method,status:'confirmado',dataChave:dateKey(),criadoEm:now});tx.set(saleRef,{id:saleRef.id,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,origem:'secretaria',operadorId:actor.id,operadorNome:actor.nome,formaPagamento:method,valorBrutoCentavos:total,valorRecebidoCentavos:received,trocoCentavos:dest==='devolver'?troco:0,creditoTrocoCentavos:dest==='credito'?troco:0,valorSaldoUtilizadoCentavos:creditUsed,itens:lines,caixaId:cash?.id||null,dataChave:dateKey(),criadoEm:now,status:'confirmada',schemaVersion:3,versao:'1.5.0-dev2'});}
+    tx.set(payRef,{id:payRef.id,vendaId:operation==='adicionar_credito'?null:saleRef.id,alunoId:student.id,alunoNome:student.nome,valorBrutoCentavos:received,valorAplicadoCentavos:applied,trocoCentavos:dest==='devolver'?troco:0,creditoTrocoCentavos:dest==='credito'?troco:0,formaPagamento:method,status:'confirmado',origem:'secretaria_presencial',usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,dataChave:dateKey(),criadoEm:now});
+    for(const line of lines.filter(x=>x.tipo==='farda')){const fr=db.collection('pedidos_farda').doc();tx.set(fr,{id:fr.id,vendaId:saleRef.id,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,produto:line.nome,tamanho:line.tamanho||'',modelo:line.modelo||'',modeloFardaId:line.modeloFardaId||'camisa_padrao',quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:line.statusAtendimento||'aguardando_producao',criadoPor:actor.id,criadoEm:now,atualizadoEm:now,versao:'1.5.0-dev2'});}
+    if(cash){const cm=db.collection('movimentos_caixa').doc();tx.set(cm,{id:cm.id,caixaId:cash.id,tipo:'recebimento_venda',vendaId:operation==='adicionar_credito'?null:saleRef.id,valorCentavos:received,alunoId:student.id,usuarioId:actor.id,usuarioNome:actor.nome,dataChave:dateKey(),criadoEm:now});if(dest==='devolver'&&troco>0){const tm=db.collection('movimentos_caixa').doc();tx.set(tm,{id:tm.id,caixaId:cash.id,tipo:'troco_entregue',vendaId:operation==='adicionar_credito'?null:saleRef.id,valorCentavos:-troco,alunoId:student.id,usuarioId:actor.id,usuarioNome:actor.nome,dataChave:dateKey(),criadoEm:now});}}
+  });
+  await audit(db,'venda_presencial_aluno',{vendaId:operation==='adicionar_credito'?null:saleRef.id,alunoId:student.id,alunoNome:student.nome,valorCentavos:operation==='adicionar_credito'?received:total,usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,descricaoHumana:operation==='adicionar_credito'?`${actor.nome} adicionou ${brl(received)} à conta de ${student.nome}.`:`${actor.nome} registrou uma venda de ${brl(total)} para ${student.nome}.`});
+  return {ok:true,vendaId:operation==='adicionar_credito'?null:saleRef.id,pagamentoId:payRef.id,totalCentavos:total,valorRecebidoCentavos:received,valorAplicadoCentavos:applied,trocoCentavos:dest==='devolver'?troco:0,creditoTrocoCentavos:dest==='credito'?troco:0,saldoAntesCentavos:before,saldoDepoisCentavos:after};
+}
 module.exports = {
   admin,
   initFirebase,
@@ -856,5 +1007,6 @@ module.exports = {
   buildReceiptInfo,
   accountNet,
   splitNet,
-  releasePendingOrder
+  releasePendingOrder,
+  registerInPersonOperation
 };
