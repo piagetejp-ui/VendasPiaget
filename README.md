@@ -1,67 +1,34 @@
-# Escola Piaget — Sistema de Vendas V1.4.1 Checkout Oficial
+# Escola Piaget — Sistema de Vendas V1.5.0-dev1
 
-Esta versão foi gerada a partir da V1.3.4 aprovada. A V1.4.0 anterior foi descartada e não deve ser usada como base.
+Base utilizada: **V1.4.3 — Checkout + Auditoria**.
 
-## O que entrou nesta versão
+> **Importante:** este pacote contém apenas os arquivos alterados nesta entrega. Ao aplicar sobre o projeto atual, mantenha a pasta `assets/` e os demais arquivos estáticos já existentes no projeto da V1.4.3.
 
-### Conta corrente do aluno
+Esta entrega implementa o primeiro ciclo funcional de pedidos antecipados da cantina:
 
-O sistema passa a tratar crédito e saldo em aberto como uma conta corrente única:
+1. o responsável escolhe um dia, uma semana ou um mês;
+2. monta a programação de lanches por data;
+3. o sistema valida e reserva o estoque crítico de salgados por **5 minutos**;
+4. o saldo positivo da conta do aluno é considerado primeiro;
+5. a InfinitePay cobra somente o valor necessário para que pagamento e compra não deixem a conta negativa;
+6. após a confirmação, cada data gera uma obrigação própria na Agenda da Cantina;
+7. o operador registra Entregue, Aluno ausente ou Não entregue;
+8. ausência/não entrega devolve o valor para a conta corrente e libera o salgado daquele dia.
 
-- saldo positivo = crédito disponível;
-- saldo zero = conta regular;
-- saldo negativo = saldo em aberto.
+## Estrutura do pacote
 
-Por compatibilidade com os dados já existentes, o sistema ainda mantém os campos `saldoCreditoCentavos` e `dividaCentavos`, mas também passa a gravar `saldoContaCentavos` como o saldo líquido.
+```txt
+index.html
+obrigado.html
+package.json
+api/
+  _utils.js
+  criar-checkout.js
+  verificar-pagamento.js
+  webhook-infinitepay.js
+```
 
-### Checkout InfinitePay
-
-Checkout ativo nesta versão:
-
-- entrada na conta do aluno;
-- regularização de saldo negativo;
-- adição de crédito quando a conta estiver zerada ou positiva.
-
-O pagamento só aplica efeito depois de confirmação por:
-
-1. webhook da InfinitePay; ou
-2. botão manual “Verificar pagamento”.
-
-### Regra de valor mínimo
-
-- Se o aluno estiver com saldo negativo, o valor mínimo do checkout é o necessário para zerar o saldo.
-- Se o aluno estiver com saldo zero ou positivo, o mínimo inicial é R$ 1,00, configurável em Configurações.
-
-### Bloqueio semanal
-
-Regra oficial:
-
-- toda sexta-feira, no fechamento semanal, alunos com saldo negativo são bloqueados;
-- ao regularizar para saldo zero ou positivo, o desbloqueio é automático.
-
-### Perfis que podem gerar pagamento
-
-- Responsável: pode gerar pagamento para o próprio aluno no portal;
-- Secretaria: pode gerar link e registrar pagamento presencial;
-- Gestão/Administração: acesso completo;
-- Cantina: não gera link nesta versão.
-
-### Pagamento presencial
-
-A secretaria/gestão pode registrar pagamento presencial em:
-
-- dinheiro;
-- Pix manual;
-- maquininha;
-- Pix banco;
-- Pix Rede / Laranjinha;
-- Cartão Rede / Laranjinha.
-
-Esse lançamento entra na mesma conta corrente do aluno e não usa link InfinitePay.
-
-## Variáveis de ambiente necessárias na Vercel
-
-Já devem estar cadastradas no projeto Vercel:
+## Variáveis de ambiente na Vercel
 
 ```txt
 INFINITEPAY_HANDLE=piaget
@@ -71,59 +38,76 @@ FIREBASE_CLIENT_EMAIL=...
 FIREBASE_PRIVATE_KEY=...
 ```
 
-## Endpoints incluídos
+## URLs do checkout
 
 ```txt
-/api/criar-checkout
-/api/verificar-pagamento
-/api/webhook-infinitepay
-```
-
-URLs finais:
-
-```txt
-Redirect URL:
+Redirect:
 https://vendas-piaget.vercel.app/obrigado.html
 
-Webhook URL:
+Webhook:
 https://vendas-piaget.vercel.app/api/webhook-infinitepay
 ```
 
-## Como testar
+## Novas estruturas no Firestore
 
-1. Subir este pacote na Vercel.
-2. Entrar no portal do responsável ou na área de Alunos e Contas.
-3. Abrir um aluno.
-4. Clicar em “Adicionar crédito” ou “Gerar link InfinitePay”.
-5. Usar valor de teste, como R$ 1,00 se o saldo estiver regular.
-6. Confirmar o pagamento na InfinitePay.
-7. Voltar para o sistema e conferir se o saldo foi atualizado.
-8. Na tela Cobranças e saldos, usar “Verificar pagamento” se o webhook demorar.
+### `pedidos`
+Pedido principal da cantina, incluindo modalidade, datas, itens, total, pagamento, reserva e situação operacional.
 
-## Observações
+### `ocorrencias_entrega`
+Uma obrigação de entrega por pedido e por data. É a fonte da Agenda da Cantina.
 
-- Cartão não é armazenado no sistema da escola.
-- Dados opcionais do comprador são apenas nome, telefone e e-mail.
-- Se houver link pendente, o sistema permite gerar outro, mas avisa. Se dois links forem pagos, os dois valores entram no saldo.
+### `disponibilidade_salgados`
+Mantém capacidade planejada, vendas, consumos, pedidos confirmados e reservas temporárias por data.
 
-## V1.4.2 — Como testar os ajustes
+### `solicitacoes_correcao_pedido`
+Solicitações do operador para corrigir uma obrigação já finalizada.
 
-1. Gere um pagamento pelo portal do responsável.
-2. Pague pelo checkout da InfinitePay.
-3. Na página `obrigado.html`, verifique se aparece o resumo do pagamento.
-4. Teste os botões:
-   - Verificar novamente;
-   - Imprimir / salvar PDF;
-   - Baixar comprovante em imagem;
-   - Voltar ao sistema.
-5. Ao voltar ao sistema, o portal do responsável deve abrir automaticamente se a sessão local ainda estiver salva no navegador.
-6. No portal do responsável, confira:
-   - saldo atualizado;
-   - extrato com nomes humanizados;
-   - campo “Dados do comprador”.
-7. Em Cobranças e saldos, confira o botão “Comprovante” nos pagamentos confirmados.
+### `fechamentos_cantina`
+Registro de encerramento operacional de cada data.
 
+## Conta corrente nos pedidos
 
-## Nota V1.4.3
+O pedido passa pela conta corrente do aluno.
 
-Esta versão substitui a V1.4.2. A correção principal está no portal do responsável, que agora renderiza corretamente após login e após retorno do checkout. Também foi adicionada uma camada de compatibilidade para evitar erro quando componentes novos chamarem funções do checkout adicionadas em versões anteriores.
+```txt
+saldo final = saldo anterior + pagamento externo - valor dos lanches
+```
+
+- saldo positivo pode pagar todo ou parte do pedido;
+- saldo negativo aumenta o valor necessário no checkout;
+- se a diferença for menor que o mínimo operacional, o checkout cobra o mínimo e o excedente permanece como crédito;
+- o pedido online não é confirmado se o resultado deixaria saldo negativo;
+- se o pagamento chegar após a reserva e já não houver estoque, o valor recebido fica na conta do aluno e o pedido vai para revisão.
+
+## Agenda da Cantina
+
+A agenda permite:
+
+- escolher uma data pelo calendário;
+- avançar ou voltar dias;
+- filtrar Todos, Manhã ou Tarde;
+- ver pendências de datas anteriores;
+- registrar Entregue;
+- registrar Aluno ausente;
+- registrar Não entregue com motivo;
+- solicitar correção de uma baixa finalizada;
+- encerrar uma data somente quando não houver pendências.
+
+## Teste recomendado
+
+1. Publicar o pacote na Vercel mantendo as variáveis atuais.
+2. Entrar no portal do responsável.
+3. Abrir **Montar a semana**.
+4. Selecionar um lanche completo em cinco dias.
+5. Revisar o total e continuar.
+6. Conferir a reserva de cinco minutos.
+7. Pagar pela InfinitePay ou testar um pedido integralmente coberto pelo saldo.
+8. Voltar pela `obrigado.html`.
+9. Entrar com o perfil Cantina.
+10. Abrir **Agenda da cantina** e conferir as obrigações por data.
+11. Marcar uma como Entregue e outra como Aluno ausente.
+12. Conferir o crédito da ausência e a disponibilidade diária do salgado.
+
+## Limite desta entrega
+
+Esta versão é a primeira etapa da V1.5.0. A venda presencial completa da secretaria, com pagamento exato, troco devolvido ou troco mantido como crédito, e a reorganização definitiva de Catálogo/Produtos entre Cantina e Fardas permanecem para a próxima etapa.
