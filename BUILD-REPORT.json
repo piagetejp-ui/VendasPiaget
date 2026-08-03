@@ -1,186 +1,207 @@
 {
-  "version": "1.5.0-dev5.2-logo-sharp",
-  "build": "2026-08-03T17:37:00-03:00",
-  "releasePath": "/releases/1.5.0-dev5.2-logo-sharp/",
-  "fileCount": 34,
-  "brandAssets": [
-    "logo-piaget-icon-blue-white-v152.png",
-    "logo-piaget-icon-v152.png",
-    "logo-piaget-icon-white-orange-v152.png",
-    "logo-piaget-icon-white-v152.png",
-    "logo-piaget-horizontal-v152.png",
-    "selo-piaget-v152.png"
+  "version": "1.5.0-dev5.2.1-financial-hotfix",
+  "baseVersion": "1.5.0-dev5.2-logo-sharp",
+  "releasePath": "/releases/1.5.0-dev5.2.1-financial-hotfix/",
+  "generatedAtUtc": "2026-08-03T21:19:31.402611+00:00",
+  "scope": [
+    "financial confirmation engine",
+    "Firestore read-before-write correction",
+    "idempotency by order_nsu and transaction_nsu",
+    "silent one-time recovery of Armando payment"
   ],
+  "uiChanges": false,
+  "localValidation": {
+    "javascriptSyntax": "passed",
+    "jsonParsing": "passed",
+    "staticPaths": "passed",
+    "mockFirestoreReadBeforeWrite": "passed",
+    "armandoRecovery": "passed",
+    "idempotency": "passed",
+    "amountMismatchProtection": "passed",
+    "paidFalseProtection": "passed",
+    "realInfinitePayAndFirestore": "not_executed"
+  },
+  "fileCount": 36,
   "files": [
     {
+      "path": "AUDITORIA-FINANCEIRA.md",
+      "sizeBytes": 866,
+      "sha256": "618f8f3136882e8580d1b2e8ca987717b9dafe93ee69e7c7d4bd535d219f83ce"
+    },
+    {
       "path": "AUDITORIA-REBUILD.md",
-      "size": 829,
-      "sha256": "ce0ea08dd056e27c49ab8573e3c3393b8100b6bcb8f3e8153614739352b204f6"
+      "sizeBytes": 837,
+      "sha256": "3151b6917b198662b78d20d1459141860cd658b91c97e61454f31a3ac51c846c"
     },
     {
       "path": "CHANGELOG.md",
-      "size": 1613,
-      "sha256": "346c18fec789ec0a4bfa369f3b44a2d48079acf9947d19e9ca96715351cbeff7"
+      "sizeBytes": 973,
+      "sha256": "faf1f793c30548c2a28ddf2f1de5fa83d21c76844e9e1323adb5c9aa010adf11"
     },
     {
       "path": "README.md",
-      "size": 2279,
-      "sha256": "5d7e7822922715e42c1ecc0feafbbb374331435d35b77f5e5d121151e81e93ff"
+      "sizeBytes": 2134,
+      "sha256": "5bd6d5cb0cc41dc5b1463038cfc6059c7cb142b096e159c7dfe0d2b3f46da4a9"
     },
     {
       "path": "TESTES.md",
-      "size": 1329,
-      "sha256": "c7b175f05fae6f96566f4c69e9a397ad8d0fd6a50f2e9e7d36731b3c4153afe0"
+      "sizeBytes": 1534,
+      "sha256": "6c39ec84c55f7b85504dd76ad98ab3890fb60196a8018c38b2e45af339ab226b"
     },
     {
       "path": "VALIDACAO-TECNICA.md",
-      "size": 736,
-      "sha256": "8981a0b65b23eea235052055d66436df32abceb20007b42e35be3f7e008b307c"
+      "sizeBytes": 1068,
+      "sha256": "33dbc29c3594f968ab3d6e44e3c2504eed906c9ec7494900ebfebe3ef9174f68"
     },
     {
       "path": "api/_utils.js",
-      "size": 70743,
-      "sha256": "fffedbb53662629d619d1ad030d118811ed3de84f5ae96a46762fca0c3581b6f"
+      "sizeBytes": 81127,
+      "sha256": "46ddc7d42180491d6b860d3b52dc6883e29fe7478c7b6bcd5369e0b0bb8dc05b"
     },
     {
       "path": "api/criar-checkout.js",
-      "size": 3398,
+      "sizeBytes": 3398,
       "sha256": "418e8d765d34d8868c467ff9ff114d5a503e18719baf9e82798df0ea79adcb8c"
     },
     {
       "path": "api/registrar-operacao-presencial.js",
-      "size": 617,
+      "sizeBytes": 617,
       "sha256": "71d916eed2f889476e0fac0927a921adf96e2b7558af883c9e1471b3957592d2"
     },
     {
+      "path": "api/sincronizar-financeiro.js",
+      "sizeBytes": 635,
+      "sha256": "9c8d179c5b1483d179ab6b81ebacccd9f35645cb2ca7d393433c6a22f45986fc"
+    },
+    {
       "path": "api/verificar-pagamento.js",
-      "size": 561,
-      "sha256": "f9ab112b9ab6e062022bae42a5bc19bdee7881834078d154e9a01cfb088a657f"
+      "sizeBytes": 600,
+      "sha256": "dd6d0723cd0b7e97f6796f180e58ac4f765af241edce9a807a2be6bf80d069f7"
     },
     {
       "path": "api/webhook-infinitepay.js",
-      "size": 768,
-      "sha256": "0d3da91a8899326e5b2ac3cdcc77a89a57556161fc0af425435b937ab7b84d84"
+      "sizeBytes": 1265,
+      "sha256": "56b735bb26aa61e4869f9da3ce148495bc1c74d0af80c96bd97565acc0f2937a"
     },
     {
       "path": "assets/logo-piaget-horizontal-v152.png",
-      "size": 78291,
+      "sizeBytes": 78291,
       "sha256": "d58b07e5a2ffc39ee72b1f83f0f720b2841ff84cc5bacd9896eaf5d7212392f8"
     },
     {
       "path": "assets/logo-piaget-icon-blue-white-v152.png",
-      "size": 80830,
+      "sizeBytes": 80830,
       "sha256": "25e5d984bc4f78549489dc10b9b8e83d322297977733b56ae4193c542538a679"
     },
     {
       "path": "assets/logo-piaget-icon-v152.png",
-      "size": 66524,
+      "sizeBytes": 66524,
       "sha256": "d98932d594dd7cf4c907890896e41df01a3cb36bb46fe457aa433011f7cb3067"
     },
     {
       "path": "assets/logo-piaget-icon-white-orange-v152.png",
-      "size": 70388,
+      "sizeBytes": 70388,
       "sha256": "90987836184113f2a2ecfcb7e9c33e556aae59de00eff5ffdb69552a95f3f588"
     },
     {
       "path": "assets/logo-piaget-icon-white-v152.png",
-      "size": 50170,
+      "sizeBytes": 50170,
       "sha256": "6735a3b15a870b48d4a304d6cb66e15fd966ef0b11bc8c1c0696126c9683bec7"
     },
     {
       "path": "assets/selo-piaget-v152.png",
-      "size": 66524,
+      "sizeBytes": 66524,
       "sha256": "d98932d594dd7cf4c907890896e41df01a3cb36bb46fe457aa433011f7cb3067"
     },
     {
       "path": "index.html",
-      "size": 6535,
-      "sha256": "2252e0446d6ff4272c20584b7c760f011722d6e1075ae2c4d3c451c2bc8649cc"
+      "sizeBytes": 6658,
+      "sha256": "38e31b2fcdf1de1d2c07c3e167762f35dbe84b13f57d4102dc2c10afaa668ecb"
     },
     {
       "path": "obrigado.html",
-      "size": 14729,
-      "sha256": "a9800862a793a1a347323ff9980a159b6705510f1248cf4624277aeee24c4e60"
+      "sizeBytes": 14761,
+      "sha256": "ffccf745dc29b0a7e21f14244b4cd9566e0470c24e5a05979a9ca178b1029d3d"
     },
     {
       "path": "package.json",
-      "size": 178,
-      "sha256": "f1af5fe695d1cc98a9e56d652c987100638b690431079ff167788a6dbd578da8"
+      "sizeBytes": 186,
+      "sha256": "45a3df097e7891a2aab5c9590e82addbac369cb9150a10b97e22ce7ae3246543"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/css/app.css",
-      "size": 68303,
-      "sha256": "8f829c6eac5b1a7c477473cc5c2746e0e3e2421fac16d9b6766d9a6463eadccf"
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/css/app.css",
+      "sizeBytes": 68327,
+      "sha256": "91c21ac24105b0dd98e156b8403ddcf6704d5ca64e00591d9f7b1c9b5a73c046"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/01-core.js",
-      "size": 174698,
-      "sha256": "bf75296f3997f22ac238510a5f42224c7858d77c27bda6ec9dfa07ec29f6a15d"
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/01-core.js",
+      "sizeBytes": 174706,
+      "sha256": "68a14326345c27c74d44577bf4afae43a6f427458e88d4b25a78477cd424ba23"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/02-operations.js",
-      "size": 92790,
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/02-operations.js",
+      "sizeBytes": 92790,
       "sha256": "53a61bcf72684826b80c2e262ec125e4ebc1d18e21098cb20c1a6be6c2a543b7"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/03-cash.js",
-      "size": 61156,
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/03-cash.js",
+      "sizeBytes": 61156,
       "sha256": "742ff8985bcab46d4b8420aaa4ed6e76be2580e1f8c68f79044ee28c9c181ace"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/04-brand.js",
-      "size": 8119,
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/04-brand.js",
+      "sizeBytes": 8119,
       "sha256": "5249aeb8b18c22d75d735dd4d4e2a8cbfc64ee251e591bd502e8b15a9321fda9"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/05-auth.js",
-      "size": 45030,
-      "sha256": "0445b834e196260f1c652e38577262f8143ccfcc5a36f70dce509149cd403dd3"
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/05-auth.js",
+      "sizeBytes": 45038,
+      "sha256": "31ff6659e9b9237f5bc074ad58df039479cddd0ac1f7bbdbf68e91498ec48ae6"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/06-notifications-navigation.js",
-      "size": 31893,
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/06-notifications-navigation.js",
+      "sizeBytes": 31893,
       "sha256": "446f2da0579c5540f2e7580125cdf4790ab4beeed847f5ee8e378333f1648aa7"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/07-account-checkout.js",
-      "size": 58841,
-      "sha256": "8e0a6fd09872c1312478c9e85bc51d90c6841f2cc5d382a920d92ad1f03e5584"
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/07-account-checkout.js",
+      "sizeBytes": 58849,
+      "sha256": "9e1dc747dba4641a23903403ea7647163ccf58ee0569a580614af0c0e9f0ceaf"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/08-orders-agenda.js",
-      "size": 24862,
-      "sha256": "459a8f64d78c95c4a9c888bc5cbda79777a47370c5ab05cbbd7897ce715f7861"
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/08-orders-agenda.js",
+      "sizeBytes": 24878,
+      "sha256": "d1576db180e632294ddc1e20c1abcd68b475312b2248a3f1fb90f2939f0656ef"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/09-portal-sales.js",
-      "size": 65674,
-      "sha256": "c41ea385701c7f3fa2ef65aa49d66dbec4c7a2af0990e36e2f5b471e95943656"
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/09-portal-sales.js",
+      "sizeBytes": 65682,
+      "sha256": "7be3e6dd10697581699c67cc847ad32e5247051f5d24f987e03531fd9784dce3"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/10-mobile-runtime.js",
-      "size": 4264,
-      "sha256": "cdebeaaf389045e9955303043b11bf396e614597c57a72f1b217afee559d75e9"
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/10-mobile-runtime.js",
+      "sizeBytes": 4280,
+      "sha256": "e56e035c0d2b5816d5eb825d44ae4438f15cddbf6f8d3e617c21232dd7602779"
     },
     {
-      "path": "releases/1.5.0-dev5.2-logo-sharp/js/11-bootstrap.js",
-      "size": 5492,
-      "sha256": "7d82a864dca67d4ecd2a17444b9a90c72ead281be4931cb7ae8330f5ec3c098b"
+      "path": "releases/1.5.0-dev5.2.1-financial-hotfix/js/11-bootstrap.js",
+      "sizeBytes": 6378,
+      "sha256": "19f61a6b70925866e9cf07ecae05f5c94d7607c0e388139b5655f13e7b247f79"
     },
     {
       "path": "sw.js",
-      "size": 2243,
-      "sha256": "444b61130e2efe53f648e8d4a7586f66e6809fd242133734a0db8eab33dc3364"
+      "sizeBytes": 2267,
+      "sha256": "584cf0cb294b3c2c59dec7a174ab1bccd94b4ca43bc9b85e626981ae2f631db0"
     },
     {
       "path": "vercel.json",
-      "size": 1333,
-      "sha256": "c8b0cd906895927ed10e0995c459a8421c733a99bfacae36314c7e795771c781"
+      "sizeBytes": 1341,
+      "sha256": "01a35d769cb2833c7206bafb59433806cdfcd12d397d7808a4808600c59330c1"
     },
     {
       "path": "version.json",
-      "size": 138,
-      "sha256": "9ee1533d979ca2d2d88e45087d5571a8abd22cc4850840aa18464a2572261033"
+      "sizeBytes": 154,
+      "sha256": "15c6c53269e8b7c65ce8cbdafcc2e8ab4a3ba0eca0e2c13f63ac94568aad4681"
     }
   ]
 }

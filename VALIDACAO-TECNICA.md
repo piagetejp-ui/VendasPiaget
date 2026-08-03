@@ -1,21 +1,27 @@
-# Validação técnica — V1.5.0-dev5.2-logo-sharp
+# Validação técnica — V1.5.0-dev5.2.1-financial-hotfix
 
-## Marca
+## Base preservada
 
-- Fonte principal: arte oficial azul/laranja enviada pelo usuário.
-- Canvas final: 1024 × 1024 px, RGBA e fundo transparente.
-- Sem ampliação do arquivo pequeno anterior.
-- Sem alteração de cor, giro, sombra ou efeito.
-- Arquivos versionados com sufixo `v152`.
+- V1.5.0-dev5.2-logo-sharp.
+- Logo, CSS mobile, atualização automática e fluxos visuais mantidos.
+- Nenhuma nova tela financeira.
 
-## Cache e release
+## Testes automatizados locais
 
-- Nova pasta física de CSS/JS: `/releases/1.5.0-dev5.2-logo-sharp/`.
-- Novo nome de cache do service worker.
-- `index.html`, `version.json` e `sw.js` permanecem com política de revalidação/no-store.
+- Sintaxe de todos os arquivos JavaScript.
+- Validação de todos os JSON.
+- Conferência dos caminhos físicos da release.
+- Transação simulada que rejeita leituras depois da primeira gravação.
+- Recuperação do caso Armando: R$ 19,00 + R$ 23,00 − R$ 42,00 = R$ 0,00.
+- Segunda execução sem duplicar movimentos.
+- Valor divergente bloqueado sem alterar saldo.
+- Resposta com `paid: false` bloqueada.
+- Atualização usando identificadores já salvos.
+- Entrada de crédito e pedido de cantina processados pelo mesmo motor.
+- Trava por NSU da transação.
 
-## Compatibilidade preservada
+Resultado local: **aprovado**.
 
-- Fluxo financeiro e recuperação de pagamento mantidos.
-- Navegação mobile e suporte a iPhone mantidos.
-- Nenhuma regra de negócio foi alterada.
+## Limite da validação
+
+Não foi possível consultar o Firestore nem a InfinitePay de produção durante a geração do pacote. A recuperação real do pagamento ocorrerá após o deploy e a primeira abertura do sistema.

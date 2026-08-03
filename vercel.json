@@ -31,7 +31,7 @@
       ]
     },
     {
-      "source": "/releases/1.5.0-dev5.2-logo-sharp/(.*)",
+      "source": "/releases/1.5.0-dev5.2.1-financial-hotfix/(.*)",
       "headers": [
         {"key":"Cache-Control","value":"public, max-age=31536000, immutable"}
       ]

@@ -17,6 +17,6 @@ O CSS anterior mantinha comportamentos responsivos de várias versões. A mesma 
 
 A URL do arquivo muda fisicamente entre versões. Exemplo:
 
-`/releases/1.5.0-dev5.2-logo-sharp/js/01-core.js`
+`/releases/1.5.0-dev5.2.1-financial-hotfix/js/01-core.js`
 
 Uma versão futura deve usar outra pasta. O aparelho não pode combinar os arquivos das duas versões.

@@ -1,33 +1,30 @@
-# Changelog — V1.5.0-dev5.2-logo-sharp
+# Changelog
 
-## Logo em alta definição
+## V1.5.0-dev5.2.1-financial-hotfix — 03/08/2026
 
-- Substituído o recorte ampliado de baixa resolução pelas artes oficiais em alta definição enviadas pelo usuário.
-- Mantido o símbolo isolado no cabeçalho, sem repetir o nome “Escola Piaget” dentro da imagem.
-- Incluídas as quatro variações oficiais: azul/laranja, branco/laranja, azul/branco e branco.
-- As imagens preservam proporção, transparência e cores originais; não foram adicionados efeitos ou sombras.
-- Todos os arquivos de marca receberam nomes físicos novos (`-v152`), evitando reaproveitamento da logo borrada pelo cache do navegador ou service worker.
-- Mantidos o rebuild mobile, a atualização automática e o hotfix financeiro da versão anterior.
+Base: V1.5.0-dev5.2-logo-sharp.
 
-## Release
+### Financeiro
 
-- Pasta física: `/releases/1.5.0-dev5.2-logo-sharp/`.
-- Cache do service worker: `piaget-1.5.0-dev5.2-logo-sharp`.
+- Unificação da confirmação do checkout.
+- `payment_check` usando `handle`, `order_nsu`, `transaction_nsu` e `slug`.
+- Validação estrita de pagamento aprovado.
+- Conferência de `amount` contra o valor esperado.
+- Identificadores armazenados antes do processamento operacional.
+- Movimentos de conta determinísticos por pedido.
+- Trava única por NSU da transação.
+- Leitura completa antes das gravações nas transações do Firestore.
+- Webhook preservado e reprocessável.
+- Reutilização dos identificadores salvos no botão Atualizar status.
 
----
+### Recuperação histórica
 
-# Changelog — V1.5.0-dev5.2-logo-sharp
+- Migração silenciosa e idempotente do pagamento de farda do Armando.
+- Nenhuma tela nova adicionada.
 
-## Correção de marca
+### Preservado
 
-- Substituída a assinatura completa usada indevidamente nos ícones da interface.
-- O cabeçalho agora usa somente o símbolo gráfico da Escola Piaget.
-- O nome “Escola Piaget” permanece como texto do próprio cabeçalho, sem repetição dentro da imagem.
-- Corrigidas também as versões do símbolo para fundo azul e fundos escuros.
-- Mantidos integralmente o rebuild mobile, a atualização automática e o hotfix financeiro da versão anterior.
-
-## Atualização
-
-- Nova pasta física de release: `/releases/1.5.0-dev5.2-logo-sharp/`.
-- Novo cache do service worker, para impedir que a logo antiga continue sendo exibida após a publicação.
-
+- Logo oficial em alta definição.
+- Rebuild mobile e ajustes para iPhone.
+- Atualização automática por release físico.
+- Uso opcional do saldo.
