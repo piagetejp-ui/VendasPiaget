@@ -1,17 +1,21 @@
-# Validação técnica — V1.5.0-dev5.1-logo-hotfix
+# Validação técnica — V1.5.0-dev5.2-logo-sharp
 
-Executado antes da geração do pacote:
+## Marca
 
-- Sintaxe de todos os módulos JavaScript, APIs e service worker com `node --check`.
-- Validação JSON de `package.json`, `version.json` e `vercel.json`.
-- Conferência de todos os caminhos locais do `index.html`.
-- Ausência dos caminhos genéricos antigos `/js/` e `/css/`.
-- CSS analisado com `tinycss2`: sem erros de parsing.
-- Remoção das media queries históricas e manutenção de uma camada mobile canônica.
-- Verificação da presença de `viewport-fit=cover`, `visualViewport`, `pageshow`, service worker e arquivos físicos versionados.
-- Verificação do logout canônico.
-- Verificação dos textos `Atualizar status` e `Atualizar pagamento`.
-- Verificação do hotfix financeiro: leituras de pedido, conta e estoque acontecem antes da primeira gravação na transação de fardamento.
-- Conferência de existência dos ativos da marca incluídos no pacote.
+- Fonte principal: arte oficial azul/laranja enviada pelo usuário.
+- Canvas final: 1024 × 1024 px, RGBA e fundo transparente.
+- Sem ampliação do arquivo pequeno anterior.
+- Sem alteração de cor, giro, sombra ou efeito.
+- Arquivos versionados com sufixo `v152`.
 
-Limites desta validação: login Firebase, Firestore real, Safari/iPhone real e InfinitePay real dependem do deploy na Vercel e devem seguir o roteiro de Preview.
+## Cache e release
+
+- Nova pasta física de CSS/JS: `/releases/1.5.0-dev5.2-logo-sharp/`.
+- Novo nome de cache do service worker.
+- `index.html`, `version.json` e `sw.js` permanecem com política de revalidação/no-store.
+
+## Compatibilidade preservada
+
+- Fluxo financeiro e recuperação de pagamento mantidos.
+- Navegação mobile e suporte a iPhone mantidos.
+- Nenhuma regra de negócio foi alterada.

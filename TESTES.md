@@ -1,10 +1,10 @@
-# Roteiro de testes — V1.5.0-dev5.1-logo-hotfix
+# Roteiro de testes — V1.5.0-dev5.2-logo-sharp
 
 ## Atualização
 
 1. Publicar o pacote completo.
 2. No primeiro acesso após a migração, fechar uma aba antiga que esteja aberta e abrir o domínio novamente.
-3. Confirmar no cabeçalho ou menu: `v1.5.0-dev5.1-logo-hotfix`.
+3. Confirmar no cabeçalho ou menu: `v1.5.0-dev5.2-logo-sharp`.
 4. Manter uma aba aberta, publicar uma versão de teste com outro número e confirmar que o sistema detecta a mudança.
 
 ## iPhone

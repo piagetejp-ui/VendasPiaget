@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.5.0-dev5.1-logo-hotfix */
-const VERSION='1.5.0-dev5.1-logo-hotfix';
+/* Escola Piaget — service worker V1.5.0-dev5.2-logo-sharp */
+const VERSION='1.5.0-dev5.2-logo-sharp';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.5.0-dev5.1-logo-hotfix/';
+const RELEASE='/releases/1.5.0-dev5.2-logo-sharp/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/01-core.js`,
@@ -15,8 +15,8 @@ const PRECACHE=[
   `${RELEASE}js/09-portal-sales.js`,
   `${RELEASE}js/10-mobile-runtime.js`,
   `${RELEASE}js/11-bootstrap.js`,
-  '/assets/logo-piaget-icon.png',
-  '/assets/logo-piaget-horizontal.png'
+  '/assets/logo-piaget-icon-v152.png',
+  '/assets/logo-piaget-horizontal-v152.png'
 ];
 
 self.addEventListener('install',event=>{
