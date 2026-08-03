@@ -1,30 +1,12 @@
-# Changelog
+# Changelog — 1.5.0-dev5.2.2-pending-receipts
 
-## V1.5.0-dev5.2.1-financial-hotfix — 03/08/2026
+## Alterações
 
-Base: V1.5.0-dev5.2-logo-sharp.
-
-### Financeiro
-
-- Unificação da confirmação do checkout.
-- `payment_check` usando `handle`, `order_nsu`, `transaction_nsu` e `slug`.
-- Validação estrita de pagamento aprovado.
-- Conferência de `amount` contra o valor esperado.
-- Identificadores armazenados antes do processamento operacional.
-- Movimentos de conta determinísticos por pedido.
-- Trava única por NSU da transação.
-- Leitura completa antes das gravações nas transações do Firestore.
-- Webhook preservado e reprocessável.
-- Reutilização dos identificadores salvos no botão Atualizar status.
-
-### Recuperação histórica
-
-- Migração silenciosa e idempotente do pagamento de farda do Armando.
-- Nenhuma tela nova adicionada.
-
-### Preservado
-
-- Logo oficial em alta definição.
-- Rebuild mobile e ajustes para iPhone.
-- Atualização automática por release físico.
-- Uso opcional do saldo.
+- Responsável pode **Descartar cobrança** na lista de pagamentos pendentes.
+- O registro não é apagado: data, responsável, motivo e status anterior ficam preservados para auditoria.
+- Pedidos de cantina descartados liberam a reserva; pedidos de farda pendentes são cancelados.
+- Se uma cobrança descartada for paga posteriormente, o valor entra como crédito na conta do aluno e o pedido não é repetido.
+- Cobranças já pagas ou com pagamento localizado não podem ser descartadas.
+- A página de retorno passa a mostrar um único botão **Comprovante**, abrindo as opções InfinitePay, Piaget imagem e Piaget PDF.
+- A tentativa histórica do Armando é encerrada silenciosamente sem novo lançamento, pois o valor do teste foi devolvido externamente.
+- Fluxo financeiro, logo e layout mobile da dev5.2.1 foram preservados.

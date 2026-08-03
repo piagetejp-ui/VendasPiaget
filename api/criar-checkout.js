@@ -12,11 +12,20 @@ module.exports=async function handler(req,res){
       await db.runTransaction(async tx=>{const snap=await tx.get(attemptRef);if(snap.exists)existing=snap.data();else tx.set(attemptRef,{id:idTentativa,fingerprint,status:'preparando',criadoEm:nowIso(),atualizadoEm:nowIso(),alunoId:body.alunoId||null,tipo:body.tipo||null})});
       if(existing){
         if(existing.fingerprint&&existing.fingerprint!==fingerprint)return json(res,409,{ok:false,error:'Esta tentativa já está vinculada a outra operação.'});
-        if(existing.checkoutUrl)return json(res,200,{ok:true,reutilizado:true,checkout_url:existing.checkoutUrl,order_nsu:existing.orderNsu,pedido_id:existing.pedidoId,tipo:existing.tipo,timings:existing.timings||{}});
-        if(existing.semCheckout)return json(res,200,{ok:true,reutilizado:true,sem_checkout:true,pedido_confirmado:true,pedido_id:existing.pedidoId,tipo:existing.tipo});
-        if(existing.orderNsu){const snap=await db.collection('pagamentos_checkout').doc(existing.orderNsu).get();if(snap.exists&&snap.data().checkoutUrl){const c=snap.data();await attemptRef.set({checkoutUrl:c.checkoutUrl,status:'aguardando_pagamento',atualizadoEm:nowIso()},{merge:true});return json(res,200,{ok:true,reutilizado:true,checkout_url:c.checkoutUrl,order_nsu:existing.orderNsu,pedido_id:c.pedidoId,tipo:c.tipo})}}
-        if(existing.status==='preparando')return json(res,200,{ok:true,preparando:true,message:'O link ainda está sendo preparado.'});
-        if(existing.status==='falha')return json(res,409,{ok:false,error:existing.error||'A tentativa anterior falhou. Tente novamente.'});
+        const resetAttempt=async reason=>{await attemptRef.set({status:'preparando',checkoutUrl:null,orderNsu:null,pedidoId:null,semCheckout:false,invalidated:false,invalidatedReason:reason||null,error:null,atualizadoEm:nowIso()},{merge:true});existing=null;};
+        if(existing.invalidated||existing.status==='descartada')await resetAttempt('tentativa_anterior_descartada');
+        if(existing&&existing.orderNsu){
+          const snap=await db.collection('pagamentos_checkout').doc(existing.orderNsu).get();
+          if(snap.exists){
+            const c=snap.data(),active=['preparando_link','aguardando_pagamento','erro_timeout'].includes(c.status)&&c.checkoutUrlAtivo!==false;
+            if(active&&c.checkoutUrl){await attemptRef.set({checkoutUrl:c.checkoutUrl,status:'aguardando_pagamento',atualizadoEm:nowIso()},{merge:true});return json(res,200,{ok:true,reutilizado:true,checkout_url:c.checkoutUrl,order_nsu:existing.orderNsu,pedido_id:c.pedidoId,tipo:c.tipo});}
+            if(!active)await resetAttempt(`checkout_${c.status||'encerrado'}`);
+          }else await resetAttempt('checkout_nao_encontrado');
+        }
+        if(existing&&existing.checkoutUrl)return json(res,200,{ok:true,reutilizado:true,checkout_url:existing.checkoutUrl,order_nsu:existing.orderNsu,pedido_id:existing.pedidoId,tipo:existing.tipo,timings:existing.timings||{}});
+        if(existing&&existing.semCheckout)return json(res,200,{ok:true,reutilizado:true,sem_checkout:true,pedido_confirmado:true,pedido_id:existing.pedidoId,tipo:existing.tipo});
+        if(existing&&existing.status==='preparando')return json(res,200,{ok:true,preparando:true,message:'O link ainda está sendo preparado.'});
+        if(existing&&existing.status==='falha')return json(res,409,{ok:false,error:existing.error||'A tentativa anterior falhou. Tente novamente.'});
       }
     }
     const buildStart=Date.now(),op=await buildCheckoutOperation(db,body);timings.preparacaoOperacaoMs=Date.now()-buildStart;op.idTentativa=idTentativa||null;

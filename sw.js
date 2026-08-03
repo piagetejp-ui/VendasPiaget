@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.5.0-dev5.2.1-financial-hotfix */
-const VERSION='1.5.0-dev5.2.1-financial-hotfix';
+/* Escola Piaget — service worker V1.5.0-dev5.2.2-pending-receipts */
+const VERSION='1.5.0-dev5.2.2-pending-receipts';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.5.0-dev5.2.1-financial-hotfix/';
+const RELEASE='/releases/1.5.0-dev5.2.2-pending-receipts/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/01-core.js`,

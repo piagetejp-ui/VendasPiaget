@@ -1,27 +1,23 @@
-# Validação técnica — V1.5.0-dev5.2.1-financial-hotfix
+# Validação técnica — V1.5.0-dev5.2.2-pending-receipts
 
-## Base preservada
+## Resultados locais
 
-- V1.5.0-dev5.2-logo-sharp.
-- Logo, CSS mobile, atualização automática e fluxos visuais mantidos.
-- Nenhuma nova tela financeira.
-
-## Testes automatizados locais
-
-- Sintaxe de todos os arquivos JavaScript.
-- Validação de todos os JSON.
-- Conferência dos caminhos físicos da release.
-- Transação simulada que rejeita leituras depois da primeira gravação.
-- Recuperação do caso Armando: R$ 19,00 + R$ 23,00 − R$ 42,00 = R$ 0,00.
-- Segunda execução sem duplicar movimentos.
-- Valor divergente bloqueado sem alterar saldo.
-- Resposta com `paid: false` bloqueada.
-- Atualização usando identificadores já salvos.
-- Entrada de crédito e pedido de cantina processados pelo mesmo motor.
-- Trava por NSU da transação.
-
-Resultado local: **aprovado**.
+- Todos os módulos JavaScript e APIs passaram em `node --check`.
+- O JavaScript embutido em `obrigado.html` passou na verificação de sintaxe.
+- Todos os caminhos físicos de CSS, JavaScript e imagens referenciados pelo `index.html` existem.
+- `version.json`, `index.html`, `sw.js` e a pasta física da release usam a mesma versão.
+- O botão **Descartar cobrança** e o endpoint `/api/descartar-cobranca` estão conectados.
+- Teste com Firestore simulado confirmou:
+  - descarte preserva o registro e cancela o pedido pendente;
+  - tentativa de checkout é invalidada para não reabrir o link antigo;
+  - pagamento tardio vira crédito na conta sem repetir o pedido;
+  - repetição da confirmação não duplica movimento nem saldo;
+  - cobrança paga não pode ser descartada;
+  - a pendência histórica do Armando é encerrada sem alterar o saldo;
+  - eventual confirmação tardia do teste do Armando não gera novo lançamento.
+- A página de retorno contém um único botão **Comprovante**, com as três opções condensadas.
+- O CSS possui chaves balanceadas e o ZIP foi verificado após a compactação.
 
 ## Limite da validação
 
-Não foi possível consultar o Firestore nem a InfinitePay de produção durante a geração do pacote. A recuperação real do pagamento ocorrerá após o deploy e a primeira abertura do sistema.
+Os testes locais não substituem a validação real com Firestore, webhook e checkout InfinitePay no deploy da Vercel.
