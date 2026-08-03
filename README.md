@@ -1,18 +1,39 @@
-# Escola Piaget — Sistema de Vendas 1.5.0-dev4.1.1-hotfix
+# Escola Piaget — Sistema de Vendas V1.5.0-dev5-rebuild
 
-Esta versão mantém integralmente o hotfix financeiro da V1.5.0-dev4.1 e acrescenta atualização nativa de arquivos no navegador.
+Esta versão reconstrói a camada de publicação e responsividade, preservando os fluxos funcionais e o hotfix financeiro da V1.5.0-dev4.1.
+
+## Como publicar
+
+1. Descompacte o pacote.
+2. Envie **todo o conteúdo da pasta** `vendas-piaget-v1.5.0-dev5-rebuild` para o projeto da Vercel.
+3. Aguarde o deploy ficar `Ready`.
+4. Abra o domínio oficial.
+
+Na migração para esta versão, uma aba antiga que já estava aberta no iPhone pode precisar ser fechada e aberta uma única vez. Depois que a dev5 carregar, o próprio sistema verifica novas versões ao abrir, ao retornar à aba, ao restaurar uma página no iPhone e periodicamente.
 
 ## Atualização automática
 
-- `index.html`, `obrigado.html` e `version.json` são entregues sem cache.
-- Todos os arquivos locais de CSS e JavaScript usam `?v=1.5.0-dev4.1.1-hotfix`.
-- O sistema consulta `version.json` ao abrir, voltar para a aba e a cada 60 segundos.
-- Quando não existe operação em andamento, a nova versão é carregada automaticamente.
-- Se houver formulário, carrinho ou modal aberto, aparece o aviso **Nova versão disponível**, evitando perda do trabalho.
-- O número da versão aparece no cabeçalho do sistema.
+- O HTML e o arquivo `version.json` são entregues sem cache.
+- JavaScript e CSS ficam em uma pasta física exclusiva da versão:
+  `/releases/1.5.0-dev5-rebuild/`.
+- Um service worker procura a versão nova e remove o cache da versão anterior.
+- O evento `pageshow` trata páginas restauradas pelo Safari/iPhone.
+- A versão carregada permanece visível no cabeçalho e no menu mobile.
 
-## Publicação
+## Mobile e iPhone
 
-Suba o conteúdo deste pacote na Vercel normalmente. Não é necessário limpar cache nos aparelhos. Após esta versão ser carregada uma vez, as próximas versões serão detectadas automaticamente, desde que cada pacote futuro atualize `version.json` e o parâmetro `?v=`.
+- `viewport-fit=cover` e áreas seguras do iPhone.
+- Altura baseada em `visualViewport`, sem `100dvh`.
+- Menu lateral único para usuários internos.
+- Modais adaptados ao teclado e às barras do Safari.
+- Tabelas operacionais convertidas em cartões no celular.
+- Inputs com 16 px para evitar o zoom automático do iPhone.
 
-> Observação: uma aba que já estava executando uma versão anterior a este mecanismo pode precisar ser reaberta uma única vez após o primeiro deploy. A partir daí, a detecção fica incorporada ao sistema.
+## Arquivos importantes
+
+- `index.html`: estrutura principal sem cache.
+- `version.json`: versão publicada.
+- `sw.js`: atualização automática.
+- `releases/1.5.0-dev5-rebuild/`: CSS e JavaScript físicos da versão.
+- `api/`: APIs Vercel e hotfix financeiro.
+- `vercel.json`: regras de cache.

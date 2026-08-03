@@ -1,67 +1,110 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Escola Piaget — Vendas, Cantina, Atendimento e Checkout</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&amp;family=Barlow+Condensed:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="application-version" content="1.5.0-dev5-rebuild">
+  <meta name="theme-color" content="#2C3896">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta http-equiv="Cache-Control" content="no-store, max-age=0, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Escola Piaget — Vendas, Cantina e Atendimento</title>
 
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/releases/1.5.0-dev5-rebuild/css/app.css">
 
-<link href="/css/app.css?v=1.5.0-dev4.1.1-hotfix" rel="stylesheet"/><meta content="1.5.0-dev4.1.1-hotfix" name="application-version"/></head>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
 <body>
-<header class="topbar">
-<div class="brand"><div class="brand-logo">EP</div><div><h1>Vendas Piaget</h1><small>Cantina, secretaria e portal do responsável</small></div></div>
-<div class="top-actions"><span class="pill app-version-pill" id="appVersionPill">v1.5.0-dev4.1.1-hotfix</span><button aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu" class="v151-mobile-menu hidden" id="v151MenuBtn" onclick="toggleMobileMenuV151()" type="button">☰</button><span class="pill" id="connectionPill">Conectando...</span><span class="pill hidden" id="userPill"></span><button class="btn btn-orange hidden" id="switchUserBtn" onclick="logoutProfile()">Trocar acesso</button></div>
-</header>
-<div class="role-screen" id="bootScreen"><div class="setup"><h2>Carregando o sistema</h2><p class="muted" id="bootText">Conectando ao Firestore...</p><div class="progress"><i id="bootProgress"></i></div><div class="alert danger hidden" id="bootError" style="margin-top:14px"></div><button class="btn btn-primary hidden" id="retryBtn" onclick="boot()" style="margin-top:12px">Tentar novamente</button></div></div>
-<div class="role-screen hidden" id="setupScreen"><div class="setup"><div class="accent"></div><h2>Inicializar a base real</h2><p>O Firestore está vazio. Este botão importará os 217 alunos reais enviados, turmas, produtos, preços, contas zeradas, usuários provisórios e configurações da escola. Nenhum dado existente será sobrescrito.</p><div class="alert warn">Esta etapa exige regras temporárias de leitura e escrita no Firestore enquanto a autenticação ainda não foi ativada.</div><button class="btn btn-primary" onclick="seedDatabase()" style="margin-top:14px">Importar base real</button><p class="muted" id="seedStatus"></p></div></div>
-<div class="role-screen hidden" id="roleScreen"><div class="role-box"><div class="accent"></div><h2 class="title">Escolha o acesso</h2><p class="subtitle" style="margin-bottom:18px">Acesso provisório para desenvolvimento. O login seguro será ativado ao final.</p><div class="role-grid">
-<div class="role-card" onclick="enterParent()"><div class="role-icon">👨‍👩‍👧</div><h3>Responsável</h3><p>Acessar por matrícula, consultar a conta, definir limite, fazer pedidos e pagar.</p></div>
-<div class="role-card" onclick="selectProfile('ruan')"><div class="role-icon">🍽️</div><h3>Ruan de Jesus</h3><p>Operador da cantina nos turnos manhã e tarde.</p></div>
-<div class="role-card" onclick="selectProfile('daniele')"><div class="role-icon">🗂️</div><h3>Daniele</h3><p>Secretaria no turno da manhã.</p></div>
-<div class="role-card" onclick="selectProfile('evanda')"><div class="role-icon">🗂️</div><h3>Evanda</h3><p>Secretaria no turno da tarde.</p></div>
-<div class="role-card" onclick="selectProfile('lucas')"><div class="role-icon">📊</div><h3>Lucas</h3><p>Gestão completa, configurações e auditoria.</p></div>
-</div></div></div>
-<div class="hidden" id="parentScreen"></div>
-<div class="shell hidden" id="appShell"><aside class="sidebar" id="sidebar"></aside><main class="main" id="mainContent"></main></div>
-<div class="v151-menu-overlay" id="v151MenuOverlay" onclick="closeMobileMenuV151()"></div><div class="modal-back" id="modalBack"><div class="modal"><div class="modal-head"><strong id="modalTitle">Detalhes</strong><button class="x" onclick="closeModal()">×</button></div><div class="modal-body" id="modalBody"></div></div></div>
-<div class="hidden" id="reportHost"></div><div class="toast" id="toast"></div>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo"><img src="/assets/logo-piaget-icon.png" alt="Escola Piaget"></div>
+      <div><h1>Escola Piaget</h1><small>Vendas, cantina e atendimento</small></div>
+    </div>
+    <div class="top-actions">
+      <span class="pill app-version-pill" id="appVersionPill" title="Versão do sistema">v1.5.0-dev5</span>
+      <button type="button" class="v151-mobile-menu hidden" id="v151MenuBtn" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰</button>
+      <span class="pill" id="connectionPill">Conectando...</span>
+      <span class="pill hidden" id="userPill"></span>
+      <button type="button" class="btn btn-orange hidden" id="switchUserBtn" onclick="logoutProfile()" aria-label="Sair do acesso atual">Sair</button>
+    </div>
+  </header>
 
+  <section class="role-screen" id="bootScreen">
+    <div class="setup">
+      <div class="accent"></div>
+      <h2>Carregando o sistema</h2>
+      <p class="muted" id="bootText">Conectando ao Firestore...</p>
+      <div class="progress"><i id="bootProgress"></i></div>
+      <div class="alert danger hidden" id="bootError" style="margin-top:14px"></div>
+      <button type="button" class="btn btn-primary hidden" id="retryBtn" onclick="boot()" style="margin-top:12px">Tentar novamente</button>
+    </div>
+  </section>
 
+  <section class="role-screen hidden" id="setupScreen">
+    <div class="setup">
+      <div class="accent"></div>
+      <h2>Inicializar a base real</h2>
+      <p>O Firestore está vazio. Esta etapa importa alunos, turmas, produtos, preços, contas e configurações sem sobrescrever dados existentes.</p>
+      <div class="alert warn">Use somente durante a implantação inicial da base.</div>
+      <button type="button" class="btn btn-primary" onclick="seedDatabase()" style="margin-top:14px">Importar base real</button>
+      <p class="muted" id="seedStatus"></p>
+    </div>
+  </section>
 
+  <section class="role-screen hidden" id="roleScreen">
+    <div class="role-box">
+      <div class="accent"></div>
+      <h2 class="title">Escolha o acesso</h2>
+      <p class="subtitle" style="margin-bottom:18px">Entre no portal do responsável ou acesse sua área de trabalho.</p>
+      <div class="role-grid">
+        <div class="role-card" onclick="enterParent()"><div class="role-icon">👨‍👩‍👧</div><h3>Responsável</h3><p>Conta do aluno, pedidos, fardamento e pagamentos.</p></div>
+        <div class="role-card" onclick="selectProfile('ruan')"><div class="role-icon">🍽️</div><h3>Ruan de Jesus</h3><p>Operação da cantina nos turnos manhã e tarde.</p></div>
+        <div class="role-card" onclick="selectProfile('daniele')"><div class="role-icon">🗂️</div><h3>Daniele</h3><p>Secretaria no turno da manhã.</p></div>
+        <div class="role-card" onclick="selectProfile('evanda')"><div class="role-icon">🗂️</div><h3>Evanda</h3><p>Secretaria no turno da tarde.</p></div>
+        <div class="role-card" onclick="selectProfile('lucas')"><div class="role-icon">📊</div><h3>Lucas</h3><p>Gestão, configurações e auditoria.</p></div>
+      </div>
+    </div>
+  </section>
 
+  <div class="hidden" id="parentScreen"></div>
 
+  <div class="shell hidden" id="appShell">
+    <aside class="sidebar" id="sidebar" aria-label="Menu principal"></aside>
+    <main class="main" id="mainContent"></main>
+  </div>
 
+  <div class="v151-menu-overlay" id="v151MenuOverlay" aria-hidden="true"></div>
 
+  <div class="modal-back" id="modalBack" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-head"><strong id="modalTitle">Detalhes</strong><button type="button" class="x" onclick="closeModal()" aria-label="Fechar">×</button></div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
 
+  <div class="hidden" id="reportHost"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script defer="True" src="/js/01-core.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/02-operations.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/03-cash.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/04-brand.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/05-auth.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/06-notifications-navigation.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/07-account-checkout.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/08-orders-agenda.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/09-portal-sales.js?v=1.5.0-dev4.1.1-hotfix"></script><script defer="True" src="/js/11-bootstrap.js?v=1.5.0-dev4.1.1-hotfix"></script></body>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/01-core.js"></script>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/02-operations.js"></script>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/03-cash.js"></script>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/04-brand.js"></script>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/05-auth.js"></script>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/06-notifications-navigation.js"></script>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/07-account-checkout.js"></script>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/08-orders-agenda.js"></script>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/09-portal-sales.js"></script>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/10-mobile-runtime.js"></script>
+  <script defer src="/releases/1.5.0-dev5-rebuild/js/11-bootstrap.js"></script>
+</body>
 </html>

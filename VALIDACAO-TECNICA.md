@@ -1,10 +1,17 @@
-# Validação técnica — 1.5.0-dev4.1.1-hotfix
+# Validação técnica — V1.5.0-dev5-rebuild
 
-- [x] O hotfix financeiro da versão anterior foi preservado.
-- [x] `index.html` referencia todos os CSS/JS com a versão atual.
-- [x] `version.json` possui a mesma versão do aplicativo.
-- [x] `vercel.json` impede cache persistente das páginas principais.
-- [x] Existe apenas um observador de versão.
-- [x] A atualização mantém parâmetros de retorno do checkout na URL.
-- [x] Operações em preenchimento não são recarregadas silenciosamente.
-- [x] Sintaxe dos módulos JavaScript validada com Node.js.
+Executado antes da geração do pacote:
+
+- Sintaxe de todos os módulos JavaScript, APIs e service worker com `node --check`.
+- Validação JSON de `package.json`, `version.json` e `vercel.json`.
+- Conferência de todos os caminhos locais do `index.html`.
+- Ausência dos caminhos genéricos antigos `/js/` e `/css/`.
+- CSS analisado com `tinycss2`: sem erros de parsing.
+- Remoção das media queries históricas e manutenção de uma camada mobile canônica.
+- Verificação da presença de `viewport-fit=cover`, `visualViewport`, `pageshow`, service worker e arquivos físicos versionados.
+- Verificação do logout canônico.
+- Verificação dos textos `Atualizar status` e `Atualizar pagamento`.
+- Verificação do hotfix financeiro: leituras de pedido, conta e estoque acontecem antes da primeira gravação na transação de fardamento.
+- Conferência de existência dos ativos da marca incluídos no pacote.
+
+Limites desta validação: login Firebase, Firestore real, Safari/iPhone real e InfinitePay real dependem do deploy na Vercel e devem seguir o roteiro de Preview.

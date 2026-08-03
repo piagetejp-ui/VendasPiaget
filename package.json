@@ -1,11 +1,7 @@
 {
   "name": "vendas-piaget-checkout",
-  "version": "1.5.0-dev4.1.1-hotfix",
+  "version": "1.5.0-dev5-rebuild",
   "private": true,
-  "engines": {
-    "node": "20.x"
-  },
-  "dependencies": {
-    "firebase-admin": "^12.7.0"
-  }
+  "engines": {"node": "20.x"},
+  "dependencies": {"firebase-admin": "^12.7.0"}
 }
