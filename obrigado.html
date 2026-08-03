@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-store, max-age=0, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="application-version" content="1.5.0-dev5-rebuild">
-<title>Pagamento — Escola Piaget V1.5.0-dev5-rebuild</title>
+<meta name="application-version" content="1.5.0-dev5.1-logo-hotfix">
+<title>Pagamento — Escola Piaget V1.5.0-dev5.1-logo-hotfix</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -84,9 +84,9 @@ function downloadReceiptImage(){
   const a=document.createElement('a');a.download=`comprovante-piaget-${receiptState.orderNsu||receiptState.id||'pagamento'}.png`;a.href=c.toDataURL('image/png');a.click();
 }
 checkPayment();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js?v=1.5.0-dev5-rebuild',{scope:'/',updateViaCache:'none'}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js?v=1.5.0-dev5.1-logo-hotfix',{scope:'/',updateViaCache:'none'}).catch(()=>{});}
 window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 </script>
-<div id="checkoutVersion" class="no-print" style="position:fixed;right:10px;bottom:8px;font-size:10px;color:#64748b;opacity:.7">v1.5.0-dev5-rebuild</div>
+<div id="checkoutVersion" class="no-print" style="position:fixed;right:10px;bottom:8px;font-size:10px;color:#64748b;opacity:.7">v1.5.0-dev5.1-logo-hotfix</div>
 </body>
 </html>

@@ -1,193 +1,178 @@
 {
-  "version": "1.5.0-dev5-rebuild",
-  "builtAt": "2026-08-03T16:32:00-03:00",
-  "base": "1.5.0-dev4.1.1-hotfix",
-  "releasePath": "/releases/1.5.0-dev5-rebuild/",
-  "features": [
-    "physical versioned assets",
-    "service worker update flow",
-    "Safari pageshow refresh",
-    "visualViewport mobile height",
-    "single canonical responsive layer",
-    "mobile table cards",
-    "iPhone safe areas",
-    "financial hotfix preserved"
-  ],
+  "version": "1.5.0-dev5.1-logo-hotfix",
+  "build": "2026-08-03T16:56:00-03:00",
+  "releasePath": "/releases/1.5.0-dev5.1-logo-hotfix/",
+  "fileCount": 34,
   "files": [
     {
       "path": "AUDITORIA-REBUILD.md",
-      "bytes": 824,
-      "sha256": "94fe6d7997005fea62bccc6913ec5763abaa0e01362bf1ffe16ec630733a026c"
-    },
-    {
-      "path": "BUILD-REPORT.json",
-      "bytes": 5140,
-      "sha256": "c095d6cd9e33b87e816e7ab5431908a6e8daa79efc07c9456a1a709c44be5c68"
+      "size": 830,
+      "sha256": "d59ba0cd67529f5c608aa530996741ec9dc5accccee7b89c12aa1d209e8983a3"
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 1498,
-      "sha256": "eaabff459b7fd9947c47d96403a2493ac860b3c06edef1d01a1ba3fa8a2a0024"
+      "size": 721,
+      "sha256": "bbe2c5dd958ef2733f93f287fae8841ec773e40f1432c581c825620b93d5f60d"
     },
     {
       "path": "README.md",
-      "bytes": 1755,
-      "sha256": "34402c0fef48417b6d857ae54f8d5a1e7a7f3bc46a0554c004d2ae66d484c4d1"
+      "size": 2046,
+      "sha256": "b0fe1f77209dbd92857ca10a320561ec635a5daeb46adcd6f21d3cf9c668f1aa"
     },
     {
       "path": "TESTES.md",
-      "bytes": 1319,
-      "sha256": "22248153316f82c2efad1a133edaf9de2e242845f2ad3007a799f4ce147cf2b4"
+      "size": 1331,
+      "sha256": "716be935f9c929c5ac336a378ecaf18799087620b51893b2c9b2177b724987ad"
     },
     {
       "path": "VALIDACAO-TECNICA.md",
-      "bytes": 1128,
-      "sha256": "2a64ea7197da8c9deb9dbdb9cacf1b840126cff4d98368bb614b3f0a0862f6f8"
+      "size": 1134,
+      "sha256": "2f4e688b5463fb3380a35f43cfff83f8f0897e6e6d60af03aaa4bbe377f67da6"
     },
     {
       "path": "api/_utils.js",
-      "bytes": 70703,
-      "sha256": "bf29e560b34c4fc2e11b6465aecff37ef1aa66ebe386b679e00d62a166cb67ae"
+      "size": 70751,
+      "sha256": "6ba8d704e38dea62140b6b5b62ae4dc094b0e31152f781913c640ac6125db9a0"
     },
     {
       "path": "api/criar-checkout.js",
-      "bytes": 3398,
+      "size": 3398,
       "sha256": "418e8d765d34d8868c467ff9ff114d5a503e18719baf9e82798df0ea79adcb8c"
     },
     {
       "path": "api/registrar-operacao-presencial.js",
-      "bytes": 617,
+      "size": 617,
       "sha256": "71d916eed2f889476e0fac0927a921adf96e2b7558af883c9e1471b3957592d2"
     },
     {
       "path": "api/verificar-pagamento.js",
-      "bytes": 561,
+      "size": 561,
       "sha256": "f9ab112b9ab6e062022bae42a5bc19bdee7881834078d154e9a01cfb088a657f"
     },
     {
       "path": "api/webhook-infinitepay.js",
-      "bytes": 768,
+      "size": 768,
       "sha256": "0d3da91a8899326e5b2ac3cdcc77a89a57556161fc0af425435b937ab7b84d84"
     },
     {
       "path": "assets/logo-piaget-horizontal.png",
-      "bytes": 78291,
+      "size": 78291,
       "sha256": "d58b07e5a2ffc39ee72b1f83f0f720b2841ff84cc5bacd9896eaf5d7212392f8"
     },
     {
       "path": "assets/logo-piaget-icon-blue-white.png",
-      "bytes": 15081,
-      "sha256": "6c8ed1ab5af26470c4b6a2e9452708482c3edbfb39cc34f5ba7dae2478b682fc"
+      "size": 29899,
+      "sha256": "aba584590454d09ce4df8ec013c5c28907bb826028a5b2d2255576cfde139f23"
     },
     {
       "path": "assets/logo-piaget-icon-white-orange.png",
-      "bytes": 15081,
-      "sha256": "6c8ed1ab5af26470c4b6a2e9452708482c3edbfb39cc34f5ba7dae2478b682fc"
+      "size": 13109,
+      "sha256": "607208ddcc62d691a370e37021e81846abf4c2c24cc9676a0ac0e53b36b8df5e"
     },
     {
       "path": "assets/logo-piaget-icon-white.png",
-      "bytes": 15081,
-      "sha256": "6c8ed1ab5af26470c4b6a2e9452708482c3edbfb39cc34f5ba7dae2478b682fc"
+      "size": 10541,
+      "sha256": "4b4a10964cf93e9a82769b62de92bccd61a9e61e72e1056591d443ba1ab69847"
     },
     {
       "path": "assets/logo-piaget-icon.png",
-      "bytes": 15081,
-      "sha256": "6c8ed1ab5af26470c4b6a2e9452708482c3edbfb39cc34f5ba7dae2478b682fc"
+      "size": 31701,
+      "sha256": "30a77bfd7c6b876dc45d390acd9d22648f5dde4ef9fb4d8830dc6dbbd9b5eaa1"
     },
     {
       "path": "assets/selo-piaget.png",
-      "bytes": 15081,
-      "sha256": "6c8ed1ab5af26470c4b6a2e9452708482c3edbfb39cc34f5ba7dae2478b682fc"
+      "size": 31701,
+      "sha256": "30a77bfd7c6b876dc45d390acd9d22648f5dde4ef9fb4d8830dc6dbbd9b5eaa1"
     },
     {
       "path": "index.html",
-      "bytes": 6451,
-      "sha256": "0a2a16cf7ca5c9481014fdfed8cfe5e0643ec62c0b16fe9b3aa4e82765e7dad8"
+      "size": 6543,
+      "sha256": "e7a928b0a36e71e8b1ee62aa6d3eeb8d4fb54583eb7ce2f2ad6cbe39e5d00a1b"
     },
     {
       "path": "obrigado.html",
-      "bytes": 14709,
-      "sha256": "f2cbee6440fb87980c1cfd27f0bdc68357ec6a52030c2faf01bec33602881bae"
+      "size": 14733,
+      "sha256": "46d5a329a33aa067176864b3173db3db226701b5862b8eb9cd8c5c019e36bd4d"
     },
     {
       "path": "package.json",
-      "bytes": 173,
-      "sha256": "5203dd5208523d5dfdf3e5abced2cb00a5e2ca3eb280820f59d75a019567a905"
+      "size": 179,
+      "sha256": "eef01733b942a04103fd5087fb4c73d9e63579850375582c38acb5e7563c1227"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/css/app.css",
-      "bytes": 68264,
-      "sha256": "2e401de2bf21f52171d405eff0ceb73a5554d75ceedb43dd097f5f3ef269912c"
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/css/app.css",
+      "size": 68282,
+      "sha256": "d5c1e68c3dc529646646c61340698603541ae112386dca046f2a401d77c01f9a"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/01-core.js",
-      "bytes": 174693,
-      "sha256": "d8ebbcb2199456c2833890b044c6404d4ec124e60c8b16c5e4753bb5bf9f2531"
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/01-core.js",
+      "size": 174699,
+      "sha256": "81e9dd7ca3e133ff95b1eb2b87d4049d0f64e97945e5c2224be889bcd8505433"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/02-operations.js",
-      "bytes": 92775,
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/02-operations.js",
+      "size": 92775,
       "sha256": "9820fd13a08b28f4b29f37c6aa7f3950d57a43b2a1c9c34c4e38ce5d29e22d1b"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/03-cash.js",
-      "bytes": 61156,
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/03-cash.js",
+      "size": 61156,
       "sha256": "742ff8985bcab46d4b8420aaa4ed6e76be2580e1f8c68f79044ee28c9c181ace"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/04-brand.js",
-      "bytes": 8099,
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/04-brand.js",
+      "size": 8099,
       "sha256": "8cbc81ab8e76bca639ec791a6e156de45739b4d127f58ff10211f3dd0abd99c8"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/05-auth.js",
-      "bytes": 45025,
-      "sha256": "1e388a02cb4ab3945e8ce27a13c84108ba011aaffc97cd7449c3c6993c9abe78"
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/05-auth.js",
+      "size": 45031,
+      "sha256": "89554180b966e9b03d83dc5d0bd60a1c193124c5baad08b41edc7c1f78c442c1"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/06-notifications-navigation.js",
-      "bytes": 31893,
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/06-notifications-navigation.js",
+      "size": 31893,
       "sha256": "446f2da0579c5540f2e7580125cdf4790ab4beeed847f5ee8e378333f1648aa7"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/07-account-checkout.js",
-      "bytes": 58836,
-      "sha256": "692023fa331f1263ded5a4b79753fc79ccebbec8defef41e11a523a7b21b9e90"
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/07-account-checkout.js",
+      "size": 58842,
+      "sha256": "731cf1cc902967cffc61e81040e3d261d6b2aa903a569da8610be9dd91e59280"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/08-orders-agenda.js",
-      "bytes": 24852,
-      "sha256": "789e6af4b050905c2c8b154fcf0d5fee064f0da2cba7371bc0d51cf5f70b4ba2"
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/08-orders-agenda.js",
+      "size": 24864,
+      "sha256": "681c6c8b21853a2695bdbaaedd92290336f210d5df8b2edfd229f130bfddbc97"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/09-portal-sales.js",
-      "bytes": 65669,
-      "sha256": "b2de82e21ce37c58a9bc1a920e251e5db71b52b3b3ee79532447fc73a2a72e74"
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/09-portal-sales.js",
+      "size": 65675,
+      "sha256": "99ed06ef3f323a6c12c7e0a8a95957a3a4b80fb1e861bb200d8fb5e1413eb48f"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/10-mobile-runtime.js",
-      "bytes": 4254,
-      "sha256": "4dbb87c9e3caa22e3a573132b9f983b4360316f5ecddb88540b9258659cffb4d"
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/10-mobile-runtime.js",
+      "size": 4266,
+      "sha256": "07114a0ad16bc3a22863b8380b90ef63b2ffb2eb8bdb77ce622f1b37aeb49189"
     },
     {
-      "path": "releases/1.5.0-dev5-rebuild/js/11-bootstrap.js",
-      "bytes": 5482,
-      "sha256": "cda8114659de54602b934ed4b488688a95493de1cd02df9737a078a46bdb481a"
+      "path": "releases/1.5.0-dev5.1-logo-hotfix/js/11-bootstrap.js",
+      "size": 5494,
+      "sha256": "08c93ad11c097e083945b667aace106e20d4b90a64390f0564e0bb4e6230eedb"
     },
     {
       "path": "sw.js",
-      "bytes": 2218,
-      "sha256": "a35c0f01ae26c064433261b1a2530d6d712dfe2c222ecdb18d8e27fe06e7db92"
+      "size": 2236,
+      "sha256": "b2d68089eb81cd29385521a0fbba60d979d91398f9ad54958d8c3501925b447b"
     },
     {
       "path": "vercel.json",
-      "bytes": 1328,
-      "sha256": "67406da5e84ed1a3a34af9c3a70a8d951956d6c725dd5b07ff90a88a80cfbf9c"
+      "size": 1334,
+      "sha256": "2e1618219a38623e2c85e0cdf1b49e17771448d0c5f9da4cfa6581f621a7e7f7"
     },
     {
       "path": "version.json",
-      "bytes": 128,
-      "sha256": "15c3884ca97947c43d53d6241a1639d41c38801848721a9118668aa1ecb33eba"
+      "size": 140,
+      "sha256": "ce00a3669beac1aa18a65211969375fca0266ab5e6dc3b7e5c4123b28ec11046"
     }
   ]
 }

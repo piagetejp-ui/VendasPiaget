@@ -1,4 +1,4 @@
-# Validação técnica — V1.5.0-dev5-rebuild
+# Validação técnica — V1.5.0-dev5.1-logo-hotfix
 
 Executado antes da geração do pacote:
 

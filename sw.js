@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.5.0-dev5-rebuild */
-const VERSION='1.5.0-dev5-rebuild';
+/* Escola Piaget — service worker V1.5.0-dev5.1-logo-hotfix */
+const VERSION='1.5.0-dev5.1-logo-hotfix';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.5.0-dev5-rebuild/';
+const RELEASE='/releases/1.5.0-dev5.1-logo-hotfix/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/01-core.js`,
