@@ -1,33 +1,14 @@
-# Roteiro de testes — 1.5.0-dev5.2.3-operational-portal
+# Testes — portal do responsável RC1
 
-## Portal do responsável
-
-1. Entrar no aluno e confirmar que os nove atalhos abrem.
-2. Abrir Pedido da cantina e testar **Um dia**, **Semana** e **Mês**.
-3. Marcar e desmarcar dias; conferir atualização imediata do total.
-4. Alterar produto e quantidade; conferir total e disponibilidade.
-5. Tocar em **Revisar pedido** e confirmar avanço.
-6. Tocar em **Voltar e alterar** e confirmar que as escolhas permanecem.
-7. Revisar com uso do saldo desligado e ligado.
-8. Confirmar pedido pago totalmente pelo saldo e pedido direcionado à InfinitePay.
-9. Testar Adicionar crédito e Comprar fardamento até a criação do checkout.
-10. Abrir Pagamentos pendentes, atualizar status e descartar uma cobrança não paga.
-
-## Ajuda e mobile
-
-1. Tocar nos ícones **i** e confirmar abertura/fechamento do balão.
-2. Testar em iPhone/Android com teclado aberto e modal do planejador.
-3. Confirmar que a versão não ocupa o cabeçalho e aparece no rodapé do menu interno.
-
-## Secretaria
-
-1. Abrir **Vendas** e confirmar que **Nova venda** abre o assistente.
-2. Testar venda imediata, programação de lanches e adição de crédito.
-3. Em **Usuários e acessos**, alterar o filtro de solicitações de redefinição e confirmar atualização.
-
-## Backend
-
-1. Requisição com quantidade 11 deve ser recusada.
-2. Produto com `vendaResponsavel=false` deve ser recusado no portal.
-3. Tamanho ou variação inexistente de farda deve ser recusado.
-4. Confirmar que `teste_avulso` retorna tipo não suportado.
+1. Entrar como responsável e confirmar que aparecem apenas sino e Sair no cabeçalho.
+2. Tocar no saldo e abrir o extrato.
+3. Abrir um comprovante no extrato e testar InfinitePay (quando houver), imagem e PDF.
+4. Testar o olho em login, criação e redefinição de senha.
+5. Pedido de R$ 6 com saldo de R$ 10 e uso do saldo ligado: confirmar sem abrir InfinitePay e obter saldo R$ 4.
+6. Pedido com saldo parcial: checkout somente pela diferença.
+7. Pedido com saldo preservado: checkout pelo valor integral.
+8. Abrir programação ativa, remarcar uma entrega futura e validar estoque.
+9. Cancelar uma entrega futura e conferir crédito e liberação do estoque.
+10. Confirmar notificações de pagamento, pedido e alteração da programação.
+11. Repetir cliques e recargas para conferir idempotência.
+12. Validar em iPhone, Android e desktop.

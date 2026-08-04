@@ -1,49 +1,49 @@
 {
-  "version": "1.5.0-dev5.2.3-operational-portal",
-  "createdAt": "2026-08-04T09:53:00-03:00",
+  "version": "1.5.0-rc1-portal-responsavel",
+  "createdAt": "2026-08-04T10:32:00-03:00",
   "checks": {
     "nodeSyntax": true,
-    "zipIntegrity": true,
     "inlineHandlersResolved": true,
-    "canonicalFunctionsUnique": true,
-    "plannerContract": true,
-    "checkoutRoutesPresent": true,
-    "testCheckoutRemoved": true,
-    "armandoRoutineRemoved": true,
-    "secretarySalePreserved": true,
-    "passwordResetFilterFixed": true,
-    "runtimeSmokePlannerReview": true
+    "balanceEndpoint": true,
+    "parentNotifications": true,
+    "movementReceipts": true,
+    "passwordVisibility": true,
+    "scheduleManagement": true,
+    "releaseVersioned": true,
+    "deliveryNotifications": true,
+    "canonicalNotificationRenderer": true,
+    "balanceAttemptReusableAfterSuccess": true
   },
   "files": [
     {
-      "path": "AUDITORIA-PORTAL-OPERACIONAL.md",
-      "bytes": 1508,
-      "sha256": "1856033a052f9908f06856c35930ce8cd376c7e9d92a7529cc6986e1a4ab490d"
-    },
-    {
       "path": "CHANGELOG.md",
-      "bytes": 1241,
-      "sha256": "deed9c41b348353fcf9a45430c767224748ef8ebafc7d928558d7a61a90cb0ed"
+      "bytes": 549,
+      "sha256": "b8b2e450009a477679b84a9ac60ecc5ffd7723724e178bde63beba8ff0ca72c8"
     },
     {
       "path": "README.md",
-      "bytes": 1022,
-      "sha256": "b3d8a47c89d538858d2aa07469776a9c10a0731e235c6387b6e03d9409dbcca9"
+      "bytes": 796,
+      "sha256": "5d05f9581032e551da257745319c1bd8758baed3885b8e7983f95003e8d2bbf6"
     },
     {
       "path": "TESTES.md",
-      "bytes": 1556,
-      "sha256": "667116f0e034e74135e6b0eae1fc349dac82e89edabbfb53077b1fb7da43f01f"
+      "bytes": 890,
+      "sha256": "925ca992d086245b362c285cbd7c033091e4626b7e0f2bdaa7ed45c7e2bc9550"
     },
     {
       "path": "VALIDACAO-TECNICA.md",
-      "bytes": 1215,
-      "sha256": "9f6d38e17a4730d870ef4b2b48a5299d34bdcd16261953682c178286e1062ecb"
+      "bytes": 636,
+      "sha256": "0fc08fc6a12b95086a506e0a0bed007c054e659dac0ab794b57b88de647121e8"
     },
     {
       "path": "api/_utils.js",
-      "bytes": 79021,
-      "sha256": "c2bd297e547dee24f7646d154b9dbaa2d887c54606561b01660db8f0bcbc0ea2"
+      "bytes": 79157,
+      "sha256": "3434cf154c32cda87c1f80b277981cab837082606d709cab23687ac4baa9fe3c"
+    },
+    {
+      "path": "api/confirmar-pedido-saldo.js",
+      "bytes": 2820,
+      "sha256": "9bd1f4ba76227a7bd75bb499776ed89fbc41c6ed12799111444cb5519c9cd2c7"
     },
     {
       "path": "api/criar-checkout.js",
@@ -54,6 +54,11 @@
       "path": "api/descartar-cobranca.js",
       "bytes": 544,
       "sha256": "83415e403aed89d366e97dc43d4ba9444642701f8227b1b67af77454872f2acb"
+    },
+    {
+      "path": "api/gerenciar-programacao-lanche.js",
+      "bytes": 7661,
+      "sha256": "88a6b71bdab813b3a0ba0aae7b1b8ef041d66e687f909ca63d67e1b6312c7998"
     },
     {
       "path": "api/registrar-operacao-presencial.js",
@@ -102,93 +107,93 @@
     },
     {
       "path": "index.html",
-      "bytes": 6693,
-      "sha256": "d3bf5a042a452dcb3cd613dbcc541e8fa8f87d6abf95171561992e9fcc1e7784"
+      "bytes": 6623,
+      "sha256": "1472df37b3a5a4362b51ca2a0a5146874f26ed1bb47677eb2375802bf1c72fb8"
     },
     {
       "path": "obrigado.html",
-      "bytes": 17193,
-      "sha256": "e3d8070465746406fc986253b58afebaf7051dd6fcfb83782445384082b5dcf0"
+      "bytes": 17173,
+      "sha256": "6e75062d29ae4da32734b9da3ca094949ed59814c7893912b31a93bb7d86ae8d"
     },
     {
       "path": "package.json",
-      "bytes": 185,
-      "sha256": "6c00336a2f8be2c16f5549581021fd8db7cb689ab412b32ab2955dc9b87f65d9"
+      "bytes": 180,
+      "sha256": "9c69d7607eea52629b5a4dc417a50034511e0831a335048d66e92a1b39c39daf"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/css/app.css",
-      "bytes": 71452,
-      "sha256": "c3213760c0ff8d7d3268c48045cc1042cdfa97e160da238fa7440b20b66c1d51"
+      "path": "releases/1.5.0-rc1-portal-responsavel/css/app.css",
+      "bytes": 73807,
+      "sha256": "b450cc157901f8dcf133e5f43972aa8c62e01f4c66b4a308cf1dc71cd1d58eca"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/01-core.js",
-      "bytes": 173993,
-      "sha256": "4d50a9e7519662945a0b4332ac9d8e420d213986a3e20230f23c58b2c373b79c"
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/01-core.js",
+      "bytes": 174065,
+      "sha256": "5d25abe472965a2e699f8a213f729fa39cd5326472042038b2599eb09dae168c"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/02-operations.js",
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/02-operations.js",
       "bytes": 88299,
       "sha256": "15e9e9d024f140c6957b70e1b3088f20f961087cef30cbad405b44d056cf365b"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/03-cash.js",
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/03-cash.js",
       "bytes": 61156,
       "sha256": "742ff8985bcab46d4b8420aaa4ed6e76be2580e1f8c68f79044ee28c9c181ace"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/04-brand.js",
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/04-brand.js",
       "bytes": 8119,
       "sha256": "5249aeb8b18c22d75d735dd4d4e2a8cbfc64ee251e591bd502e8b15a9321fda9"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/05-auth.js",
-      "bytes": 45829,
-      "sha256": "a0b556d0875a6a24a4288beea58eac617a56ace35585c3e98a15575308d9870a"
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/05-auth.js",
+      "bytes": 45704,
+      "sha256": "d55cb02397031d3416aceea3bd5f6694232b10e515c5485af8f6270a386869e0"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/06-notifications-navigation.js",
-      "bytes": 32024,
-      "sha256": "d7d0ac278589646beecd069c5213eb131199f4b24aa7cfc993aa8fc9b2b38998"
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/06-notifications-navigation.js",
+      "bytes": 32643,
+      "sha256": "f3a92265df2319ce76c0c8a1d4acd8d08839028f6be1944b96dc6f43b0e76c69"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/07-account-checkout.js",
-      "bytes": 59477,
-      "sha256": "912a07fdd0cc5e5be4850e08a92eeaf1a2fbe469874a625f117e808d4cb44d41"
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/07-account-checkout.js",
+      "bytes": 59472,
+      "sha256": "b2453dcd4db9031ddb5a972949daf39606c25eabd1ecfef15e3bf0bd1b4fa786"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/08-orders-agenda.js",
-      "bytes": 28907,
-      "sha256": "762fbae24780a739aee367ca7b528ed5806cf54d64d2164cca033103f075ee05"
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/08-orders-agenda.js",
+      "bytes": 29570,
+      "sha256": "3e705d46e24e4d14785ec12f1b9add8f171733741c5aad8c7c84d0e6330e0c48"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/09-portal-sales.js",
-      "bytes": 66540,
-      "sha256": "16520b758372f9015fa85b128c2f874bd64d8821431de35d2092002b6551d907"
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/09-portal-sales.js",
+      "bytes": 77737,
+      "sha256": "c17abfcc8574ec420c0de034d5b6a22d6536743a06f1c42456790de104811098"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/10-mobile-runtime.js",
-      "bytes": 4284,
-      "sha256": "f5f16dc4b18cbbaeb5e82d0ce7794e299e9c32229fd7dfcff59f3d485475e671"
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/10-mobile-runtime.js",
+      "bytes": 5507,
+      "sha256": "cf56d386ca76733101cd923af0fed92cfb2a76e23799d65915db45c9c8ba584c"
     },
     {
-      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/11-bootstrap.js",
-      "bytes": 5512,
-      "sha256": "740ef38c7d67872733c7dd9afaf839c2882fe92bc684b9de35fec89b972fc41b"
+      "path": "releases/1.5.0-rc1-portal-responsavel/js/11-bootstrap.js",
+      "bytes": 5502,
+      "sha256": "4a18ff5507584aeac51fd4594a2509e3d357a408858a7489a6e1d1640175899a"
     },
     {
       "path": "sw.js",
-      "bytes": 2507,
-      "sha256": "3d2b6985d01924ea49ac711b749f90ae3ab4c9ad8c3a9577adbd8a1fde0700e9"
+      "bytes": 2492,
+      "sha256": "35c0b837a995c00156006895b9d54e22b685bea7dcb8aaa8e905fbd0a2de6ab3"
     },
     {
       "path": "vercel.json",
-      "bytes": 1343,
-      "sha256": "417510b5c54ec86a911b029ca5c6d02891b338be1be92432b9816b908831f3ba"
+      "bytes": 1338,
+      "sha256": "47ad890c20e85b8c9d5575cd9e6b8dfba1333d809e09d0958e7710e41aa119a9"
     },
     {
       "path": "version.json",
-      "bytes": 158,
-      "sha256": "d2279fd230370aafd1572575c206fc0eb90973192b49cd7c4ba02cec5064a3be"
+      "bytes": 148,
+      "sha256": "e4363d7ce2fa94655c17639b51daae39e2644e6687748167479bd26c925cd144"
     }
   ]
 }
