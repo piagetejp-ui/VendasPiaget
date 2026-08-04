@@ -1,199 +1,200 @@
 {
-  "version": "1.5.0-rc1-portal-responsavel",
-  "createdAt": "2026-08-04T10:32:00-03:00",
-  "checks": {
-    "nodeSyntax": true,
-    "inlineHandlersResolved": true,
-    "balanceEndpoint": true,
-    "parentNotifications": true,
-    "movementReceipts": true,
-    "passwordVisibility": true,
-    "scheduleManagement": true,
-    "releaseVersioned": true,
-    "deliveryNotifications": true,
-    "canonicalNotificationRenderer": true,
-    "balanceAttemptReusableAfterSuccess": true
-  },
+  "version": "1.5.0-rc1.1-portal-responsavel-hotfix",
+  "generatedAt": "2026-08-04T11:12:00-03:00",
+  "fileCount": 36,
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 549,
-      "sha256": "b8b2e450009a477679b84a9ac60ecc5ffd7723724e178bde63beba8ff0ca72c8"
+      "size": 671,
+      "sha256": "111c6a0549b8d74b0ff14001c2682b04166545edb231a764f77f21cf624cebae"
     },
     {
       "path": "README.md",
-      "bytes": 796,
-      "sha256": "5d05f9581032e551da257745319c1bd8758baed3885b8e7983f95003e8d2bbf6"
+      "size": 545,
+      "sha256": "268017c282a747a81cbf5ae3cf949676040bcdbd947744f4070c05aadd9115d0"
     },
     {
       "path": "TESTES.md",
-      "bytes": 890,
-      "sha256": "925ca992d086245b362c285cbd7c033091e4626b7e0f2bdaa7ed45c7e2bc9550"
+      "size": 1360,
+      "sha256": "6d6dffd0d93763a28eff7aec86405917821cb0070772326a9914806f57603b12"
     },
     {
       "path": "VALIDACAO-TECNICA.md",
-      "bytes": 636,
-      "sha256": "0fc08fc6a12b95086a506e0a0bed007c054e659dac0ab794b57b88de647121e8"
+      "size": 1672,
+      "sha256": "aa7de6befc310fa5e0e3c14ad01b99c36b728ba480a8e60d6b0053bbc997853e"
     },
     {
       "path": "api/_utils.js",
-      "bytes": 79157,
-      "sha256": "3434cf154c32cda87c1f80b277981cab837082606d709cab23687ac4baa9fe3c"
+      "size": 82670,
+      "sha256": "6948b0299c567d8bf0bf1f2a78b541918939f3c06422ee487aeef09d16553e58"
     },
     {
       "path": "api/confirmar-pedido-saldo.js",
-      "bytes": 2820,
+      "size": 2820,
       "sha256": "9bd1f4ba76227a7bd75bb499776ed89fbc41c6ed12799111444cb5519c9cd2c7"
     },
     {
       "path": "api/criar-checkout.js",
-      "bytes": 4140,
+      "size": 4140,
       "sha256": "c9bc7cf65be3f1b6dda4b69c6c0d734a1cefe824cbd1e186740ee95f0bb7b883"
     },
     {
       "path": "api/descartar-cobranca.js",
-      "bytes": 544,
+      "size": 544,
       "sha256": "83415e403aed89d366e97dc43d4ba9444642701f8227b1b67af77454872f2acb"
     },
     {
       "path": "api/gerenciar-programacao-lanche.js",
-      "bytes": 7661,
-      "sha256": "88a6b71bdab813b3a0ba0aae7b1b8ef041d66e687f909ca63d67e1b6312c7998"
+      "size": 8945,
+      "sha256": "096e3a4bfa926c90a9a9018d40cf29709ed6ac68e96b8c343a68c3bedb2450c4"
     },
     {
       "path": "api/registrar-operacao-presencial.js",
-      "bytes": 617,
+      "size": 617,
       "sha256": "71d916eed2f889476e0fac0927a921adf96e2b7558af883c9e1471b3957592d2"
     },
     {
       "path": "api/verificar-pagamento.js",
-      "bytes": 600,
+      "size": 600,
       "sha256": "dd6d0723cd0b7e97f6796f180e58ac4f765af241edce9a807a2be6bf80d069f7"
     },
     {
       "path": "api/webhook-infinitepay.js",
-      "bytes": 1265,
+      "size": 1265,
       "sha256": "56b735bb26aa61e4869f9da3ce148495bc1c74d0af80c96bd97565acc0f2937a"
     },
     {
       "path": "assets/logo-piaget-horizontal-v152.png",
-      "bytes": 78291,
+      "size": 78291,
       "sha256": "d58b07e5a2ffc39ee72b1f83f0f720b2841ff84cc5bacd9896eaf5d7212392f8"
     },
     {
       "path": "assets/logo-piaget-icon-blue-white-v152.png",
-      "bytes": 80830,
+      "size": 80830,
       "sha256": "25e5d984bc4f78549489dc10b9b8e83d322297977733b56ae4193c542538a679"
     },
     {
       "path": "assets/logo-piaget-icon-v152.png",
-      "bytes": 66524,
+      "size": 66524,
       "sha256": "d98932d594dd7cf4c907890896e41df01a3cb36bb46fe457aa433011f7cb3067"
     },
     {
       "path": "assets/logo-piaget-icon-white-orange-v152.png",
-      "bytes": 70388,
+      "size": 70388,
       "sha256": "90987836184113f2a2ecfcb7e9c33e556aae59de00eff5ffdb69552a95f3f588"
     },
     {
       "path": "assets/logo-piaget-icon-white-v152.png",
-      "bytes": 50170,
+      "size": 50170,
       "sha256": "6735a3b15a870b48d4a304d6cb66e15fd966ef0b11bc8c1c0696126c9683bec7"
     },
     {
       "path": "assets/selo-piaget-v152.png",
-      "bytes": 66524,
+      "size": 66524,
       "sha256": "d98932d594dd7cf4c907890896e41df01a3cb36bb46fe457aa433011f7cb3067"
     },
     {
       "path": "index.html",
-      "bytes": 6623,
-      "sha256": "1472df37b3a5a4362b51ca2a0a5146874f26ed1bb47677eb2375802bf1c72fb8"
+      "size": 6749,
+      "sha256": "d37f829e54cfe9098ddbd6c000d6b1d6efda227b6f9e81205984d0436f6fd620"
     },
     {
       "path": "obrigado.html",
-      "bytes": 17173,
-      "sha256": "6e75062d29ae4da32734b9da3ca094949ed59814c7893912b31a93bb7d86ae8d"
+      "size": 17209,
+      "sha256": "02dc9f7f5c4e14bf8d20c5aa1dbdcfd65357777f65172af178dc4d6f898c6a6e"
     },
     {
       "path": "package.json",
-      "bytes": 180,
-      "sha256": "9c69d7607eea52629b5a4dc417a50034511e0831a335048d66e92a1b39c39daf"
+      "size": 182,
+      "sha256": "cf562d2798a91644bd00d0220121d04c500311af77d0f41e77d62b3934f00085"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/css/app.css",
-      "bytes": 73807,
-      "sha256": "b450cc157901f8dcf133e5f43972aa8c62e01f4c66b4a308cf1dc71cd1d58eca"
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/css/app.css",
+      "size": 73931,
+      "sha256": "1f32862265b077659c0ffe5556ab39b57543c6734786ac829afe1fcf29931bfd"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/01-core.js",
-      "bytes": 174065,
-      "sha256": "5d25abe472965a2e699f8a213f729fa39cd5326472042038b2599eb09dae168c"
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/01-core.js",
+      "size": 174074,
+      "sha256": "172ba4c797828b779af0b26abdb9a855e0c0445e5166b1ad5c25095edd4ce71a"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/02-operations.js",
-      "bytes": 88299,
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/02-operations.js",
+      "size": 88299,
       "sha256": "15e9e9d024f140c6957b70e1b3088f20f961087cef30cbad405b44d056cf365b"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/03-cash.js",
-      "bytes": 61156,
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/03-cash.js",
+      "size": 61156,
       "sha256": "742ff8985bcab46d4b8420aaa4ed6e76be2580e1f8c68f79044ee28c9c181ace"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/04-brand.js",
-      "bytes": 8119,
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/04-brand.js",
+      "size": 8119,
       "sha256": "5249aeb8b18c22d75d735dd4d4e2a8cbfc64ee251e591bd502e8b15a9321fda9"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/05-auth.js",
-      "bytes": 45704,
-      "sha256": "d55cb02397031d3416aceea3bd5f6694232b10e515c5485af8f6270a386869e0"
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/05-auth.js",
+      "size": 45713,
+      "sha256": "0f0723691ed75ef9da8cc1896a765970c61142139a6f433983e3a161eeff2983"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/06-notifications-navigation.js",
-      "bytes": 32643,
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/06-notifications-navigation.js",
+      "size": 32643,
       "sha256": "f3a92265df2319ce76c0c8a1d4acd8d08839028f6be1944b96dc6f43b0e76c69"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/07-account-checkout.js",
-      "bytes": 59472,
-      "sha256": "b2453dcd4db9031ddb5a972949daf39606c25eabd1ecfef15e3bf0bd1b4fa786"
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/07-account-checkout.js",
+      "size": 59481,
+      "sha256": "c4704e09dc84b422354fa2406de19647c9429f30b3630e9bd5fc70679137dc0f"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/08-orders-agenda.js",
-      "bytes": 29570,
-      "sha256": "3e705d46e24e4d14785ec12f1b9add8f171733741c5aad8c7c84d0e6330e0c48"
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/08-orders-agenda.js",
+      "size": 29588,
+      "sha256": "9a396fe706d85375b8e5901352d7512d2cf16f77860b620180566cbe1ccf8afb"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/09-portal-sales.js",
-      "bytes": 77737,
-      "sha256": "c17abfcc8574ec420c0de034d5b6a22d6536743a06f1c42456790de104811098"
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/09-portal-sales.js",
+      "size": 77759,
+      "sha256": "af3869c7218beff7f4a13da220094b6b61f5721c8286b57ec87531e1015a9667"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/10-mobile-runtime.js",
-      "bytes": 5507,
-      "sha256": "cf56d386ca76733101cd923af0fed92cfb2a76e23799d65915db45c9c8ba584c"
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/10-mobile-runtime.js",
+      "size": 5525,
+      "sha256": "619887f49e4ced81e0a91f15e40a0a23a19257b7e2a82f50afda41eed914e83a"
     },
     {
-      "path": "releases/1.5.0-rc1-portal-responsavel/js/11-bootstrap.js",
-      "bytes": 5502,
-      "sha256": "4a18ff5507584aeac51fd4594a2509e3d357a408858a7489a6e1d1640175899a"
+      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/11-bootstrap.js",
+      "size": 5520,
+      "sha256": "ca0f696ea816f0dca4b9f588dd504dbb9bc1b39ee5829ef9b0488732932869eb"
     },
     {
       "path": "sw.js",
-      "bytes": 2492,
-      "sha256": "35c0b837a995c00156006895b9d54e22b685bea7dcb8aaa8e905fbd0a2de6ab3"
+      "size": 2519,
+      "sha256": "4aff1f3e8b78e6b5f71818bdb5e985ddb57a12a55eb76727b9073684f7226e85"
     },
     {
       "path": "vercel.json",
-      "bytes": 1338,
-      "sha256": "47ad890c20e85b8c9d5575cd9e6b8dfba1333d809e09d0958e7710e41aa119a9"
+      "size": 1347,
+      "sha256": "97d1f585983a21aade584e41efe1894d2b912bb83abec690755393f87c29fd3b"
     },
     {
       "path": "version.json",
-      "bytes": 148,
-      "sha256": "e4363d7ce2fa94655c17639b51daae39e2644e6687748167479bd26c925cd144"
+      "size": 166,
+      "sha256": "f634a1a71dd612cd9a38f9a9c4d7237a09d229cb307fe553fc69e8f7318fcaac"
     }
-  ]
+  ],
+  "validation": {
+    "jsSyntax": true,
+    "apiModuleLoad": true,
+    "balanceOnlyOrder": true,
+    "fullCheckout": true,
+    "partialCheckout": true,
+    "balanceIdempotency": true,
+    "legacyCancellation": true,
+    "reschedule": true,
+    "discardCheckout": true,
+    "frontendPlannerSmoke": true,
+    "assetPaths": true
+  }
 }

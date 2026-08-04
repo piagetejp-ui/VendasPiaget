@@ -1,11 +1,9 @@
-# Changelog — 1.5.0-rc1-portal-responsavel
+# Changelog — 1.5.0-rc1.1-portal-responsavel-hotfix
 
-- Separação entre confirmação com saldo e criação de checkout.
-- Correção da mensagem e do botão conforme o pagamento externo necessário.
-- Cabeçalho e notificações do responsável.
-- Saldo como atalho para o extrato.
-- Comprovantes no extrato.
-- Olho para mostrar/ocultar senhas.
-- Consulta, remarcação e cancelamento de entregas futuras.
-- Mensagens de erro operacionais, sem detalhes técnicos ao responsável.
-- Notificações de entrega, ausência e devolução para o responsável.
+- Implementada a função `discardCheckout`, que estava exportada mas ausente e impedia o carregamento das APIs.
+- Adicionado teste de carregamento real dos módulos serverless, além da validação de sintaxe.
+- Corrigido o fluxo de confirmação de pedido integralmente pago pelo saldo.
+- Restaurado o checkout para pedidos com pagamento externo integral ou parcial.
+- Reforçado o cancelamento de entregas antigas com cálculo alternativo de valor e quantidade de salgados.
+- Ampliada a lista de estados encerrados da programação.
+- Substituído o cartão de saldo clicável pelo link discreto **Ver extrato**.

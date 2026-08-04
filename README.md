@@ -1,16 +1,14 @@
-# Sistema de Vendas Escola Piaget — 1.5.0-rc1-portal-responsavel
+# Sistema de Vendas Escola Piaget — 1.5.0-rc1.1-portal-responsavel-hotfix
 
-Candidata a final do portal do responsável.
+Hotfix da RC1 do Portal do Responsável.
 
-## Destaques
+## Correções
 
-- Pedido integralmente coberto pelo saldo é confirmado por endpoint próprio, sem chamar a InfinitePay.
-- Saldo parcial e saldo preservado seguem para a InfinitePay apenas pelo valor correto.
-- Cabeçalho do responsável limpo, com sino e saída.
-- Saldo clicável, extrato com comprovantes e visualização de senha global.
-- Programações ativas podem ser abertas; entregas futuras podem ser remarcadas ou canceladas.
-- Cancelamento futuro libera o estoque e devolve o valor para a conta.
+- restauração do carregamento de todas as APIs serverless;
+- pedido pago integralmente pelo saldo sem checkout;
+- checkout para pagamento integral ou diferença;
+- cancelamento e remarcação de programação futura;
+- compatibilidade de devolução com programações antigas;
+- saldo preservado visualmente e link discreto **Ver extrato**.
 
-## Publicação
-
-Publique todo o conteúdo do diretório. A release física e o service worker usam `1.5.0-rc1-portal-responsavel` para impedir mistura com arquivos antigos.
+Consulte `TESTES.md` antes de promover o deploy para produção.

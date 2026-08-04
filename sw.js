@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.5.0-rc1-portal-responsavel */
-const VERSION='1.5.0-rc1-portal-responsavel';
+/* Escola Piaget — service worker V1.5.0-rc1.1-portal-responsavel-hotfix */
+const VERSION='1.5.0-rc1.1-portal-responsavel-hotfix';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.5.0-rc1-portal-responsavel/';
+const RELEASE='/releases/1.5.0-rc1.1-portal-responsavel-hotfix/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/01-core.js`,
