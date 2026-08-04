@@ -1,5 +1,5 @@
 {
-  "version": "1.5.0-rc1.4-status-hotfix",
+  "version": "1.5.0-rc1.5-venda-online-secretaria",
   "source": "await notify(db,{tipo:'checkout_pagamento_confirmado',titulo:'Pagamento confirmado',mensagem:`Pagamento de ${brl(checkout.totalCentavos)} confirmado para ${checkout.alunoNome||'operação avulsa'}.`,prioridade:'normal',alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,matricula:checkout.matricula,pagamentoId:orderNsu,destinatariosPerfis:['admin','gestao','secretaria']});",
   "createdAt": "2026-08-04T14:20:00-03:00",
   "changes": [

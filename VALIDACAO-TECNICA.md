@@ -1,12 +1,12 @@
-# Validação técnica — 1.5.0-rc1.4-status-hotfix
+# Validação técnica — RC1.5
 
-- Resolvedor único de status testado para cantina e fardamento.
-- Pedido cancelado de farda não é convertido em entregue.
-- Pedido confirmado de cantina é distinguido de entrega realizada.
-- Notificações internas não recebem mais o aluno automaticamente como destinatário.
-- Notificações do responsável são criadas explicitamente.
-- Módulos frontend e APIs carregados em runtime local.
-- Handlers inline conferidos.
-- ZIP validado.
+- Sintaxe validada em todos os módulos JavaScript e APIs.
+- Novo fluxo público usa token aleatório armazenado apenas como hash.
+- Link interno tem validade de 24 horas.
+- Checkout da InfinitePay só é criado depois da confirmação dos dados do comprador.
+- Pagamentos usam o mesmo webhook e motor idempotente já validado.
+- Venda online genérica grava venda, pagamento, compra, conta do aluno, estoque e pedidos de farda.
+- Programação de lanches reutiliza o motor existente de pedidos e reservas.
+- Cancelamento e renovação encerram o checkout anterior no sistema.
 
-A validação definitiva depende do Firestore e do deploy de produção.
+A integração real ainda deve ser validada após o deploy com Firestore e InfinitePay.

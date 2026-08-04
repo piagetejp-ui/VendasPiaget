@@ -1,10 +1,9 @@
-# Changelog — 1.5.0-rc1.4-status-hotfix
+# Changelog — 1.5.0-rc1.5-venda-online-secretaria
 
-- Corrige pedidos cancelados ou com pagamento não concluído que apareciam como entregues.
-- Separa status de pagamento, pedido e entrega.
-- Pedido de cantina confirmado passa a aparecer como aguardando entrega.
-- Pedidos parcialmente entregues aparecem como em andamento.
-- Pedidos concluídos com devolução recebem status próprio.
-- Separa notificações internas das notificações do responsável.
-- Normaliza a redação de notificações antigas de pedido confirmado no portal do responsável.
-- Preserva checkout, remarcação, cancelamento e demais fluxos da RC1.3.
+- Nova escolha entre Venda presencial e Venda online.
+- Link interno da Escola Piaget vinculado ao aluno e à compra.
+- Dados do comprador preenchidos pelo responsável antes da InfinitePay.
+- Validade padrão de 24 horas.
+- Acompanhamento, cópia, cancelamento e renovação de links pela Secretaria.
+- Suporte a produtos, fardamento, crédito e programação de lanches.
+- Movimentações online vinculadas à conta corrente do aluno.

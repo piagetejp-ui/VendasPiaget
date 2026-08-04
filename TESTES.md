@@ -1,12 +1,12 @@
-# Testes — 1.5.0-rc1.4-status-hotfix
+# Roteiro de testes — RC1.5
 
-1. Pedido da cantina pago e com entrega futura: deve mostrar **Confirmado · aguarda entrega**.
-2. Notificação do responsável: deve mostrar **Pedido de cantina confirmado** e informar que aguarda entrega.
-3. Cantina com uma entrega concluída e outra futura: deve mostrar **Em andamento**.
-4. Todas as entregas concluídas: deve mostrar **Concluído**.
-5. Entrega com devolução: deve mostrar **Concluído com devoluções** quando o pedido terminar.
-6. Farda com pagamento não concluído e atendimento cancelado: deve mostrar **Pagamento não concluído**, nunca **Entregue**.
-7. Farda paga em produção: deve mostrar **Em produção** ou o estado operacional correspondente.
-8. Farda entregue: somente então deve mostrar **Entregue**.
-9. Ver pedido pela notificação e diretamente em Meus pedidos.
-10. Confirmar que checkout e remarcação da RC1.3 continuam funcionando.
+1. Venda presencial continua registrando normalmente.
+2. Venda online de produto sem usar saldo gera link interno.
+3. Responsável abre o link, preenche dados e chega à InfinitePay.
+4. Venda online usando saldo parcial cobra somente a diferença.
+5. Compra integralmente coberta pelo saldo é confirmada sem link.
+6. Adicionar crédito gera link pelo valor informado.
+7. Programação de lanches gera link e reserva estoque somente quando o responsável avança.
+8. Cancelar link impede abertura.
+9. Renovar link substitui o anterior.
+10. Pagamento confirmado aparece na conta do aluno e na lista de links.
