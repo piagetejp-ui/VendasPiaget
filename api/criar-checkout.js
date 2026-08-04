@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { initFirebase, json, parseBody, buildCheckoutOperation, createCheckoutLink, nowIso } = require('./_utils');
+const { initFirebase, json, parseBody, buildCheckoutOperation, createCheckoutLink, checkoutOperationKey, replaceActiveCheckoutsForOperation, nowIso } = require('./_utils');
 function cleanAttemptId(v){const s=String(v||'').trim();return /^[A-Za-z0-9-]{8,100}$/.test(s)?s:''}
 function bodyFingerprint(body){const copy={...body};delete copy.idTentativa;return crypto.createHash('sha256').update(JSON.stringify(copy)).digest('hex')}
 module.exports=async function handler(req,res){
@@ -17,7 +17,7 @@ module.exports=async function handler(req,res){
         if(existing&&existing.orderNsu){
           const snap=await db.collection('pagamentos_checkout').doc(existing.orderNsu).get();
           if(snap.exists){
-            const c=snap.data(),active=['preparando_link','aguardando_pagamento','erro_timeout'].includes(c.status)&&c.checkoutUrlAtivo!==false;
+            const c=snap.data(),reuseUntil=new Date(c.linkReutilizavelAte||c.atualizadoEm||0).getTime(),active=['preparando_link','aguardando_pagamento'].includes(c.status)&&c.checkoutUrlAtivo!==false&&reuseUntil>Date.now();
             if(active&&c.checkoutUrl){await attemptRef.set({checkoutUrl:c.checkoutUrl,status:'aguardando_pagamento',atualizadoEm:nowIso()},{merge:true});return json(res,200,{ok:true,reutilizado:true,checkout_url:c.checkoutUrl,order_nsu:existing.orderNsu,pedido_id:c.pedidoId,tipo:c.tipo});}
             if(!active)await resetAttempt(`checkout_${c.status||'encerrado'}`);
           }else await resetAttempt('checkout_nao_encontrado');
@@ -28,9 +28,11 @@ module.exports=async function handler(req,res){
         if(existing&&existing.status==='falha')return json(res,409,{ok:false,error:existing.error||'A tentativa anterior falhou. Tente novamente.'});
       }
     }
-    const buildStart=Date.now(),op=await buildCheckoutOperation(db,body);timings.preparacaoOperacaoMs=Date.now()-buildStart;op.idTentativa=idTentativa||null;
+    const operationKey=checkoutOperationKey(body);
+    if(body.forceNewLink)timings.checkoutsSubstituidos=await replaceActiveCheckoutsForOperation(db,body,operationKey);
+    const buildStart=Date.now(),op=await buildCheckoutOperation(db,body);timings.preparacaoOperacaoMs=Date.now()-buildStart;op.idTentativa=idTentativa||null;op.operationKey=operationKey;
     const result=await createCheckoutLink(db,req,op,timings);timings.totalMs=Date.now()-totalStart;
-    if(attemptRef)await attemptRef.set({status:result.sem_checkout?'concluida':'aguardando_pagamento',semCheckout:Boolean(result.sem_checkout),checkoutUrl:result.checkout_url||null,orderNsu:result.order_nsu||null,pedidoId:result.pedido_id||null,tipo:result.tipo||body.tipo||null,timings,atualizadoEm:nowIso()},{merge:true});
+    if(attemptRef)await attemptRef.set({status:result.sem_checkout?'concluida':'aguardando_pagamento',semCheckout:Boolean(result.sem_checkout),checkoutUrl:result.checkout_url||null,orderNsu:result.order_nsu||null,pedidoId:result.pedido_id||null,tipo:result.tipo||body.tipo||null,operationKey,timings,atualizadoEm:nowIso()},{merge:true});
     return json(res,200,{ok:true,...result,timings});
   }catch(error){console.error('criar-checkout:',error);if(attemptRef)await attemptRef.set({status:'falha',error:error.message||'Erro ao criar checkout.',atualizadoEm:nowIso()},{merge:true}).catch(()=>{});return json(res,error.status||500,{ok:false,error:error.message||'Erro ao criar checkout.',details:error.details||null})}
 };

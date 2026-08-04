@@ -1,32 +1,37 @@
 {
-  "version": "1.5.0-rc1.1-portal-responsavel-hotfix",
-  "generatedAt": "2026-08-04T11:12:00-03:00",
-  "fileCount": 36,
+  "version": "1.5.0-rc1.2-portal-responsavel",
+  "generatedAt": "2026-08-04T12:21:48-03:00",
+  "fileCount": 38,
   "files": [
     {
+      "path": "AUDITORIA-RC1.2.md",
+      "size": 1459,
+      "sha256": "94870422a6d8da493aa9218673d32b92018060479e0618142272d65b80740637"
+    },
+    {
       "path": "CHANGELOG.md",
-      "size": 671,
-      "sha256": "111c6a0549b8d74b0ff14001c2682b04166545edb231a764f77f21cf624cebae"
+      "size": 1740,
+      "sha256": "23cf0c49a0f4833580bf7a9fbc5282349c241624c71559aee83b65829e7e1f0e"
     },
     {
       "path": "README.md",
-      "size": 545,
-      "sha256": "268017c282a747a81cbf5ae3cf949676040bcdbd947744f4070c05aadd9115d0"
+      "size": 1079,
+      "sha256": "ef53fa67d10c034ba5fe6c41d67405164a56dd8c2c4fa8965d9af7ce0b126b8d"
     },
     {
       "path": "TESTES.md",
-      "size": 1360,
-      "sha256": "6d6dffd0d93763a28eff7aec86405917821cb0070772326a9914806f57603b12"
+      "size": 2879,
+      "sha256": "2bc76a040f252e94021316a19a252f912c7c89a32575241fd01e725046faed2a"
     },
     {
       "path": "VALIDACAO-TECNICA.md",
-      "size": 1672,
-      "sha256": "aa7de6befc310fa5e0e3c14ad01b99c36b728ba480a8e60d6b0053bbc997853e"
+      "size": 1557,
+      "sha256": "857f2726538d4e88e7bbb7a90827fdbeb9971a6468d2677efb08ff5e4ecc16bf"
     },
     {
       "path": "api/_utils.js",
-      "size": 82670,
-      "sha256": "6948b0299c567d8bf0bf1f2a78b541918939f3c06422ee487aeef09d16553e58"
+      "size": 86789,
+      "sha256": "69c53b4a9c691fe5265cdd30f723c0172c1c4bf409ef99fd421cafc29d8eaac8"
     },
     {
       "path": "api/confirmar-pedido-saldo.js",
@@ -35,8 +40,8 @@
     },
     {
       "path": "api/criar-checkout.js",
-      "size": 4140,
-      "sha256": "c9bc7cf65be3f1b6dda4b69c6c0d734a1cefe824cbd1e186740ee95f0bb7b883"
+      "size": 4490,
+      "sha256": "c797a904d3b2b4200fc0b2233ce541b9578681f5e3d938e6a2b1d4ddebf916db"
     },
     {
       "path": "api/descartar-cobranca.js",
@@ -45,8 +50,8 @@
     },
     {
       "path": "api/gerenciar-programacao-lanche.js",
-      "size": 8945,
-      "sha256": "096e3a4bfa926c90a9a9018d40cf29709ed6ac68e96b8c343a68c3bedb2450c4"
+      "size": 9574,
+      "sha256": "38c6794f0e2ee021d78ed01bbb38e59a5929ea7838f8d682365637f079c5606e"
     },
     {
       "path": "api/registrar-operacao-presencial.js",
@@ -95,106 +100,120 @@
     },
     {
       "path": "index.html",
-      "size": 6749,
-      "sha256": "d37f829e54cfe9098ddbd6c000d6b1d6efda227b6f9e81205984d0436f6fd620"
+      "size": 6753,
+      "sha256": "b856757b3c2d1cfec53f9e03043781d4502b0ce5bfb1b4f6624cdcc834093546"
     },
     {
       "path": "obrigado.html",
-      "size": 17209,
-      "sha256": "02dc9f7f5c4e14bf8d20c5aa1dbdcfd65357777f65172af178dc4d6f898c6a6e"
+      "size": 18220,
+      "sha256": "77a055fc9ec35844e845df5c75f508c3bcf5f2a3ee08d9a61a4e933a396c9685"
     },
     {
       "path": "package.json",
       "size": 182,
-      "sha256": "cf562d2798a91644bd00d0220121d04c500311af77d0f41e77d62b3934f00085"
+      "sha256": "471026854970c47ca6caeaf17d75463fa421b3671a34c576abf4817a10303d22"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/css/app.css",
-      "size": 73931,
-      "sha256": "1f32862265b077659c0ffe5556ab39b57543c6734786ac829afe1fcf29931bfd"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/css/app.css",
+      "size": 76847,
+      "sha256": "8a209528cb1f848e64760fa2b9479a1d89a11b55c1c400fce6596d4fc764335d"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/01-core.js",
-      "size": 174074,
-      "sha256": "172ba4c797828b779af0b26abdb9a855e0c0445e5166b1ad5c25095edd4ce71a"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/01-core.js",
+      "size": 174117,
+      "sha256": "cccd94b06c171a5081fdf76ca70dba77a59c332c6e0dec3d88b0387780c6fad7"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/02-operations.js",
-      "size": 88299,
-      "sha256": "15e9e9d024f140c6957b70e1b3088f20f961087cef30cbad405b44d056cf365b"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/02-operations.js",
+      "size": 88439,
+      "sha256": "03430e55efec45cf21b96b5b2ff98d01b2e5c0cff55df4a3dd56423daf2c3f82"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/03-cash.js",
-      "size": 61156,
-      "sha256": "742ff8985bcab46d4b8420aaa4ed6e76be2580e1f8c68f79044ee28c9c181ace"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/03-cash.js",
+      "size": 61308,
+      "sha256": "f9f61bf65f1ce7dc8af63774c116bafd20654b349310f1d4dba37e0da94383c1"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/04-brand.js",
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/04-brand.js",
       "size": 8119,
       "sha256": "5249aeb8b18c22d75d735dd4d4e2a8cbfc64ee251e591bd502e8b15a9321fda9"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/05-auth.js",
-      "size": 45713,
-      "sha256": "0f0723691ed75ef9da8cc1896a765970c61142139a6f433983e3a161eeff2983"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/05-auth.js",
+      "size": 46055,
+      "sha256": "b8f46e1a2a7fbe31e68b17d487c2a52f96a87bad48497bbbc84af07d6ba9bef3"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/06-notifications-navigation.js",
-      "size": 32643,
-      "sha256": "f3a92265df2319ce76c0c8a1d4acd8d08839028f6be1944b96dc6f43b0e76c69"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/06-notifications-navigation.js",
+      "size": 32658,
+      "sha256": "7664887f21eb70b55254df249823be9ad3c2fe6db65cfe6733762adeaee07a82"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/07-account-checkout.js",
-      "size": 59481,
-      "sha256": "c4704e09dc84b422354fa2406de19647c9429f30b3630e9bd5fc70679137dc0f"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/07-account-checkout.js",
+      "size": 59699,
+      "sha256": "22bcfc054eb5bd56743707ae0decf6ac124f9610cc822c968895b7505200f8b5"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/08-orders-agenda.js",
-      "size": 29588,
-      "sha256": "9a396fe706d85375b8e5901352d7512d2cf16f77860b620180566cbe1ccf8afb"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/08-orders-agenda.js",
+      "size": 29737,
+      "sha256": "586208f636b67bd9ab51968f116c63893d05f31ffaea2600f04e5cc81ee82dc2"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/09-portal-sales.js",
-      "size": 77759,
-      "sha256": "af3869c7218beff7f4a13da220094b6b61f5721c8286b57ec87531e1015a9667"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/09-portal-sales.js",
+      "size": 78068,
+      "sha256": "dd79011712ea2da9f6d88b407dbe3fa67f0aa73863b6e0afe3f03746f52bfbf6"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/10-mobile-runtime.js",
-      "size": 5525,
-      "sha256": "619887f49e4ced81e0a91f15e40a0a23a19257b7e2a82f50afda41eed914e83a"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/10-mobile-runtime.js",
+      "size": 5511,
+      "sha256": "1fe6fef1f5d3f86a7b732f55699ae22917d4b56401c069b2be6085e49b06fcf9"
     },
     {
-      "path": "releases/1.5.0-rc1.1-portal-responsavel-hotfix/js/11-bootstrap.js",
-      "size": 5520,
-      "sha256": "ca0f696ea816f0dca4b9f588dd504dbb9bc1b39ee5829ef9b0488732932869eb"
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/11-bootstrap.js",
+      "size": 5506,
+      "sha256": "4cde38ae004c5fca0dd663750fe3406cc8bca72f3f82da357e0f91c140b3206b"
+    },
+    {
+      "path": "releases/1.5.0-rc1.2-portal-responsavel/js/12-portal-finalization.js",
+      "size": 31019,
+      "sha256": "f4866738b6dd07872914124e4dff82ec3559c82e609e5a11570c1bb2e1bb2241"
     },
     {
       "path": "sw.js",
-      "size": 2519,
-      "sha256": "4aff1f3e8b78e6b5f71818bdb5e985ddb57a12a55eb76727b9073684f7226e85"
+      "size": 2542,
+      "sha256": "708610e60ca6cb207c9f8058ea8cb215b6cb435a60c96e90fedde87fcad012e3"
     },
     {
       "path": "vercel.json",
-      "size": 1347,
-      "sha256": "97d1f585983a21aade584e41efe1894d2b912bb83abec690755393f87c29fd3b"
+      "size": 1340,
+      "sha256": "5beb499eaeef8a1e28460d299ef27cc31f40afdff6c92e256da96de0394d5c2e"
     },
     {
       "path": "version.json",
-      "size": 166,
-      "sha256": "f634a1a71dd612cd9a38f9a9c4d7237a09d229cb307fe553fc69e8f7318fcaac"
+      "size": 151,
+      "sha256": "b2af3a8276817bfcfa375e2b615aa23d740698e8446ef142d6a16e00fafa3253"
     }
   ],
   "validation": {
     "jsSyntax": true,
     "apiModuleLoad": true,
-    "balanceOnlyOrder": true,
-    "fullCheckout": true,
-    "partialCheckout": true,
-    "balanceIdempotency": true,
-    "legacyCancellation": true,
-    "reschedule": true,
-    "discardCheckout": true,
-    "frontendPlannerSmoke": true,
-    "assetPaths": true
-  }
+    "frontendRuntimeLoad": true,
+    "nativeBrowserDialogsRemoved": true,
+    "buyerStepExternalCheckout": true,
+    "balanceOnlySkipsCheckout": true,
+    "freshCheckoutAttempt": true,
+    "oldCheckoutSubstitution": true,
+    "checkoutUrlValidation": true,
+    "programCancellation": true,
+    "programReschedule": true,
+    "firestoreReadBeforeWriteSimulation": true,
+    "assetPaths": true,
+    "staleReleasePathsAbsent": true
+  },
+  "realEnvironmentPending": [
+    "Vercel serverless",
+    "Firestore production",
+    "InfinitePay live checkout",
+    "Safari iPhone"
+  ]
 }
