@@ -1,19 +1,14 @@
-# Changelog — 1.6.0-rc2.2-visoes-operacionais
+# Changelog — 1.6.0-rc2.3-lanches-pagamento-combinado
 
-## Visões operacionais
+## Correções e evoluções
 
-- Cards de Cobranças agora filtram a listagem: saldo em aberto, contas bloqueadas, links pendentes, pagos recentes e todas.
-- Cobranças e pagamentos são ordenados do mais recente para o mais antigo.
-- Página Vendas ganhou histórico unificado de operações presenciais e online.
-- Operações pendentes mantêm abrir, copiar, renovar e cancelar link.
-- Operações concluídas exibem detalhamento e comprovantes.
-- Detalhamento mostra item, quantidade, preço unitário e subtotal.
-- Movimentações do responsável ganharam botão Detalhar sem alterar o fluxo validado do portal.
-- Gestão e Secretaria ganharam visão completa da conta do aluno com resumo, lanches, pedidos, movimentações, pagamentos e comprovantes.
-
-## Base preservada
-
-- Catálogo flexível da RC2.1.
-- Venda presencial e online.
-- Checkout InfinitePay e portal do responsável.
-- Correção do modal de fardamento, mensalidade e negociação.
+- Programação de lanche agora entra no mesmo carrinho de farda, mensalidade, evento, negociação e demais serviços.
+- Programação por data, semana ou mês, com retorno ao carrinho e edição antes da confirmação.
+- A Secretaria não registra consumo imediato de cantina: toda compra de lanche gera agenda para o operador da Cantina.
+- Pagamento de lanche já consumido continua sendo regularização do saldo em aberto.
+- Venda presencial aceita pagamento combinado entre dinheiro, Pix e cartão, além do saldo do aluno.
+- Cartão registra bruto, líquido, taxa, adquirente, modalidade, parcelas e NSU.
+- Dinheiro registra valor entregue, troco e entrada líquida no caixa aberto da Secretaria.
+- Vendas mistas geram pedidos e ocorrências da Cantina vinculados à mesma venda e ao mesmo comprovante.
+- Venda online preserva saldo + InfinitePay e confirma a programação somente após o pagamento.
+- Detalhes da venda mostram composição, programação e taxas de cartão.

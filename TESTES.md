@@ -1,39 +1,38 @@
-# Roteiro de testes — 1.6.0-rc2.2-visoes-operacionais
+# Roteiro de testes — 1.6.0-rc2.3-lanches-pagamento-combinado
 
-## 1. Cobranças
+## 1. Carrinho misto presencial
+1. Inicie uma venda presencial.
+2. Selecione um aluno.
+3. Adicione uma farda e uma mensalidade.
+4. Clique em **Programar lanches**, escolha uma data futura e adicione ao carrinho.
+5. Confirme que os três grupos permanecem no mesmo carrinho.
 
-1. Abra **Cobranças e saldos**.
-2. Clique em cada card: Saldo em aberto, Contas bloqueadas, Links pendentes, Pagos recentes e Mostrar todas.
-3. Confirme que a lista muda conforme o card e permanece ordenada pela data mais recente.
-4. Em link pendente, teste Abrir, Copiar e Atualizar status.
-5. Em pagamento concluído, abra Detalhar e Comprovante.
+## 2. Programação semanal e mensal
+- Repita usando Semana e Mês.
+- Edite uma programação já inserida no carrinho.
+- Remova uma programação sem apagar os demais itens.
 
-## 2. Histórico de vendas
+## 3. Pagamento combinado
+- Abra o caixa da Secretaria antes de usar dinheiro.
+- Use parte do saldo do aluno.
+- Adicione dinheiro, Pix e cartão até fechar exatamente o restante.
+- No cartão, informe bruto de R$ 100,00 e líquido de R$ 96,80; confira taxa de R$ 3,20.
+- Confirme que não é possível avançar faltando ou sobrando valor.
+- Em dinheiro, confira o valor entregue, o troco e o valor líquido lançado no caixa.
 
-1. Abra **Vendas**.
-2. Confirme que aparecem operações presenciais e online na mesma lista.
-3. Teste os filtros Todas, Presenciais, Online, Pendentes e Concluídas.
-4. Abra uma venda variada e valide item, quantidade, preço unitário e subtotal.
-5. Em venda concluída, abra os comprovantes.
+## 4. Agenda da Cantina
+- Finalize a venda.
+- Abra Entregas e confirme que as datas programadas aparecem como pendentes.
+- Confirme que a Secretaria não marcou nenhum lanche como entregue.
 
-## 3. Portal do responsável
+## 5. Venda online mista
+- Monte farda + mensalidade + lanches programados.
+- Gere o link, preencha dados do comprador e conclua na InfinitePay.
+- Após confirmação, verifique venda, conta do aluno, pedidos e agenda da Cantina.
 
-1. Abra Movimentações.
-2. Confirme que o valor global continua visível.
-3. Clique em Detalhar e valide a composição de uma venda com mais de um item.
-4. Abra o comprovante.
+## 6. Regularização
+- Em um aluno com saldo negativo, use Regularizar saldo.
+- Confirme que não é criada nova ocorrência de lanche.
 
-## 4. Conta administrativa do aluno
-
-1. Acesse Alunos e contas ou Consultar aluno.
-2. Abra um aluno com pedidos e movimentações.
-3. Valide as abas Resumo, Lanches, Pedidos, Movimentações e Pagamentos.
-4. Abra um detalhe de movimentação, pedido e comprovante.
-5. Teste Gerar cobrança e Registrar pagamento.
-
-## 5. Regressão
-
-- Criar fardamento presencial e online.
-- Criar negociação presencial e online.
-- Gerar checkout pelo portal do responsável.
-- Confirmar que o portal continua com o mesmo menu e navegação.
+## 7. Regressão
+- Portal do responsável, checkout próprio, comprovantes, fardamento, catálogo, notificações e histórico de vendas.

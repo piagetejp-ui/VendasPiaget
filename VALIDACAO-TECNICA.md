@@ -1,9 +1,22 @@
-# Validação técnica — 1.6.0-rc2.2-visoes-operacionais
+# Validação técnica — 1.6.0-rc2.3-lanches-pagamento-combinado
 
-- Base: V1.6.0 RC2.1.
-- Novo módulo isolado: `15-operational-views.js`.
-- As APIs financeiras e o checkout não tiveram sua lógica operacional redesenhada.
-- As novas visões leem as coleções já existentes: `contas_alunos`, `pagamentos_checkout`, `vendas_online_links`, `vendas`, `movimentos_conta`, `pedidos`, `pedidos_farda` e `ocorrencias_entrega`.
-- O histórico de vendas evita duplicar a venda online quando `vendas_online_links.vendaId` aponta para o registro de `vendas`.
-- Pedidos e movimentos preservam os valores históricos gravados; o catálogo continua definindo apenas novas operações.
-- A confirmação final depende do deploy e dos dados reais do Firestore.
+Validações locais executadas em 04/08/2026:
+
+- sintaxe validada em **29 arquivos JavaScript**;
+- carregamento conjunto dos **16 módulos frontend**;
+- carregamento das **12 APIs** com Firebase Admin simulado;
+- programação de lanche adicionada e devolvida ao carrinho misto;
+- pagamento presencial combinado com dinheiro, Pix e cartão;
+- cálculo de troco, valor líquido e taxa da maquininha;
+- venda mista presencial com farda, mensalidade e lanche programado;
+- uso parcial de saldo do aluno;
+- operação totalmente coberta pelo saldo, sem pagamento externo;
+- compatibilidade do fluxo anterior de programação de lanche;
+- confirmação simulada de venda online mista após pagamento;
+- criação simulada de pedido e ocorrência para a agenda da Cantina;
+- atualização simulada da conta corrente do aluno;
+- carregamento e integridade estrutural do pacote.
+
+Durante a validação foram corrigidos também o reconhecimento do caixa aberto da Secretaria, o lançamento líquido de dinheiro após o troco e o vínculo das parcelas de pagamento aos movimentos e à venda.
+
+A confirmação definitiva do webhook, da concorrência real de estoque e das transações financeiras depende do deploy com Firestore e InfinitePay de produção.

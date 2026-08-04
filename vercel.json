@@ -58,7 +58,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.2-visoes-operacionais/(.*)",
+      "source": "/releases/1.6.0-rc2.3-lanches-pagamento-combinado/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.2-visoes-operacionais */
-const VERSION='1.6.0-rc2.2-visoes-operacionais';
+/* Escola Piaget — service worker V1.6.0-rc2.3-lanches-pagamento-combinado */
+const VERSION='1.6.0-rc2.3-lanches-pagamento-combinado';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.2-visoes-operacionais/';
+const RELEASE='/releases/1.6.0-rc2.3-lanches-pagamento-combinado/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/00-portal-utils.js`,
