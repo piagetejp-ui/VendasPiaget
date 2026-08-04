@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.5.0-dev5.2.2-pending-receipts */
-const VERSION='1.5.0-dev5.2.2-pending-receipts';
+/* Escola Piaget — service worker V1.5.0-dev5.2.3-operational-portal */
+const VERSION='1.5.0-dev5.2.3-operational-portal';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.5.0-dev5.2.2-pending-receipts/';
+const RELEASE='/releases/1.5.0-dev5.2.3-operational-portal/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/01-core.js`,
@@ -47,10 +47,12 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  if(url.pathname.startsWith(RELEASE)||url.pathname.startsWith('/assets/')){
-    event.respondWith(caches.match(request).then(hit=>hit||fetch(request).then(response=>{
-      const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});return response;
-    })));
+  if(url.pathname.startsWith(RELEASE)){
+    event.respondWith(fetch(request,{cache:'no-store'}).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});return response;}).catch(()=>caches.match(request)));
+    return;
+  }
+  if(url.pathname.startsWith('/assets/')){
+    event.respondWith(caches.match(request).then(hit=>hit||fetch(request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});return response;})));
     return;
   }
 

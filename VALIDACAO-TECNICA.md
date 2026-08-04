@@ -1,23 +1,20 @@
-# Validação técnica — V1.5.0-dev5.2.2-pending-receipts
+# Validação técnica — 1.5.0-dev5.2.3-operational-portal
 
-## Resultados locais
+## Resultado local
 
-- Todos os módulos JavaScript e APIs passaram em `node --check`.
-- O JavaScript embutido em `obrigado.html` passou na verificação de sintaxe.
-- Todos os caminhos físicos de CSS, JavaScript e imagens referenciados pelo `index.html` existem.
-- `version.json`, `index.html`, `sw.js` e a pasta física da release usam a mesma versão.
-- O botão **Descartar cobrança** e o endpoint `/api/descartar-cobranca` estão conectados.
-- Teste com Firestore simulado confirmou:
-  - descarte preserva o registro e cancela o pedido pendente;
-  - tentativa de checkout é invalidada para não reabrir o link antigo;
-  - pagamento tardio vira crédito na conta sem repetir o pedido;
-  - repetição da confirmação não duplica movimento nem saldo;
-  - cobrança paga não pode ser descartada;
-  - a pendência histórica do Armando é encerrada sem alterar o saldo;
-  - eventual confirmação tardia do teste do Armando não gera novo lançamento.
-- A página de retorno contém um único botão **Comprovante**, com as três opções condensadas.
-- O CSS possui chaves balanceadas e o ZIP foi verificado após a compactação.
+- Sintaxe Node verificada em todos os módulos e APIs.
+- Integridade do ZIP verificada.
+- Todos os caminhos de scripts, CSS, imagens e service worker conferidos.
+- `reviewParentOrderV150` não chama mais função privada de outro módulo.
+- Existe um único contrato `window.PiagetOrderPlanner`.
+- Fluxo de revisão usa itens normalizados, sem referências a elementos removidos do DOM.
+- Checkout público de teste, harness e rotina específica do Armando foram removidos.
+- Quantidade máxima e validações de catálogo/farda aplicadas no servidor.
+- Todos os manipuladores inline (`onclick`, `onchange` e `oninput`) foram conferidos contra funções existentes.
+- O filtro de solicitações de redefinição de senha, antes sem função correspondente, foi implementado.
+- A venda presencial da secretaria permaneceu conectada após a compactação da tela.
+- Smoke test em runtime confirmou seleção, cálculo, criação do payload e abertura da revisão do pedido.
 
-## Limite da validação
+## Limitação
 
-Os testes locais não substituem a validação real com Firestore, webhook e checkout InfinitePay no deploy da Vercel.
+A validação real de Firestore e InfinitePay depende do deploy em Preview/produção. A versão não cria cobranças durante os testes locais.

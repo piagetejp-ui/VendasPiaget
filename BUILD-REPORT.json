@@ -1,12 +1,194 @@
 {
-  "version": "1.5.0-dev5.2.2-pending-receipts",
-  "base": "1.5.0-dev5.2.1-financial-hotfix",
-  "changes": [
-    "discard_pending_checkout",
-    "audit_preserved",
-    "late_discarded_payment_to_credit",
-    "single_receipt_menu",
-    "close_armando_test_without_ledger"
-  ],
-  "generatedAt": "2026-08-03T18:34:00-03:00"
+  "version": "1.5.0-dev5.2.3-operational-portal",
+  "createdAt": "2026-08-04T09:53:00-03:00",
+  "checks": {
+    "nodeSyntax": true,
+    "zipIntegrity": true,
+    "inlineHandlersResolved": true,
+    "canonicalFunctionsUnique": true,
+    "plannerContract": true,
+    "checkoutRoutesPresent": true,
+    "testCheckoutRemoved": true,
+    "armandoRoutineRemoved": true,
+    "secretarySalePreserved": true,
+    "passwordResetFilterFixed": true,
+    "runtimeSmokePlannerReview": true
+  },
+  "files": [
+    {
+      "path": "AUDITORIA-PORTAL-OPERACIONAL.md",
+      "bytes": 1508,
+      "sha256": "1856033a052f9908f06856c35930ce8cd376c7e9d92a7529cc6986e1a4ab490d"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 1241,
+      "sha256": "deed9c41b348353fcf9a45430c767224748ef8ebafc7d928558d7a61a90cb0ed"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1022,
+      "sha256": "b3d8a47c89d538858d2aa07469776a9c10a0731e235c6387b6e03d9409dbcca9"
+    },
+    {
+      "path": "TESTES.md",
+      "bytes": 1556,
+      "sha256": "667116f0e034e74135e6b0eae1fc349dac82e89edabbfb53077b1fb7da43f01f"
+    },
+    {
+      "path": "VALIDACAO-TECNICA.md",
+      "bytes": 1215,
+      "sha256": "9f6d38e17a4730d870ef4b2b48a5299d34bdcd16261953682c178286e1062ecb"
+    },
+    {
+      "path": "api/_utils.js",
+      "bytes": 79021,
+      "sha256": "c2bd297e547dee24f7646d154b9dbaa2d887c54606561b01660db8f0bcbc0ea2"
+    },
+    {
+      "path": "api/criar-checkout.js",
+      "bytes": 4140,
+      "sha256": "c9bc7cf65be3f1b6dda4b69c6c0d734a1cefe824cbd1e186740ee95f0bb7b883"
+    },
+    {
+      "path": "api/descartar-cobranca.js",
+      "bytes": 544,
+      "sha256": "83415e403aed89d366e97dc43d4ba9444642701f8227b1b67af77454872f2acb"
+    },
+    {
+      "path": "api/registrar-operacao-presencial.js",
+      "bytes": 617,
+      "sha256": "71d916eed2f889476e0fac0927a921adf96e2b7558af883c9e1471b3957592d2"
+    },
+    {
+      "path": "api/verificar-pagamento.js",
+      "bytes": 600,
+      "sha256": "dd6d0723cd0b7e97f6796f180e58ac4f765af241edce9a807a2be6bf80d069f7"
+    },
+    {
+      "path": "api/webhook-infinitepay.js",
+      "bytes": 1265,
+      "sha256": "56b735bb26aa61e4869f9da3ce148495bc1c74d0af80c96bd97565acc0f2937a"
+    },
+    {
+      "path": "assets/logo-piaget-horizontal-v152.png",
+      "bytes": 78291,
+      "sha256": "d58b07e5a2ffc39ee72b1f83f0f720b2841ff84cc5bacd9896eaf5d7212392f8"
+    },
+    {
+      "path": "assets/logo-piaget-icon-blue-white-v152.png",
+      "bytes": 80830,
+      "sha256": "25e5d984bc4f78549489dc10b9b8e83d322297977733b56ae4193c542538a679"
+    },
+    {
+      "path": "assets/logo-piaget-icon-v152.png",
+      "bytes": 66524,
+      "sha256": "d98932d594dd7cf4c907890896e41df01a3cb36bb46fe457aa433011f7cb3067"
+    },
+    {
+      "path": "assets/logo-piaget-icon-white-orange-v152.png",
+      "bytes": 70388,
+      "sha256": "90987836184113f2a2ecfcb7e9c33e556aae59de00eff5ffdb69552a95f3f588"
+    },
+    {
+      "path": "assets/logo-piaget-icon-white-v152.png",
+      "bytes": 50170,
+      "sha256": "6735a3b15a870b48d4a304d6cb66e15fd966ef0b11bc8c1c0696126c9683bec7"
+    },
+    {
+      "path": "assets/selo-piaget-v152.png",
+      "bytes": 66524,
+      "sha256": "d98932d594dd7cf4c907890896e41df01a3cb36bb46fe457aa433011f7cb3067"
+    },
+    {
+      "path": "index.html",
+      "bytes": 6693,
+      "sha256": "d3bf5a042a452dcb3cd613dbcc541e8fa8f87d6abf95171561992e9fcc1e7784"
+    },
+    {
+      "path": "obrigado.html",
+      "bytes": 17193,
+      "sha256": "e3d8070465746406fc986253b58afebaf7051dd6fcfb83782445384082b5dcf0"
+    },
+    {
+      "path": "package.json",
+      "bytes": 185,
+      "sha256": "6c00336a2f8be2c16f5549581021fd8db7cb689ab412b32ab2955dc9b87f65d9"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/css/app.css",
+      "bytes": 71452,
+      "sha256": "c3213760c0ff8d7d3268c48045cc1042cdfa97e160da238fa7440b20b66c1d51"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/01-core.js",
+      "bytes": 173993,
+      "sha256": "4d50a9e7519662945a0b4332ac9d8e420d213986a3e20230f23c58b2c373b79c"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/02-operations.js",
+      "bytes": 88299,
+      "sha256": "15e9e9d024f140c6957b70e1b3088f20f961087cef30cbad405b44d056cf365b"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/03-cash.js",
+      "bytes": 61156,
+      "sha256": "742ff8985bcab46d4b8420aaa4ed6e76be2580e1f8c68f79044ee28c9c181ace"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/04-brand.js",
+      "bytes": 8119,
+      "sha256": "5249aeb8b18c22d75d735dd4d4e2a8cbfc64ee251e591bd502e8b15a9321fda9"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/05-auth.js",
+      "bytes": 45829,
+      "sha256": "a0b556d0875a6a24a4288beea58eac617a56ace35585c3e98a15575308d9870a"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/06-notifications-navigation.js",
+      "bytes": 32024,
+      "sha256": "d7d0ac278589646beecd069c5213eb131199f4b24aa7cfc993aa8fc9b2b38998"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/07-account-checkout.js",
+      "bytes": 59477,
+      "sha256": "912a07fdd0cc5e5be4850e08a92eeaf1a2fbe469874a625f117e808d4cb44d41"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/08-orders-agenda.js",
+      "bytes": 28907,
+      "sha256": "762fbae24780a739aee367ca7b528ed5806cf54d64d2164cca033103f075ee05"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/09-portal-sales.js",
+      "bytes": 66540,
+      "sha256": "16520b758372f9015fa85b128c2f874bd64d8821431de35d2092002b6551d907"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/10-mobile-runtime.js",
+      "bytes": 4284,
+      "sha256": "f5f16dc4b18cbbaeb5e82d0ce7794e299e9c32229fd7dfcff59f3d485475e671"
+    },
+    {
+      "path": "releases/1.5.0-dev5.2.3-operational-portal/js/11-bootstrap.js",
+      "bytes": 5512,
+      "sha256": "740ef38c7d67872733c7dd9afaf839c2882fe92bc684b9de35fec89b972fc41b"
+    },
+    {
+      "path": "sw.js",
+      "bytes": 2507,
+      "sha256": "3d2b6985d01924ea49ac711b749f90ae3ab4c9ad8c3a9577adbd8a1fde0700e9"
+    },
+    {
+      "path": "vercel.json",
+      "bytes": 1343,
+      "sha256": "417510b5c54ec86a911b029ca5c6d02891b338be1be92432b9816b908831f3ba"
+    },
+    {
+      "path": "version.json",
+      "bytes": 158,
+      "sha256": "d2279fd230370aafd1572575c206fc0eb90973192b49cd7c4ba02cec5064a3be"
+    }
+  ]
 }

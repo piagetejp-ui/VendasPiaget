@@ -1,30 +1,33 @@
-# Roteiro de testes — 1.5.0-dev5.2.2-pending-receipts
+# Roteiro de testes — 1.5.0-dev5.2.3-operational-portal
 
-## 1. Descartar uma cobrança pendente
-1. Gere um link sem concluir o pagamento.
-2. Abra o portal do responsável > Pagamentos pendentes.
-3. Toque em **Descartar cobrança** e confirme.
-4. Confirme que a cobrança desapareceu da lista.
-5. Na gestão, confirme que o registro continua no histórico com status `descartado_responsavel`.
+## Portal do responsável
 
-## 2. Proteções
-- Uma cobrança paga não deve permitir descarte.
-- Uma cobrança com pagamento localizado/processando não deve permitir descarte.
-- Repetir o descarte não deve gerar erro nem duplicar auditoria operacional relevante.
+1. Entrar no aluno e confirmar que os nove atalhos abrem.
+2. Abrir Pedido da cantina e testar **Um dia**, **Semana** e **Mês**.
+3. Marcar e desmarcar dias; conferir atualização imediata do total.
+4. Alterar produto e quantidade; conferir total e disponibilidade.
+5. Tocar em **Revisar pedido** e confirmar avanço.
+6. Tocar em **Voltar e alterar** e confirmar que as escolhas permanecem.
+7. Revisar com uso do saldo desligado e ligado.
+8. Confirmar pedido pago totalmente pelo saldo e pedido direcionado à InfinitePay.
+9. Testar Adicionar crédito e Comprar fardamento até a criação do checkout.
+10. Abrir Pagamentos pendentes, atualizar status e descartar uma cobrança não paga.
 
-## 3. Pagamento tardio de cobrança descartada
-1. Em ambiente de teste, descarte uma cobrança e depois pague o link antigo.
-2. Confirme que o valor foi creditado na conta do aluno.
-3. Confirme que o pedido antigo não foi recriado nem entregue automaticamente.
-4. Confirme o alerta para gestão/secretaria.
+## Ajuda e mobile
 
-## 4. Comprovante
-1. Conclua um pagamento novo.
-2. Na página de retorno, confirme apenas os botões **Voltar ao sistema**, **Atualizar pagamento** e **Comprovante**.
-3. Abra **Comprovante** e teste:
-   - Comprovante InfinitePay, quando houver URL;
-   - Comprovante Piaget em imagem;
-   - Imprimir/salvar Piaget em PDF.
+1. Tocar nos ícones **i** e confirmar abertura/fechamento do balão.
+2. Testar em iPhone/Android com teclado aberto e modal do planejador.
+3. Confirmar que a versão não ocupa o cabeçalho e aparece no rodapé do menu interno.
 
-## 5. Armando
-- Após a primeira abertura, a cobrança histórica `PIAGET-FARDA-20260731-201148-3328` deve sair dos pendentes sem alterar o saldo do aluno.
+## Secretaria
+
+1. Abrir **Vendas** e confirmar que **Nova venda** abre o assistente.
+2. Testar venda imediata, programação de lanches e adição de crédito.
+3. Em **Usuários e acessos**, alterar o filtro de solicitações de redefinição e confirmar atualização.
+
+## Backend
+
+1. Requisição com quantidade 11 deve ser recusada.
+2. Produto com `vendaResponsavel=false` deve ser recusado no portal.
+3. Tamanho ou variação inexistente de farda deve ser recusado.
+4. Confirmar que `teste_avulso` retorna tipo não suportado.

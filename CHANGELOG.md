@@ -1,12 +1,25 @@
-# Changelog — 1.5.0-dev5.2.2-pending-receipts
+# Changelog — 1.5.0-dev5.2.3-operational-portal
 
-## Alterações
+## Portal do responsável
 
-- Responsável pode **Descartar cobrança** na lista de pagamentos pendentes.
-- O registro não é apagado: data, responsável, motivo e status anterior ficam preservados para auditoria.
-- Pedidos de cantina descartados liberam a reserva; pedidos de farda pendentes são cancelados.
-- Se uma cobrança descartada for paga posteriormente, o valor entra como crédito na conta do aluno e o pedido não é repetido.
-- Cobranças já pagas ou com pagamento localizado não podem ser descartadas.
-- A página de retorno passa a mostrar um único botão **Comprovante**, abrindo as opções InfinitePay, Piaget imagem e Piaget PDF.
-- A tentativa histórica do Armando é encerrada silenciosamente sem novo lançamento, pois o valor do teste foi devolvido externamente.
-- Fluxo financeiro, logo e layout mobile da dev5.2.1 foram preservados.
+- Corrigida a transição **Montar pedido → Revisar pedido** por meio de um contrato público único do planejador.
+- O pedido agora preserva dias, produtos e quantidades ao voltar da revisão.
+- Totais atualizam imediatamente ao marcar dias ou alterar quantidades.
+- Consulta de disponibilidade recebeu debounce e cache curto para reduzir leituras repetidas.
+- Erros de revisão e checkout aparecem no próprio fluxo, sem botão silencioso.
+- Validado o encaminhamento para checkout de crédito, fardamento e cantina.
+
+## Interface operacional
+
+- Textos longos e tutoriais permanentes foram reduzidos.
+- Explicações secundárias passaram para o componente acessível **i**.
+- Versão saiu do cabeçalho e passou a aparecer discretamente no menu interno.
+- Portal e tela de vendas da secretaria ficaram mais compactos.
+
+## Limpeza e segurança
+
+- Removido checkout `teste_avulso`.
+- Removido harness de auditoria da distribuição.
+- Removida rotina específica do teste financeiro antigo.
+- Removido fluxo legado de fardamento do responsável que chamava checkout antigo.
+- Backend limita quantidades, valida canal do produto, tamanho e variação de farda.
