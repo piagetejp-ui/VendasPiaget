@@ -1,22 +1,15 @@
-# Validação técnica — 1.6.0-rc2.3-lanches-pagamento-combinado
+# Validação técnica — 1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix
 
-Validações locais executadas em 04/08/2026:
+Validações locais executadas:
 
-- sintaxe validada em **29 arquivos JavaScript**;
-- carregamento conjunto dos **16 módulos frontend**;
-- carregamento das **12 APIs** com Firebase Admin simulado;
-- programação de lanche adicionada e devolvida ao carrinho misto;
-- pagamento presencial combinado com dinheiro, Pix e cartão;
-- cálculo de troco, valor líquido e taxa da maquininha;
-- venda mista presencial com farda, mensalidade e lanche programado;
-- uso parcial de saldo do aluno;
-- operação totalmente coberta pelo saldo, sem pagamento externo;
-- compatibilidade do fluxo anterior de programação de lanche;
-- confirmação simulada de venda online mista após pagamento;
-- criação simulada de pedido e ocorrência para a agenda da Cantina;
-- atualização simulada da conta corrente do aluno;
-- carregamento e integridade estrutural do pacote.
+- sintaxe de todos os arquivos JavaScript;
+- carregamento conjunto dos módulos frontend;
+- carregamento de todas as APIs com Firebase Admin simulado;
+- cartão com líquido de R$ 61,00 e bruto de R$ 63,00;
+- soma do pagamento combinado usando o líquido;
+- cálculo de taxa de R$ 2,00;
+- rejeição de bruto menor que líquido;
+- persistência separada de líquido, bruto e taxa;
+- integridade do ZIP e ausência de referências à versão anterior.
 
-Durante a validação foram corrigidos também o reconhecimento do caixa aberto da Secretaria, o lançamento líquido de dinheiro após o troco e o vínculo das parcelas de pagamento aos movimentos e à venda.
-
-A confirmação definitiva do webhook, da concorrência real de estoque e das transações financeiras depende do deploy com Firestore e InfinitePay de produção.
+A confirmação definitiva depende do deploy e do Firestore real.

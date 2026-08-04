@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.3-lanches-pagamento-combinado */
-const VERSION='1.6.0-rc2.3-lanches-pagamento-combinado';
+/* Escola Piaget — service worker V1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix */
+const VERSION='1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.3-lanches-pagamento-combinado/';
+const RELEASE='/releases/1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/00-portal-utils.js`,

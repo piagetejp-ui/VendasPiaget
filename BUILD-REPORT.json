@@ -1,20 +1,13 @@
 {
-  "version": "1.6.0-rc2.3-lanches-pagamento-combinado",
-  "base": "1.6.0-rc2.2-visoes-operacionais",
+  "version": "1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix",
+  "baseVersion": "RC2.3",
   "files": 47,
-  "features": [
-    "lanches_no_carrinho",
-    "agenda_cantina",
-    "pagamento_combinado",
-    "cartao_bruto_liquido_taxa"
+  "changes": [
+    "card_liquid_drives_sale",
+    "card_gross_is_machine_charge",
+    "fee_equals_gross_minus_liquid",
+    "backend_validation_updated",
+    "details_wording_updated"
   ],
-  "generatedAt": "2026-08-04T18:40:00-03:00",
-  "validation": {
-    "javascriptSyntax": "passed",
-    "frontendRuntime": "passed",
-    "apiRuntime": "passed",
-    "frontendBehavior": "passed",
-    "backendBehavior": "passed",
-    "zipIntegrity": "passed"
-  }
+  "generatedAt": "2026-08-04T21:56:54.909699+00:00"
 }
