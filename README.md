@@ -1,8 +1,10 @@
-# Sistema de Vendas Escola Piaget
+# Sistema de Vendas Escola Piaget — 1.6.0-rc2.2-visoes-operacionais
 
-**Versão:** `1.6.0-rc2.1-carrinho-modal-hotfix`
+**Versão:** `1.6.0-rc2.2-visoes-operacionais`
 
-Hotfix focado no retorno ao carrinho após configurar fardamento, negociação, mensalidade e itens de valor livre.
+Versão de desenvolvimento com catálogo flexível, vendas presenciais e online, filtros operacionais de cobranças, histórico unificado, detalhamento de itens e visão administrativa da conta do aluno.
+
+A atualização preserva o portal do responsável, o checkout da InfinitePay, a conta corrente do aluno e o motor unificado de vendas validados nas versões anteriores.
 
 ## Catálogo de vendas e motor unificado da Secretaria
 
@@ -83,3 +85,4 @@ version.json
 vercel.json
 package.json
 ```
+

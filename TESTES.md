@@ -1,31 +1,39 @@
-# Roteiro de testes — 1.6.0-rc2.1-carrinho-modal-hotfix
+# Roteiro de testes — 1.6.0-rc2.2-visoes-operacionais
 
-## Teste prioritário: itens com configuração
+## 1. Cobranças
 
-Execute os dois cenários em **Venda presencial** e em **Venda online**.
+1. Abra **Cobranças e saldos**.
+2. Clique em cada card: Saldo em aberto, Contas bloqueadas, Links pendentes, Pagos recentes e Mostrar todas.
+3. Confirme que a lista muda conforme o card e permanece ordenada pela data mais recente.
+4. Em link pendente, teste Abrir, Copiar e Atualizar status.
+5. Em pagamento concluído, abra Detalhar e Comprovante.
 
-### Fardamento
+## 2. Histórico de vendas
 
-1. Selecione um aluno.
-2. Entre em **Produtos e serviços** e abra **Fardamento**.
-3. Escolha tamanho, modelo e quantidade.
-4. Clique em **Adicionar ao carrinho**.
-5. Confirme que o sistema retorna ao carrinho e mostra a farda adicionada.
-6. Abra novamente o formulário e use **Voltar ao carrinho**.
-7. Repita usando o botão **×**. A venda deve continuar aberta.
+1. Abra **Vendas**.
+2. Confirme que aparecem operações presenciais e online na mesma lista.
+3. Teste os filtros Todas, Presenciais, Online, Pendentes e Concluídas.
+4. Abra uma venda variada e valide item, quantidade, preço unitário e subtotal.
+5. Em venda concluída, abra os comprovantes.
 
-### Negociação ou cobrança de valor livre
+## 3. Portal do responsável
 
-1. Abra o item de negociação.
-2. Informe referência/descrição, valor e quantidade.
-3. Clique em **Adicionar ao carrinho**.
-4. Confirme o retorno ao carrinho com descrição e valor preservados.
-5. Prossiga até pagamento presencial ou geração do link.
+1. Abra Movimentações.
+2. Confirme que o valor global continua visível.
+3. Clique em Detalhar e valide a composição de uma venda com mais de um item.
+4. Abra o comprovante.
 
-## Regressão rápida
+## 4. Conta administrativa do aluno
 
-- Produto simples entra diretamente no carrinho.
-- Mensalidade exige competência.
-- Botões de aumentar, diminuir e remover continuam funcionando.
-- O botão geral de fechar na venda principal ainda encerra a venda.
-- Portal do responsável e checkout permanecem sem alteração funcional nesta versão.
+1. Acesse Alunos e contas ou Consultar aluno.
+2. Abra um aluno com pedidos e movimentações.
+3. Valide as abas Resumo, Lanches, Pedidos, Movimentações e Pagamentos.
+4. Abra um detalhe de movimentação, pedido e comprovante.
+5. Teste Gerar cobrança e Registrar pagamento.
+
+## 5. Regressão
+
+- Criar fardamento presencial e online.
+- Criar negociação presencial e online.
+- Gerar checkout pelo portal do responsável.
+- Confirmar que o portal continua com o mesmo menu e navegação.

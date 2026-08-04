@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.1-carrinho-modal-hotfix */
-const VERSION='1.6.0-rc2.1-carrinho-modal-hotfix';
+/* Escola Piaget — service worker V1.6.0-rc2.2-visoes-operacionais */
+const VERSION='1.6.0-rc2.2-visoes-operacionais';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.1-carrinho-modal-hotfix/';
+const RELEASE='/releases/1.6.0-rc2.2-visoes-operacionais/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/00-portal-utils.js`,
@@ -19,6 +19,7 @@ const PRECACHE=[
   `${RELEASE}js/12-portal-finalization.js`,
   `${RELEASE}js/13-secretary-online-sales.js`,
   `${RELEASE}js/14-catalog-sales.js`,
+  `${RELEASE}js/15-operational-views.js`,
   '/assets/logo-piaget-icon-v152.png',
   '/assets/logo-piaget-horizontal-v152.png'
 ];

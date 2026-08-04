@@ -1,26 +1,8 @@
 {
-  "version": "1.6.0-rc2.1-carrinho-modal-hotfix",
-  "build": "2026-08-04T17:35:00-03:00",
-  "base": "1.6.0-rc2-catalogo-vendas",
-  "purpose": "Hotfix do retorno ao carrinho em itens que exigem configuração na venda presencial e online.",
-  "protectedFlows": [
-    "Portal do responsável",
-    "Checkout InfinitePay do responsável",
-    "Conta corrente do aluno",
-    "Catálogo e motor unificado RC2"
-  ],
-  "validation": {
-    "frontendSyntax": "pass",
-    "backendSyntax": "pass",
-    "frontendRuntimeLoad": "pass",
-    "backendModuleLoad": "pass",
-    "configuredItemModalFlow": "pass",
-    "uniformReturnToCart": "pass",
-    "negotiationReturnToCart": "pass",
-    "contextualCloseButton": "pass",
-    "zipIntegrity": "pass"
-  },
-  "fileCountExcludingReport": 46,
+  "version": "1.6.0-rc2.2-visoes-operacionais",
+  "generatedAt": "2026-08-04T17:45:00-03:00",
+  "fileCount": 47,
+  "totalBytes": 1423951,
   "files": [
     {
       "path": "AUDITORIA-CATALOGO.md",
@@ -29,28 +11,28 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 782,
-      "sha256": "eb4a7b89a82b7e9c16ce0f91892e7c362d27e50354be134b9ad485c89c8fbd03"
+      "bytes": 996,
+      "sha256": "db7585c331a55782f23a825d32f67791941fe0a0f2e454e6cd35a07e3ecc8762"
     },
     {
       "path": "README.md",
-      "bytes": 3329,
-      "sha256": "c2002344af0438a30e6b94ace2ba670b86e47706ed3fcf8f68b27a9a3ba2f8e1"
+      "bytes": 3622,
+      "sha256": "4ba56a9adda75d0662658e9d9085ed5035717fafc4a8b9cdc9f6b03bfbdcb290"
     },
     {
       "path": "TESTES.md",
-      "bytes": 1199,
-      "sha256": "702aedd6c57b064d199e2c07fa0260e5e3b46c1ba7e9f1ff3ff91e3bec276b53"
+      "bytes": 1485,
+      "sha256": "a36b7be09b3f235f9c8dc0161600171a9aa37478d21b309071416d611420bee1"
     },
     {
       "path": "VALIDACAO-TECNICA.md",
-      "bytes": 975,
-      "sha256": "102449af5d870b540fdac51c0f7dff2007658ff9a7795b2ca1ce1efac44e046b"
+      "bytes": 742,
+      "sha256": "7aef0c6e6c9b819eada308b6d429f770ccafaaeac624cd6cb608058fd11528bb"
     },
     {
       "path": "api/_utils.js",
-      "bytes": 108778,
-      "sha256": "1e73218f6b3580edb1fc29fc6aa3423350e1b9c242a4f7e839a5d2e700da3520"
+      "bytes": 108752,
+      "sha256": "d94653260d3af97f7b3ab6352860a976ffda9bbd68a7a3242ff2f5c7c8667955"
     },
     {
       "path": "api/confirmar-pedido-saldo.js",
@@ -64,8 +46,8 @@
     },
     {
       "path": "api/criar-venda-online.js",
-      "bytes": 3512,
-      "sha256": "7fc42914a0457d22dfd0632702c506e6570cf853e11f352b83c3eb125e0240e2"
+      "bytes": 3510,
+      "sha256": "8c65fc33ff797317ff71fa875de46cdb5933f7ed619a73206b5ac47ce6f42a6c"
     },
     {
       "path": "api/descartar-cobranca.js",
@@ -84,8 +66,8 @@
     },
     {
       "path": "api/iniciar-venda-online.js",
-      "bytes": 2732,
-      "sha256": "945491e752a05bbca8190a8897f90f02a33fbc6eb9fce376ca05bc68cc54bc37"
+      "bytes": 2730,
+      "sha256": "21d70a3a0524df6df62f5d431d1cf17fec9e8bb559831a1a69d3a1cab6d355d5"
     },
     {
       "path": "api/obter-venda-online.js",
@@ -139,13 +121,13 @@
     },
     {
       "path": "index.html",
-      "bytes": 7164,
-      "sha256": "7c506b59d11f408ccfc283a5a8d3a353382ee684f61d321f2db7a98cc94bfa9d"
+      "bytes": 7229,
+      "sha256": "324996c2f331c53d4fade7626b79a68c2d4d8a2114ea55368cd3a3bc3c7cb23e"
     },
     {
       "path": "obrigado.html",
-      "bytes": 18232,
-      "sha256": "df4195e5741d6507ca4d66050820162f3c004f93e623d2d6ef240ea9b524f662"
+      "bytes": 18224,
+      "sha256": "1f03514025b5b0bdcecdeffdd7722db7851fbeb91e608c22e02a03666967379c"
     },
     {
       "path": "package.json",
@@ -158,99 +140,104 @@
       "sha256": "d1f9516f6694ea7c54027bba8eb13567d89fa4458c8ec2649891e879dc04e8c9"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/css/app.css",
-      "bytes": 80869,
-      "sha256": "b6ef762f78e3cf90c8bcf0b310d162f00b7e9c15fd18070bff61c90e0d65fc39"
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/css/app.css",
+      "bytes": 85644,
+      "sha256": "665b00a704a4fc200c15e9230f5dd8c5f7e4935010b43950e069e9c371cc437b"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/00-portal-utils.js",
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/00-portal-utils.js",
       "bytes": 7113,
       "sha256": "7f83ce399a01ce1e8aa5da007f40d7448641d3bd5f759b566245fbdf518f9a28"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/01-core.js",
-      "bytes": 174120,
-      "sha256": "05f91323ea7bc10c3fe94133156019e6313c882e74eb43107cdf7d7086b4d017"
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/01-core.js",
+      "bytes": 174118,
+      "sha256": "6f99b038fd2613dfaec8acb06e282757f54419166d515c8b4c7a80ba4773ccf1"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/02-operations.js",
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/02-operations.js",
       "bytes": 88439,
       "sha256": "03430e55efec45cf21b96b5b2ff98d01b2e5c0cff55df4a3dd56423daf2c3f82"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/03-cash.js",
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/03-cash.js",
       "bytes": 61308,
       "sha256": "f9f61bf65f1ce7dc8af63774c116bafd20654b349310f1d4dba37e0da94383c1"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/04-brand.js",
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/04-brand.js",
       "bytes": 8119,
       "sha256": "5249aeb8b18c22d75d735dd4d4e2a8cbfc64ee251e591bd502e8b15a9321fda9"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/05-auth.js",
-      "bytes": 46058,
-      "sha256": "53d6a274d1490152b7068464713a8c12ddaa84c755cfce138a4df259dda23c1e"
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/05-auth.js",
+      "bytes": 46056,
+      "sha256": "af088e1327c70a2a1a0d0d06f21dc7886711603f3b815a2c10bea33cb5cd61a7"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/06-notifications-navigation.js",
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/06-notifications-navigation.js",
       "bytes": 33600,
       "sha256": "6b49556b6aaa4a0fe3e9724b3f6cca4996f0a4c0155eb578467c6721431eac80"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/07-account-checkout.js",
-      "bytes": 59702,
-      "sha256": "e992443a6aa98df92a42bc53b4c4208ebec564da17af6fa16d0fd6a7377516b8"
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/07-account-checkout.js",
+      "bytes": 59700,
+      "sha256": "be9ee15bf34bb95a5b16a15d1e73f4cc7b6faed31c20a89eb1fabe1e6bbf8ae8"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/08-orders-agenda.js",
-      "bytes": 29750,
-      "sha256": "fb3505bfecb7d71c2661f30d6bfdf2f1208a68bd2ac72156bd64d15d698c9316"
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/08-orders-agenda.js",
+      "bytes": 29746,
+      "sha256": "ba3ba81b045dbc8a6a1e094bddcb5275cb08f9377076ef7c955f03aa4fc563c3"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/09-portal-sales.js",
-      "bytes": 79116,
-      "sha256": "c30c6547c359c69daaf238241acfa10d1e475cf4440e70e97ae169c3f3d689c6"
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/09-portal-sales.js",
+      "bytes": 79114,
+      "sha256": "1d1536338fe0e15fce955a2cd1eb38953a7e81f33dbffcf3927c0011f1092bdc"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/10-mobile-runtime.js",
-      "bytes": 5517,
-      "sha256": "3869a35cfd1f0310e5889198624528ff7f115e235a41bd903ab48fe2186f8b4c"
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/10-mobile-runtime.js",
+      "bytes": 5513,
+      "sha256": "c390bc74f8ea5fe6a3a3223fdf5f96e622ae9cd69ffecdb0c5508e4db63d20bc"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/11-bootstrap.js",
-      "bytes": 5512,
-      "sha256": "7aee4f0695664bdcf08beeae71113e9e7bf874ae55f49b0f00b856cd051c3f7c"
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/11-bootstrap.js",
+      "bytes": 5508,
+      "sha256": "33ba03189887d27165da63cd67c3a0b614c36a505de80178edf4ede9af2f5166"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/12-portal-finalization.js",
-      "bytes": 31043,
-      "sha256": "8607a0eb3248177c6e620c534c99b53198d8cc40868e0d165bddcba37a633096"
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/12-portal-finalization.js",
+      "bytes": 31041,
+      "sha256": "c09540799f9fc4170c280b07b658d6ca754913d5c9b485e3523df57d5a08b19e"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/13-secretary-online-sales.js",
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/13-secretary-online-sales.js",
       "bytes": 21155,
       "sha256": "161c5a0c5102acd73f9bc4be2058c2082fe02c28826753cee39f5d31dbfe2c29"
     },
     {
-      "path": "releases/1.6.0-rc2.1-carrinho-modal-hotfix/js/14-catalog-sales.js",
-      "bytes": 46639,
-      "sha256": "14eeb48779afeb913a209f42c59244a16ac97c8737d0abedf5f16c1a2a6ea3fe"
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/14-catalog-sales.js",
+      "bytes": 46637,
+      "sha256": "17459f5a718270843bb84ec6e3b1bf9c95e87f9649306cb04f45b02c351d5131"
+    },
+    {
+      "path": "releases/1.6.0-rc2.2-visoes-operacionais/js/15-operational-views.js",
+      "bytes": 40663,
+      "sha256": "ad0ca9b44709bdaac396e4a81e6d51d10fef0eec2835d9037e3f2c28288dced7"
     },
     {
       "path": "sw.js",
-      "bytes": 2707,
-      "sha256": "6815daf50ce853a91f21a9becef5a5dab810b8448394bdf7e86b8d3349e176f6"
+      "bytes": 2743,
+      "sha256": "8bd35dd437a944d483558897864c1193eaecac2854bfb03dec90d40b177c79cc"
     },
     {
       "path": "vercel.json",
-      "bytes": 1909,
-      "sha256": "13ad1ea6e4e15e8294627b8174d056a8b2a89c5ca073dabced5fea0e39fc23ee"
+      "bytes": 1907,
+      "sha256": "d68e0db5fff58ffa4f5b57b876161ac77385e0d33a8b543b1e8a1d0cd099714a"
     },
     {
       "path": "version.json",
-      "bytes": 157,
-      "sha256": "cded84e31fd3a87493305e3907511e434adbc9245512237474f9a5a8f4d320ea"
+      "bytes": 153,
+      "sha256": "2a298ff68ac51cf8c0bf1692e3b61f225fb8b2edd3838df6fdac61a854f7c7b8"
     }
   ]
 }
