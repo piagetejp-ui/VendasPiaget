@@ -58,7 +58,7 @@
       ]
     },
     {
-      "source": "/releases/1.5.0-rc1.5-venda-online-secretaria/(.*)",
+      "source": "/releases/1.6.0-rc2-catalogo-vendas/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

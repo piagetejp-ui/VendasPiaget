@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.5.0-rc1.5-venda-online-secretaria */
-const VERSION='1.5.0-rc1.5-venda-online-secretaria';
+/* Escola Piaget — service worker V1.6.0-rc2-catalogo-vendas */
+const VERSION='1.6.0-rc2-catalogo-vendas';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.5.0-rc1.5-venda-online-secretaria/';
+const RELEASE='/releases/1.6.0-rc2-catalogo-vendas/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/00-portal-utils.js`,
@@ -18,6 +18,7 @@ const PRECACHE=[
   `${RELEASE}js/11-bootstrap.js`,
   `${RELEASE}js/12-portal-finalization.js`,
   `${RELEASE}js/13-secretary-online-sales.js`,
+  `${RELEASE}js/14-catalog-sales.js`,
   '/assets/logo-piaget-icon-v152.png',
   '/assets/logo-piaget-horizontal-v152.png'
 ];

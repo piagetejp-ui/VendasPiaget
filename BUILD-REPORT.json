@@ -1,12 +1,261 @@
 {
-  "version": "1.5.0-rc1.5-venda-online-secretaria",
-  "source": "await notify(db,{tipo:'checkout_pagamento_confirmado',titulo:'Pagamento confirmado',mensagem:`Pagamento de ${brl(checkout.totalCentavos)} confirmado para ${checkout.alunoNome||'operação avulsa'}.`,prioridade:'normal',alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,matricula:checkout.matricula,pagamentoId:orderNsu,destinatariosPerfis:['admin','gestao','secretaria']});",
-  "createdAt": "2026-08-04T14:20:00-03:00",
-  "changes": [
-    "canonical order status resolver",
-    "parent/internal notification separation",
-    "legacy notification wording normalization",
-    "uniform cancellation status fix",
-    "cantina confirmed vs delivery pending distinction"
+  "version": "1.6.0-rc2-catalogo-vendas",
+  "build": "2026-08-04T16:40:00-03:00",
+  "base": "1.5.0-rc1.5-venda-online-secretaria",
+  "purpose": "Reestruturação do catálogo e unificação das vendas presencial e online da Secretaria.",
+  "protectedFlows": [
+    "Portal do responsável",
+    "Checkout InfinitePay do responsável",
+    "Conta corrente do aluno",
+    "Layout mobile e identidade visual",
+    "Comprovantes e notificações validados"
+  ],
+  "validation": {
+    "frontendSyntax": "pass",
+    "backendSyntax": "pass",
+    "frontendRuntimeLoad": "pass",
+    "backendModuleLoad": "pass",
+    "inlineHandlersChecked": 408,
+    "missingInlineHandlers": 0,
+    "catalogBehaviorSmoke": "pass",
+    "backendCatalogNormalization": "pass",
+    "inPersonRegularization": "pass",
+    "inPersonCatalogSale": "pass",
+    "onlineLinkAuthoritativeTotal": "pass",
+    "buyerDataValidation": "pass",
+    "localAssetPaths": "pass"
+  },
+  "fileCountExcludingReport": 46,
+  "files": [
+    {
+      "path": "AUDITORIA-CATALOGO.md",
+      "bytes": 1602,
+      "sha256": "9aec41b989bf611489591789a1803be3815d7d5c390e8f6bc42ce2bc40e1399c"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 2062,
+      "sha256": "c1c6e3c52c231694d3ccd3901bbedbdcc9579128613ec86a10aef7efa51a45f7"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3177,
+      "sha256": "08c2c2264b38f142e791ad920a71228573a2a0be0a8170aea24cb6565476d5a9"
+    },
+    {
+      "path": "TESTES.md",
+      "bytes": 3762,
+      "sha256": "c6b6219266ad3b7dfcc081431392424a7adbbf4e5abe1b92c208c942f5b3ac39"
+    },
+    {
+      "path": "VALIDACAO-TECNICA.md",
+      "bytes": 2063,
+      "sha256": "b6a1f48226f1b8d3c40d040ac5c409e986ba9c70a7f34ddc480559bff94e0ade"
+    },
+    {
+      "path": "api/_utils.js",
+      "bytes": 108674,
+      "sha256": "5d3a3120716081fe8ca62ed35ad19e4d01d767882a6b5e0f2afa8a20333ca1b1"
+    },
+    {
+      "path": "api/confirmar-pedido-saldo.js",
+      "bytes": 2820,
+      "sha256": "9bd1f4ba76227a7bd75bb499776ed89fbc41c6ed12799111444cb5519c9cd2c7"
+    },
+    {
+      "path": "api/criar-checkout.js",
+      "bytes": 4490,
+      "sha256": "c797a904d3b2b4200fc0b2233ce541b9578681f5e3d938e6a2b1d4ddebf916db"
+    },
+    {
+      "path": "api/criar-venda-online.js",
+      "bytes": 3504,
+      "sha256": "b84f12fde0f02168203a02d3a16ab9e12942a6071fca4c15f4ed1107a14b0c2c"
+    },
+    {
+      "path": "api/descartar-cobranca.js",
+      "bytes": 544,
+      "sha256": "83415e403aed89d366e97dc43d4ba9444642701f8227b1b67af77454872f2acb"
+    },
+    {
+      "path": "api/gerenciar-programacao-lanche.js",
+      "bytes": 10962,
+      "sha256": "09291ca38219612a2063def53145415ce13098df3b2a1decb31f55cb1bd4455d"
+    },
+    {
+      "path": "api/gerenciar-venda-online.js",
+      "bytes": 2396,
+      "sha256": "97ace71e9ff56a539faa559d2f6134cb02408bb2c6f1da6bbde998e770987826"
+    },
+    {
+      "path": "api/iniciar-venda-online.js",
+      "bytes": 2724,
+      "sha256": "377ac0ec27014b5fec80c7b3137f8445d6ee05a864186cb2801f5c0a966a36ed"
+    },
+    {
+      "path": "api/obter-venda-online.js",
+      "bytes": 1903,
+      "sha256": "df6540990c8b311f7a70efa47d81b323075b9418e4c2891241ab00aca7c0ad6d"
+    },
+    {
+      "path": "api/registrar-operacao-presencial.js",
+      "bytes": 617,
+      "sha256": "71d916eed2f889476e0fac0927a921adf96e2b7558af883c9e1471b3957592d2"
+    },
+    {
+      "path": "api/verificar-pagamento.js",
+      "bytes": 600,
+      "sha256": "dd6d0723cd0b7e97f6796f180e58ac4f765af241edce9a807a2be6bf80d069f7"
+    },
+    {
+      "path": "api/webhook-infinitepay.js",
+      "bytes": 1265,
+      "sha256": "56b735bb26aa61e4869f9da3ce148495bc1c74d0af80c96bd97565acc0f2937a"
+    },
+    {
+      "path": "assets/logo-piaget-horizontal-v152.png",
+      "bytes": 78291,
+      "sha256": "d58b07e5a2ffc39ee72b1f83f0f720b2841ff84cc5bacd9896eaf5d7212392f8"
+    },
+    {
+      "path": "assets/logo-piaget-icon-blue-white-v152.png",
+      "bytes": 80830,
+      "sha256": "25e5d984bc4f78549489dc10b9b8e83d322297977733b56ae4193c542538a679"
+    },
+    {
+      "path": "assets/logo-piaget-icon-v152.png",
+      "bytes": 66524,
+      "sha256": "d98932d594dd7cf4c907890896e41df01a3cb36bb46fe457aa433011f7cb3067"
+    },
+    {
+      "path": "assets/logo-piaget-icon-white-orange-v152.png",
+      "bytes": 70388,
+      "sha256": "90987836184113f2a2ecfcb7e9c33e556aae59de00eff5ffdb69552a95f3f588"
+    },
+    {
+      "path": "assets/logo-piaget-icon-white-v152.png",
+      "bytes": 50170,
+      "sha256": "6735a3b15a870b48d4a304d6cb66e15fd966ef0b11bc8c1c0696126c9683bec7"
+    },
+    {
+      "path": "assets/selo-piaget-v152.png",
+      "bytes": 66524,
+      "sha256": "d98932d594dd7cf4c907890896e41df01a3cb36bb46fe457aa433011f7cb3067"
+    },
+    {
+      "path": "index.html",
+      "bytes": 7020,
+      "sha256": "c2600c51b7a25889a0d69c98ddbc413ba785cc4439589a66033d811bb43ac1a7"
+    },
+    {
+      "path": "obrigado.html",
+      "bytes": 18200,
+      "sha256": "dc247f94182f140f88875afd894a65b2f0b0f92e7f9316eb8877f17a7c5c88b6"
+    },
+    {
+      "path": "package.json",
+      "bytes": 180,
+      "sha256": "518788350bc8e741e53e4eac6828975811c924486bd1a75b61166813f3e5a90c"
+    },
+    {
+      "path": "pagamento.html",
+      "bytes": 8278,
+      "sha256": "d1f9516f6694ea7c54027bba8eb13567d89fa4458c8ec2649891e879dc04e8c9"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/css/app.css",
+      "bytes": 80869,
+      "sha256": "b6ef762f78e3cf90c8bcf0b310d162f00b7e9c15fd18070bff61c90e0d65fc39"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/00-portal-utils.js",
+      "bytes": 7113,
+      "sha256": "7f83ce399a01ce1e8aa5da007f40d7448641d3bd5f759b566245fbdf518f9a28"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/01-core.js",
+      "bytes": 174112,
+      "sha256": "1c9e5ec3d1f98fb906c018e11acd037a3289d5987fe3e89bf815d4133ae99875"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/02-operations.js",
+      "bytes": 88439,
+      "sha256": "03430e55efec45cf21b96b5b2ff98d01b2e5c0cff55df4a3dd56423daf2c3f82"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/03-cash.js",
+      "bytes": 61308,
+      "sha256": "f9f61bf65f1ce7dc8af63774c116bafd20654b349310f1d4dba37e0da94383c1"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/04-brand.js",
+      "bytes": 8119,
+      "sha256": "5249aeb8b18c22d75d735dd4d4e2a8cbfc64ee251e591bd502e8b15a9321fda9"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/05-auth.js",
+      "bytes": 46050,
+      "sha256": "275041e4f8fdaf2fc6db989fcbb249a9c457ed3025986a49057b5364def8a4e9"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/06-notifications-navigation.js",
+      "bytes": 33600,
+      "sha256": "6b49556b6aaa4a0fe3e9724b3f6cca4996f0a4c0155eb578467c6721431eac80"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/07-account-checkout.js",
+      "bytes": 59694,
+      "sha256": "20f2488874c8d8597d178a2fa9ed8a53633298374d9aa1f09f192c040b6dd68a"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/08-orders-agenda.js",
+      "bytes": 29734,
+      "sha256": "7083d806b8f7fdee245c51e1355ee0d2ac4aa3dc3eb3e97ecb335cda48c0f30e"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/09-portal-sales.js",
+      "bytes": 79108,
+      "sha256": "35b80cfa0dbcdda23984188eab94ca74a8a368cc8f4a54cd119c76c5e216daf3"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/10-mobile-runtime.js",
+      "bytes": 5501,
+      "sha256": "bf3075b64b66e6eeb531ce04c7949d1329e0d666db4f3f1bcd0ecd294a8b6fa0"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/11-bootstrap.js",
+      "bytes": 5496,
+      "sha256": "32ca4a2a467b939212a3bf97905591c561653cb28f7c407adef4ffb53f445aa6"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/12-portal-finalization.js",
+      "bytes": 31035,
+      "sha256": "9ad1d00143da1a05ac43701cc0d7e3da0db1cf5d12f715bfc2a78b4a5c59fe11"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/13-secretary-online-sales.js",
+      "bytes": 21155,
+      "sha256": "161c5a0c5102acd73f9bc4be2058c2082fe02c28826753cee39f5d31dbfe2c29"
+    },
+    {
+      "path": "releases/1.6.0-rc2-catalogo-vendas/js/14-catalog-sales.js",
+      "bytes": 45952,
+      "sha256": "65495b57aabe2edf6c28e3f587e2269684cca72d48897b38443f8936b2d3b0e3"
+    },
+    {
+      "path": "sw.js",
+      "bytes": 2683,
+      "sha256": "72e028aeeeeffb5a45cc75c08011c19158d001ec7a672f2a1ba86207937bb429"
+    },
+    {
+      "path": "vercel.json",
+      "bytes": 1901,
+      "sha256": "38978778aede8a205989db2cc966190a92d91b83b1967b84309e947661dbafb7"
+    },
+    {
+      "path": "version.json",
+      "bytes": 141,
+      "sha256": "71b19eb6a7f8da14b76698c010b2ef68fa58fb391fc3c71fa672605747a2b822"
+    }
   ]
 }
