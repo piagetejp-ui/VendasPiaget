@@ -1,9 +1,12 @@
-# Validação técnica — 1.5.0-rc1.3-portal-responsavel-hotfix
+# Validação técnica — 1.5.0-rc1.4-status-hotfix
 
-- Todos os arquivos JavaScript passaram por `node --check`.
-- Todos os módulos frontend foram carregados em uma VM conjunta.
-- Todas as APIs foram carregadas como módulos Node.
-- Testes de integração cobriram: agregação de pedidos, abertura direta por notificação, remarcação, reserva vencida, conflito ativo e cancelamento.
-- O ZIP foi verificado com `unzip -t`.
+- Resolvedor único de status testado para cantina e fardamento.
+- Pedido cancelado de farda não é convertido em entregue.
+- Pedido confirmado de cantina é distinguido de entrega realizada.
+- Notificações internas não recebem mais o aluno automaticamente como destinatário.
+- Notificações do responsável são criadas explicitamente.
+- Módulos frontend e APIs carregados em runtime local.
+- Handlers inline conferidos.
+- ZIP validado.
 
-A validação real ainda depende do deploy com Firestore e navegador.
+A validação definitiva depende do Firestore e do deploy de produção.

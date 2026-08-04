@@ -1,12 +1,12 @@
 {
-  "version": "1.5.0-rc1.3-portal-responsavel-hotfix",
-  "source": "1.5.0-rc1.2-portal-responsavel",
-  "createdAt": "2026-08-04T13:49:32-03:00",
+  "version": "1.5.0-rc1.4-status-hotfix",
+  "source": "await notify(db,{tipo:'checkout_pagamento_confirmado',titulo:'Pagamento confirmado',mensagem:`Pagamento de ${brl(checkout.totalCentavos)} confirmado para ${checkout.alunoNome||'operação avulsa'}.`,prioridade:'normal',alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,matricula:checkout.matricula,pagamentoId:orderNsu,destinatariosPerfis:['admin','gestao','secretaria']});",
+  "createdAt": "2026-08-04T14:20:00-03:00",
   "changes": [
-    "shared portal utilities",
-    "orders list/detail restored",
-    "notification deep-link",
-    "reschedule frontend fixed",
-    "reschedule backend normalized"
+    "canonical order status resolver",
+    "parent/internal notification separation",
+    "legacy notification wording normalization",
+    "uniform cancellation status fix",
+    "cantina confirmed vs delivery pending distinction"
   ]
 }

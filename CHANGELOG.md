@@ -1,12 +1,10 @@
-# Changelog — 1.5.0-rc1.3-portal-responsavel-hotfix
+# Changelog — 1.5.0-rc1.4-status-hotfix
 
-## Correções
-
-- Restaurada a tela **Meus pedidos** com utilitários compartilhados de período e agregação.
-- Notificações agora abrem diretamente o pedido relacionado.
-- Corrigida a abertura do formulário **Alterar data**.
-- Remarcação agora ignora reservas vencidas e verifica somente entregas ativas.
-- Programações antigas são normalizadas durante a remarcação.
-- A ocorrência anterior é preservada como `remarcado` e a nova ocorrência é criada como pendente.
-- O cancelamento também atualiza o dia no pedido mestre.
-- Checkouts da RC1.2 foram preservados sem alteração funcional.
+- Corrige pedidos cancelados ou com pagamento não concluído que apareciam como entregues.
+- Separa status de pagamento, pedido e entrega.
+- Pedido de cantina confirmado passa a aparecer como aguardando entrega.
+- Pedidos parcialmente entregues aparecem como em andamento.
+- Pedidos concluídos com devolução recebem status próprio.
+- Separa notificações internas das notificações do responsável.
+- Normaliza a redação de notificações antigas de pedido confirmado no portal do responsável.
+- Preserva checkout, remarcação, cancelamento e demais fluxos da RC1.3.

@@ -1,5 +1,5 @@
-# Sistema de Vendas Escola Piaget — 1.5.0-rc1.3-portal-responsavel-hotfix
+# Sistema de Vendas Escola Piaget — 1.5.0-rc1.4-status-hotfix
 
-Hotfix da RC1.2 para **Meus pedidos**, abertura direta por notificação e remarcação de programações.
+Pacote completo para substituir o conteúdo do repositório. Preserve a estrutura de pastas e mantenha `index.html` na raiz.
 
-Publique o conteúdo desta pasta na Vercel. O sistema utiliza arquivos físicos versionados em `/releases/1.5.0-rc1.3-portal-responsavel-hotfix/`.
+Esta revisão corrige exclusivamente a interpretação de estados e as notificações do responsável, preservando os fluxos validados da RC1.3.
