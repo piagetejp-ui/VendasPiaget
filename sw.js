@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2-catalogo-vendas */
-const VERSION='1.6.0-rc2-catalogo-vendas';
+/* Escola Piaget — service worker V1.6.0-rc2.1-carrinho-modal-hotfix */
+const VERSION='1.6.0-rc2.1-carrinho-modal-hotfix';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2-catalogo-vendas/';
+const RELEASE='/releases/1.6.0-rc2.1-carrinho-modal-hotfix/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/00-portal-utils.js`,

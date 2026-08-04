@@ -58,7 +58,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2-catalogo-vendas/(.*)",
+      "source": "/releases/1.6.0-rc2.1-carrinho-modal-hotfix/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

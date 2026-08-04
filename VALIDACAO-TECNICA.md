@@ -1,49 +1,22 @@
-# Validação técnica — V1.6.0 RC2
+# Validação técnica — 1.6.0-rc2.1-carrinho-modal-hotfix
 
-## Resultado local
+## Causa encontrada
 
-- Sintaxe validada em todos os módulos JavaScript do frontend.
-- Sintaxe validada em todas as APIs serverless.
-- Todos os módulos frontend carregados no mesmo contexto de execução.
-- Todas as APIs carregadas como módulos Node com `firebase-admin` simulado.
-- 455 handlers inline verificados; nenhum aponta para função ausente.
-- Caminhos locais de CSS, JavaScript e imagens conferidos.
-- Arquivos do service worker conferidos, incluindo o novo módulo do catálogo.
-- JavaScript embutido em `pagamento.html` e `obrigado.html` validado.
+O submodal de fardamento/negociação substituía o conteúdo do modal principal. Ao confirmar, `addCatalogLineV160()` chamava `renderCatalogPickerV160()` antes de reconstruir a venda. Nesse momento, `#v160OperationBody` não existia, provocando uma exceção e interrompendo o fluxo antes do retorno ao carrinho.
 
-## Casos simulados
+## Correção
 
-- Produto simples com estoque geral.
-- Combo consumindo componente.
-- Evento consumindo capacidade de vagas.
-- Mensalidade com competência obrigatória.
-- Negociação com referência obrigatória.
-- Venda presencial usando crédito parcial do aluno.
-- Regularização presencial de saldo negativo.
-- Geração de link online com total recalculado no servidor.
-- Dados válidos do comprador aceitos pela página pública.
-- Renderização do Catálogo de vendas e do carrinho unificado.
+- Inclusão do item separada da renderização do carrinho.
+- Reconstrução controlada do modal principal após a confirmação.
+- Ação contextual do botão **×** no submodal.
+- Botão explícito **Voltar ao carrinho**.
 
-## Regras estruturais verificadas
+## Verificações locais
 
-- IDs permanentes para categorias e itens.
-- Categorias inativas retiram seus itens das novas vendas.
-- Canal presencial e online verificado no servidor.
-- Combos possuem detecção de composição circular no servidor.
-- Estoque e vagas são lidos antes das gravações nas transações.
-- Movimentos financeiros e vendas armazenam fotografia dos itens utilizados.
-- Migração inicial marcada para não duplicar o catálogo.
-- Mudança de tipo inativa o cadastro legado incompatível.
+- Sintaxe de todos os arquivos JavaScript.
+- Carregamento conjunto dos módulos frontend.
+- Carregamento dos módulos de API.
+- Teste estático das funções e handlers do novo retorno ao carrinho.
+- Integridade do ZIP.
 
-## Limites da validação local
-
-Ainda exigem teste após o deploy:
-
-- Firestore real e suas regras de segurança.
-- Firebase Auth real.
-- InfinitePay real.
-- concorrência simultânea de duas vendas sobre o mesmo estoque;
-- comportamento em iPhone e Android reais;
-- migração com os dados atualmente existentes no projeto.
-
-A versão é uma candidata estrutural de desenvolvimento, não uma declaração de produção final.
+A validação final ainda depende do deploy e do teste no navegador com o Firestore real.

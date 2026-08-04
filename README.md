@@ -1,4 +1,8 @@
-# Sistema de Vendas Escola Piaget — V1.6.0 RC2
+# Sistema de Vendas Escola Piaget
+
+**Versão:** `1.6.0-rc2.1-carrinho-modal-hotfix`
+
+Hotfix focado no retorno ao carrinho após configurar fardamento, negociação, mensalidade e itens de valor livre.
 
 ## Catálogo de vendas e motor unificado da Secretaria
 
