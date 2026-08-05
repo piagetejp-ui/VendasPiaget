@@ -1,12 +1,25 @@
-# Changelog — 1.6.0-rc2.3.2-lanches-multiplos-produtos
+# Changelog — 1.6.0-rc2.4-caixa-responsabilidade
 
-- Permite adicionar vários produtos na mesma data da programação de lanches.
-- Cada dia ganhou ações para adicionar e remover produtos.
-- Permite copiar a composição completa de um dia para todos os dias marcados.
-- Totais agora distinguem quantidade de entregas e quantidade de itens programados.
-- A revisão do responsável agrupa os produtos por data.
-- A programação adicionada ao carrinho da Secretaria preserva todos os produtos de cada dia.
-- A edição de uma programação existente restaura corretamente composições com vários produtos.
-- A agenda da Cantina continua recebendo uma única ocorrência por data, com a lista completa dos itens.
-- A validação do backend consolida produtos repetidos e bloqueia mais de 10 unidades do mesmo produto na mesma data.
-- Preserva o portal do responsável, o checkout InfinitePay, o pagamento combinado e o hotfix de líquido/bruto do cartão.
+## Caixa da Secretaria
+
+- Removida a dependência de turno para o caixa físico da Secretaria.
+- `sessoes_caixa` passa a ser a fonte das novas vendas em dinheiro.
+- Criados períodos em `periodos_responsabilidade_caixa`.
+- Criada conferência para assumir um caixa aberto por outro operador.
+- Divergências da troca ficam vinculadas ao período anterior e não bloqueiam o novo responsável.
+- Criadas entradas e saídas manuais com categoria, descrição, beneficiário e referência de comprovante.
+- Vendas e pagamentos em dinheiro passam a registrar sessão e período de responsabilidade.
+
+## Hierarquia e auditoria
+
+- Adicionada permissão de caixa: sem acesso, operador ou gestor.
+- Lucas inicia como gestor; Daniele e Evanda como operadoras.
+- Operadores registram justificativas, mas a decisão final pertence à Gestão.
+- Divergência registrada por gestor é concluída como decisão gerencial, mantendo o histórico.
+- Criada conta mensal informativa de divergências por operador.
+
+## Experiência de uso
+
+- A página Vendas informa antecipadamente se o caixa está fechado, disponível ou sob responsabilidade de outra pessoa.
+- Pix, cartão e saldo continuam disponíveis quando o caixa físico está fechado.
+- Removidos cartões, aviso e funções visíveis do antigo modo de implantação.

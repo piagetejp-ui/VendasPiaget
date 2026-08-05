@@ -1,19 +1,22 @@
-# Validação técnica — 1.6.0-rc2.3.2-lanches-multiplos-produtos
+# Validação técnica — 1.6.0-rc2.4-caixa-responsabilidade
 
-Validações locais executadas:
+## Executado localmente
 
-- sintaxe de todos os arquivos JavaScript;
-- carregamento dos 16 módulos frontend em um mesmo contexto;
-- carregamento das 12 APIs com Firebase Admin simulado;
-- seleção de três produtos na mesma data;
-- seleção de produtos diferentes em duas datas;
-- cálculo de total por item, por data e do pedido completo;
-- salvamento do rascunho com uma lista de itens por data;
-- consolidação de produtos repetidos na mesma data;
-- bloqueio, no backend, de mais de 10 unidades do mesmo produto por data;
-- normalização de uma programação com três produtos em um dia e um combo em outro;
-- expansão dos componentes do combo e cálculo da quantidade de salgados;
-- ausência de referências à versão anterior;
-- integridade estrutural do pacote e do ZIP.
+- verificação sintática de todos os arquivos JavaScript com Node.js;
+- carregamento conjunto dos módulos frontend em contexto simulado;
+- carregamento de todas as APIs com `firebase-admin` simulado;
+- verificação de referências da versão e integridade do pacote;
+- inspeção do vínculo `venda → sessão de caixa → período de responsabilidade`;
+- inspeção da revalidação da sessão dentro da transação da venda;
+- testes estáticos das permissões operador/gestor, aviso em Vendas, assunção, divergências, entradas e saídas;
+- teste de integridade do ZIP.
 
-A confirmação definitiva depende do deploy e dos testes com o Firestore e a InfinitePay reais.
+## Necessita validação após deploy
+
+- gravações reais no Firestore;
+- concorrência entre fechamento, assunção e venda em dinheiro;
+- permissões reais dos usuários autenticados;
+- migração de eventual sessão de teste ainda aberta;
+- comportamento em celulares usados pela Secretaria.
+
+O deploy não foi realizado neste ambiente.

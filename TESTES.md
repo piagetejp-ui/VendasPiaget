@@ -1,48 +1,72 @@
-# Roteiro de testes — 1.6.0-rc2.3.2-lanches-multiplos-produtos
+# Roteiro de testes — 1.6.0-rc2.4-caixa-responsabilidade
 
-## Responsável — uma data
+## 1. Abertura sem turno
 
-1. Entre no portal do responsável.
-2. Abra a programação de lanches e selecione **Um dia**.
-3. Adicione salgado, suco e biscoito na mesma data.
-4. Altere as quantidades e remova apenas um dos produtos.
-5. Revise o pedido.
-6. Confirme que os três produtos aparecem agrupados na mesma entrega e que o total está correto.
+1. Entrar como Daniele.
+2. Abrir **Caixa** e informar o valor contado.
+3. Confirmar que aparecem horário, responsável e saldo esperado, sem seleção de manhã/tarde.
+4. Abrir **Vendas** e confirmar o aviso “Caixa aberto e sob sua responsabilidade”.
 
-## Responsável — semana ou mês
+## 2. Venda em dinheiro
 
-1. Monte uma composição com mais de um produto em um dos dias.
-2. Marque os outros dias desejados.
-3. Use **Aplicar esta composição aos dias marcados**.
-4. Altere somente um dos dias depois da cópia.
-5. Revise e confirme que cada data preservou sua própria composição.
+1. Com o caixa aberto por Daniele, registrar venda presencial com dinheiro.
+2. Confirmar que a venda é concluída.
+3. Voltar ao caixa e conferir a entrada líquida, descontado eventual troco.
+4. Verificar que Pix e cartão não alteram o dinheiro físico.
 
-## Secretaria — venda presencial
+## 3. Aviso antecipado
 
-1. Inicie uma venda presencial e selecione um aluno.
-2. Adicione uma programação com vários produtos na mesma data.
-3. Volte ao carrinho e acrescente outro item, como farda ou mensalidade.
-4. Conclua com pagamento combinado.
-5. Confira o histórico, o detalhamento da venda e a agenda da Cantina.
+1. Fechar o caixa.
+2. Abrir **Vendas**.
+3. Confirmar o aviso de caixa fechado antes de iniciar a venda.
+4. Confirmar que Pix, cartão e saldo permanecem disponíveis.
+5. Tentar adicionar dinheiro e confirmar que o sistema oferece a abertura sem perder a venda.
 
-## Secretaria — venda online
+## 4. Troca Daniele → Evanda sem fechamento
 
-1. Monte uma venda online com programação de lanches e outro item.
-2. Gere o link e conclua o pagamento pelo fluxo do responsável.
-3. Confirme que a agenda da Cantina recebeu uma ocorrência por data com todos os produtos.
+1. Deixar o caixa aberto como Daniele.
+2. Entrar como Evanda.
+3. Confirmar o aviso de caixa sob responsabilidade de Daniele.
+4. Usar **Conferir e assumir**.
+5. Informar exatamente o saldo esperado.
+6. Confirmar que Evanda assume e pode vender em dinheiro sem pendência financeira.
 
-## Edição
+## 5. Troca com divergência
 
-1. Adicione uma programação com vários produtos ao carrinho da Secretaria.
-2. Clique em **Editar**.
-3. Confirme que todos os dias e produtos são restaurados.
-4. Faça uma alteração e volte ao carrinho.
+1. Repetir a troca, informando valor contado diferente do esperado.
+2. Confirmar que Evanda assume pelo valor efetivamente contado.
+3. Confirmar que a venda em dinheiro continua liberada para Evanda.
+4. Verificar que a divergência fica na conta de Daniele e aguarda decisão gerencial.
 
-## Validações
+## 6. Hierarquia
 
-- um dia marcado sem produtos não deve ser considerado entrega;
-- produtos repetidos na mesma data devem ser consolidados;
-- mais de 10 unidades do mesmo produto na mesma data devem ser bloqueadas;
-- combos devem continuar consumindo seus componentes;
-- a disponibilidade de salgados deve considerar a soma de todos os produtos e combos do dia;
-- o operador da Cantina deve visualizar todos os itens da ocorrência.
+1. Fechar caixa com divergência como operadora e informar justificativa.
+2. Confirmar que a situação fica “Aguardando decisão gerencial”.
+3. Entrar como Lucas e abrir **Caixa**.
+4. Aprovar, rejeitar/pedir esclarecimento, manter pendente ou regularizar.
+5. Abrir/fechar um caixa como Lucas com divergência e confirmar que sua justificativa nasce como decisão gerencial definitiva.
+
+## 7. Entradas e saídas
+
+1. Registrar entrada manual.
+2. Registrar saída por suprimento.
+3. Registrar pagamento a funcionário.
+4. Confirmar descrição, usuário, horário e efeito no saldo esperado.
+5. Fechar o caixa e conferir a memória de movimentações.
+
+## 8. Conta mensal de divergências
+
+1. Criar divergências para mais de um operador.
+2. Conferir a visão mensal individual da operadora.
+3. Conferir, como Lucas, totais por operador e pendências para decisão.
+4. Confirmar que sobras não compensam desfalques automaticamente.
+
+## 9. Permissões e implantação
+
+1. Em **Usuários e acessos**, criar um usuário sem acesso ao caixa e outro como operador.
+2. Confirmar os limites de cada perfil.
+3. Confirmar que o antigo aviso/cartão/modo de implantação não aparece mais no login ou em Usuários e acessos.
+
+## 10. Regressão
+
+Revalidar portal do responsável, checkout InfinitePay, carrinho misto, programação de lanches com múltiplos produtos, venda online e cartão com líquido/bruto.

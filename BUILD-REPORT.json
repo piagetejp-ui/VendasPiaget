@@ -1,13 +1,16 @@
 {
-  "version": "1.6.0-rc2.3.2-lanches-multiplos-produtos",
-  "baseVersion": "1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix",
-  "files": 47,
+  "version": "1.6.0-rc2.4-caixa-responsabilidade",
+  "baseVersion": "1.6.0-rc2.3.2-lanches-multiplos-produtos",
+  "generatedAt": "2026-08-05T18:17:00-03:00",
   "changes": [
-    "multiple_snack_products_per_date",
-    "day_composition_copy",
-    "grouped_review_by_date",
-    "secretary_cart_edit_restore",
-    "backend_duplicate_quantity_guard"
-  ],
-  "generatedAt": "2026-08-05T17:29:00-03:00"
+    "single_secretary_cash_without_shift",
+    "cash_responsibility_periods",
+    "takeover_without_operational_block",
+    "operator_monthly_divergence_account",
+    "manager_final_decision",
+    "cash_entries_and_expenses",
+    "sales_cash_status_banner",
+    "cash_sale_session_sync",
+    "deployment_mode_removed"
+  ]
 }

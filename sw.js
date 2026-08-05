@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.3.2-lanches-multiplos-produtos */
-const VERSION='1.6.0-rc2.3.2-lanches-multiplos-produtos';
+/* Escola Piaget — service worker V1.6.0-rc2.4-caixa-responsabilidade */
+const VERSION='1.6.0-rc2.4-caixa-responsabilidade';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/';
+const RELEASE='/releases/1.6.0-rc2.4-caixa-responsabilidade/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/00-portal-utils.js`,
@@ -20,6 +20,7 @@ const PRECACHE=[
   `${RELEASE}js/13-secretary-online-sales.js`,
   `${RELEASE}js/14-catalog-sales.js`,
   `${RELEASE}js/15-operational-views.js`,
+  `${RELEASE}js/16-cash-responsibility.js`,
   '/assets/logo-piaget-icon-v152.png',
   '/assets/logo-piaget-horizontal-v152.png'
 ];

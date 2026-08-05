@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="application-version" content="1.6.0-rc2.3.2-lanches-multiplos-produtos">
+  <meta name="application-version" content="1.6.0-rc2.4-caixa-responsabilidade">
   <meta name="theme-color" content="#2C3896">
   <link rel="icon" href="/assets/logo-piaget-icon-v152.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/css/app.css">
+  <link rel="stylesheet" href="/releases/1.6.0-rc2.4-caixa-responsabilidade/css/app.css">
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -32,7 +32,7 @@
       <div><h1>Escola Piaget</h1><small>Vendas, cantina e atendimento</small></div>
     </div>
     <div class="top-actions">
-      <span class="pill app-version-pill hidden" id="appVersionPill" title="Versão do sistema">v1.6.0-rc2.3.2-lanches-multiplos-produtos</span>
+      <span class="pill app-version-pill hidden" id="appVersionPill" title="Versão do sistema">v1.6.0-rc2.4-caixa-responsabilidade</span>
       <button type="button" class="v151-mobile-menu hidden" id="v151MenuBtn" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰</button>
       <span class="pill" id="connectionPill">Conectando...</span>
       <span class="pill hidden" id="userPill"></span>
@@ -51,28 +51,12 @@
     </div>
   </section>
 
-  <section class="role-screen hidden" id="setupScreen">
-    <div class="setup">
-      <div class="accent"></div>
-      <h2>Inicializar a base real</h2>
-      <p>O Firestore está vazio. Esta etapa importa alunos, turmas, produtos, preços, contas e configurações sem sobrescrever dados existentes.</p>
-      <div class="alert warn">Use somente durante a implantação inicial da base.</div>
-      <button type="button" class="btn btn-primary" onclick="seedDatabase()" style="margin-top:14px">Importar base real</button>
-      <p class="muted" id="seedStatus"></p>
-    </div>
-  </section>
 
   <section class="role-screen hidden" id="roleScreen">
     <div class="role-box">
-      <div class="accent"></div>
-      <h2 class="title">Escolha o acesso</h2>
-      <p class="subtitle" style="margin-bottom:18px">Entre no portal do responsável ou acesse sua área de trabalho.</p>
-      <div class="role-grid">
-        <div class="role-card" onclick="enterParent()"><div class="role-icon">👨‍👩‍👧</div><h3>Responsável</h3><p>Conta do aluno, pedidos, fardamento e pagamentos.</p></div>
-        <div class="role-card" onclick="selectProfile('ruan')"><div class="role-icon">🍽️</div><h3>Ruan de Jesus</h3><p>Operação da cantina nos turnos manhã e tarde.</p></div>
-        <div class="role-card" onclick="selectProfile('daniele')"><div class="role-icon">🗂️</div><h3>Daniele</h3><p>Secretaria no turno da manhã.</p></div>
-        <div class="role-card" onclick="selectProfile('evanda')"><div class="role-icon">🗂️</div><h3>Evanda</h3><p>Secretaria no turno da tarde.</p></div>
-        <div class="role-card" onclick="selectProfile('lucas')"><div class="role-icon">📊</div><h3>Lucas</h3><p>Gestão, configurações e auditoria.</p></div>
+      <div class="access-logo-v130">
+        <img src="/assets/logo-piaget-icon-v152.png" alt="Símbolo Escola Piaget">
+        <div><strong>Escola Piaget</strong><span>Carregando acesso seguro…</span></div>
       </div>
     </div>
   </section>
@@ -96,21 +80,22 @@
   <div class="hidden" id="reportHost"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/00-portal-utils.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/01-core.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/02-operations.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/03-cash.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/04-brand.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/05-auth.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/06-notifications-navigation.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/07-account-checkout.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/08-orders-agenda.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/09-portal-sales.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/10-mobile-runtime.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/12-portal-finalization.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/13-secretary-online-sales.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/14-catalog-sales.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/15-operational-views.js"></script>
-  <script defer src="/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/js/11-bootstrap.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/00-portal-utils.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/01-core.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/02-operations.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/03-cash.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/04-brand.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/05-auth.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/06-notifications-navigation.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/07-account-checkout.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/08-orders-agenda.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/09-portal-sales.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/10-mobile-runtime.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/12-portal-finalization.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/13-secretary-online-sales.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/14-catalog-sales.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/15-operational-views.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/16-cash-responsibility.js"></script>
+  <script defer src="/releases/1.6.0-rc2.4-caixa-responsabilidade/js/11-bootstrap.js"></script>
 </body>
 </html>

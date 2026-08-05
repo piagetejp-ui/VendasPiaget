@@ -1,25 +1,21 @@
-# Sistema de Vendas Escola Piaget — 1.6.0-rc2.3.2
+# Sistema de Vendas Escola Piaget — 1.6.0-rc2.4-caixa-responsabilidade
 
-Hotfix construído sobre a RC2.3.1. Preserva o portal do responsável, a venda online, o carrinho misto, o pagamento combinado e o checkout InfinitePay já validados.
+Versão estrutural do caixa físico da Secretaria, construída sobre a RC2.3.2.
 
-## Alteração principal
+## Principais mudanças
 
-A programação de lanches da Secretaria e do responsável agora permite vários produtos na mesma data.
+- caixa único da Secretaria, sem divisão por turno;
+- abertura e fechamento com data, horário, responsável e valor contado;
+- períodos individuais de responsabilidade;
+- conferência e assunção de caixa deixado aberto por outro operador;
+- divergência vinculada ao operador anterior sem bloquear o atendimento seguinte;
+- conta mensal informativa de desfalques e divergências por operador;
+- decisão final reservada ao perfil gestor;
+- justificativa do gestor registrada como decisão definitiva e auditável;
+- entradas manuais, despesas, pagamentos a funcionários, suprimentos, sangrias e outras saídas;
+- aviso do estado do caixa na página Vendas antes da montagem da operação;
+- dinheiro liberado somente para o responsável atual do caixa;
+- venda presencial em dinheiro vinculada à sessão e ao período de responsabilidade;
+- remoção da interface e do acesso provisório de implantação.
 
-Exemplo:
-
-- 1 salgado;
-- 1 suco;
-- 2 biscoitos;
-- 1 combo.
-
-Cada dia funciona como um pequeno carrinho. É possível adicionar, remover e alterar itens, além de copiar a composição de um dia para os demais dias marcados.
-
-## Regras mantidas
-
-- a Secretaria agenda e cobra, mas não confirma a entrega;
-- a Cantina recebe uma ocorrência por aluno e data, contendo todos os itens daquele dia;
-- combos continuam expandindo seus componentes;
-- a capacidade diária de salgados continua sendo validada;
-- a venda presencial e a venda online usam o mesmo planejador;
-- cada produto pode ter quantidade de 1 a 10 por dia.
+O portal do responsável, a InfinitePay, o catálogo, o carrinho misto, os lanches com múltiplos produtos e os pagamentos combinados foram preservados.
