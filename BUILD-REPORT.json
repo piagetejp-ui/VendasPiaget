@@ -1,13 +1,13 @@
 {
-  "version": "1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix",
-  "baseVersion": "RC2.3",
+  "version": "1.6.0-rc2.3.2-lanches-multiplos-produtos",
+  "baseVersion": "1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix",
   "files": 47,
   "changes": [
-    "card_liquid_drives_sale",
-    "card_gross_is_machine_charge",
-    "fee_equals_gross_minus_liquid",
-    "backend_validation_updated",
-    "details_wording_updated"
+    "multiple_snack_products_per_date",
+    "day_composition_copy",
+    "grouped_review_by_date",
+    "secretary_cart_edit_restore",
+    "backend_duplicate_quantity_guard"
   ],
-  "generatedAt": "2026-08-04T21:56:54.909699+00:00"
+  "generatedAt": "2026-08-05T17:29:00-03:00"
 }

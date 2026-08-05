@@ -58,7 +58,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix/(.*)",
+      "source": "/releases/1.6.0-rc2.3.2-lanches-multiplos-produtos/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

@@ -1,27 +1,48 @@
-# Roteiro de testes — 1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix
+# Roteiro de testes — 1.6.0-rc2.3.2-lanches-multiplos-produtos
 
-## Cartão simples
+## Responsável — uma data
 
-1. Abra uma venda presencial de R$ 100,00.
-2. Adicione a forma **Cartão**.
-3. Confirme que o primeiro campo está identificado como **Valor líquido recebido pela escola** e começa em R$ 100,00.
-4. Informe R$ 104,00 em **Valor bruto cobrado no cartão**.
-5. Confirme o resumo: líquido R$ 100,00, bruto R$ 104,00 e taxa R$ 4,00.
-6. Adicione o pagamento e finalize a venda.
+1. Entre no portal do responsável.
+2. Abra a programação de lanches e selecione **Um dia**.
+3. Adicione salgado, suco e biscoito na mesma data.
+4. Altere as quantidades e remova apenas um dos produtos.
+5. Revise o pedido.
+6. Confirme que os três produtos aparecem agrupados na mesma entrega e que o total está correto.
 
-## Pagamento combinado
+## Responsável — semana ou mês
 
-Venda de R$ 150,00:
+1. Monte uma composição com mais de um produto em um dos dias.
+2. Marque os outros dias desejados.
+3. Use **Aplicar esta composição aos dias marcados**.
+4. Altere somente um dos dias depois da cópia.
+5. Revise e confirme que cada data preservou sua própria composição.
 
-- Pix: R$ 50,00;
-- cartão líquido: R$ 100,00;
-- cartão bruto: R$ 104,00.
+## Secretaria — venda presencial
 
-O total registrado para quitar a venda deve ser R$ 150,00, e não R$ 154,00.
+1. Inicie uma venda presencial e selecione um aluno.
+2. Adicione uma programação com vários produtos na mesma data.
+3. Volte ao carrinho e acrescente outro item, como farda ou mensalidade.
+4. Conclua com pagamento combinado.
+5. Confira o histórico, o detalhamento da venda e a agenda da Cantina.
+
+## Secretaria — venda online
+
+1. Monte uma venda online com programação de lanches e outro item.
+2. Gere o link e conclua o pagamento pelo fluxo do responsável.
+3. Confirme que a agenda da Cantina recebeu uma ocorrência por data com todos os produtos.
+
+## Edição
+
+1. Adicione uma programação com vários produtos ao carrinho da Secretaria.
+2. Clique em **Editar**.
+3. Confirme que todos os dias e produtos são restaurados.
+4. Faça uma alteração e volte ao carrinho.
 
 ## Validações
 
-- Bruto menor que líquido deve ser bloqueado.
-- Bruto igual ao líquido deve gerar taxa zero.
-- O histórico e o detalhe da venda devem mostrar líquido, bruto e taxa.
-- Dinheiro, Pix, saldo, lanches programados e venda online devem continuar funcionando.
+- um dia marcado sem produtos não deve ser considerado entrega;
+- produtos repetidos na mesma data devem ser consolidados;
+- mais de 10 unidades do mesmo produto na mesma data devem ser bloqueadas;
+- combos devem continuar consumindo seus componentes;
+- a disponibilidade de salgados deve considerar a soma de todos os produtos e combos do dia;
+- o operador da Cantina deve visualizar todos os itens da ocorrência.

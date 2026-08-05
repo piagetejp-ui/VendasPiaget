@@ -1,13 +1,25 @@
-# Sistema de Vendas Escola Piaget — 1.6.0-rc2.3.1-cartao-liquido-bruto-hotfix
+# Sistema de Vendas Escola Piaget — 1.6.0-rc2.3.2
 
-Hotfix construído sobre a RC2.3. Mantém o carrinho misto, os lanches programados, o portal do responsável e o checkout já validados.
+Hotfix construído sobre a RC2.3.1. Preserva o portal do responsável, a venda online, o carrinho misto, o pagamento combinado e o checkout InfinitePay já validados.
 
-## Correção principal
+## Alteração principal
 
-No pagamento presencial por cartão:
+A programação de lanches da Secretaria e do responsável agora permite vários produtos na mesma data.
 
-- **Valor líquido recebido** é o valor que quita a venda e entra na soma das formas de pagamento.
-- **Valor bruto cobrado** é o valor passado na maquininha, já com o acréscimo da taxa.
-- **Taxa da maquininha = bruto cobrado − líquido recebido**.
+Exemplo:
 
-Exemplo: venda de R$ 100,00, líquido de R$ 100,00 e bruto cobrado de R$ 104,00 gera taxa de R$ 4,00.
+- 1 salgado;
+- 1 suco;
+- 2 biscoitos;
+- 1 combo.
+
+Cada dia funciona como um pequeno carrinho. É possível adicionar, remover e alterar itens, além de copiar a composição de um dia para os demais dias marcados.
+
+## Regras mantidas
+
+- a Secretaria agenda e cobra, mas não confirma a entrega;
+- a Cantina recebe uma ocorrência por aluno e data, contendo todos os itens daquele dia;
+- combos continuam expandindo seus componentes;
+- a capacidade diária de salgados continua sendo validada;
+- a venda presencial e a venda online usam o mesmo planejador;
+- cada produto pode ter quantidade de 1 a 10 por dia.
