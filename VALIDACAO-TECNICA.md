@@ -1,22 +1,19 @@
-# Validação técnica — 1.6.0-rc2.4-caixa-responsabilidade
+# Validação técnica — 1.6.0-rc2.4.1-caixa-page-hotfix
 
-## Executado localmente
+## Causa corrigida
 
-- verificação sintática de todos os arquivos JavaScript com Node.js;
-- carregamento conjunto dos módulos frontend em contexto simulado;
-- carregamento de todas as APIs com `firebase-admin` simulado;
-- verificação de referências da versão e integridade do pacote;
-- inspeção do vínculo `venda → sessão de caixa → período de responsabilidade`;
-- inspeção da revalidação da sessão dentro da transação da venda;
-- testes estáticos das permissões operador/gestor, aviso em Vendas, assunção, divergências, entradas e saídas;
-- teste de integridade do ZIP.
+A normalização de uma sessão antiga declarava `operatorId`, mas usava o identificador inexistente `operadorId` como abreviação de objeto em dois pontos. Isso causava `ReferenceError` antes da renderização da página.
 
-## Necessita validação após deploy
+## Verificações locais
 
-- gravações reais no Firestore;
-- concorrência entre fechamento, assunção e venda em dinheiro;
-- permissões reais dos usuários autenticados;
-- migração de eventual sessão de teste ainda aberta;
-- comportamento em celulares usados pela Secretaria.
+- Sintaxe de todos os arquivos JavaScript com `node --check`.
+- Verificação estática de ausência do padrão defeituoso no bloco de migração.
+- Teste de normalização de sessão antiga, com criação de período de responsabilidade.
+- Teste de página gerencial e operacional com sessão legada.
+- Estado de carregamento e estado de erro visível.
+- Carregamento das APIs com `firebase-admin` simulado.
+- Integridade completa do ZIP.
 
-O deploy não foi realizado neste ambiente.
+## Limite da validação
+
+O deploy não foi executado. A confirmação final depende das regras e dos dados reais do Firestore no ambiente de produção.

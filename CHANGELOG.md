@@ -1,25 +1,16 @@
-# Changelog — 1.6.0-rc2.4-caixa-responsabilidade
+# Changelog — 1.6.0-rc2.4.1-caixa-page-hotfix
 
-## Caixa da Secretaria
+## Correções
 
-- Removida a dependência de turno para o caixa físico da Secretaria.
-- `sessoes_caixa` passa a ser a fonte das novas vendas em dinheiro.
-- Criados períodos em `periodos_responsabilidade_caixa`.
-- Criada conferência para assumir um caixa aberto por outro operador.
-- Divergências da troca ficam vinculadas ao período anterior e não bloqueiam o novo responsável.
-- Criadas entradas e saídas manuais com categoria, descrição, beneficiário e referência de comprovante.
-- Vendas e pagamentos em dinheiro passam a registrar sessão e período de responsabilidade.
+- Corrigida a criação automática do primeiro período de responsabilidade para caixas abertos em versões anteriores.
+- Substituídas duas referências inválidas a `operadorId` pelo valor correto de `operatorId`.
+- A página Caixa agora mostra estado de carregamento durante a consulta ao Firestore.
+- Uma falha futura deixa mensagem visível e botão **Tentar novamente**, em vez de uma tela vazia.
+- Uma falha ao consultar o caixa não derruba mais a página Vendas; o aviso do caixa passa a falhar de forma isolada.
 
-## Hierarquia e auditoria
+## Preservado
 
-- Adicionada permissão de caixa: sem acesso, operador ou gestor.
-- Lucas inicia como gestor; Daniele e Evanda como operadoras.
-- Operadores registram justificativas, mas a decisão final pertence à Gestão.
-- Divergência registrada por gestor é concluída como decisão gerencial, mantendo o histórico.
-- Criada conta mensal informativa de divergências por operador.
-
-## Experiência de uso
-
-- A página Vendas informa antecipadamente se o caixa está fechado, disponível ou sob responsabilidade de outra pessoa.
-- Pix, cartão e saldo continuam disponíveis quando o caixa físico está fechado.
-- Removidos cartões, aviso e funções visíveis do antigo modo de implantação.
+- Caixa único sem turno.
+- Conferência e assunção por novo operador.
+- Conta de divergências e decisão gerencial.
+- Venda presencial, venda online, portal do responsável e checkout InfinitePay.

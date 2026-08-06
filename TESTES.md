@@ -1,72 +1,35 @@
-# Roteiro de testes — 1.6.0-rc2.4-caixa-responsabilidade
+# Testes — 1.6.0-rc2.4.1-caixa-page-hotfix
 
-## 1. Abertura sem turno
+## Teste prioritário após o deploy
 
-1. Entrar como Daniele.
-2. Abrir **Caixa** e informar o valor contado.
-3. Confirmar que aparecem horário, responsável e saldo esperado, sem seleção de manhã/tarde.
-4. Abrir **Vendas** e confirmar o aviso “Caixa aberto e sob sua responsabilidade”.
+1. Entrar como Lucas e abrir **Caixa**.
+2. Repetir como Daniele.
+3. Repetir como Evanda.
+4. Confirmar que a página mostra o caixa aberto ou fechado, sem ficar vazia.
 
-## 2. Venda em dinheiro
+## Compatibilidade com caixa antigo
 
-1. Com o caixa aberto por Daniele, registrar venda presencial com dinheiro.
-2. Confirmar que a venda é concluída.
-3. Voltar ao caixa e conferir a entrada líquida, descontado eventual troco.
-4. Verificar que Pix e cartão não alteram o dinheiro físico.
+1. Manter um caixa aberto criado pela RC2.3.2 ou anterior.
+2. Publicar a RC2.4.1.
+3. Abrir a página Caixa.
+4. Confirmar que o sistema cria o período de responsabilidade e mantém:
+   - a mesma sessão;
+   - o responsável anterior;
+   - o valor inicial;
+   - as movimentações existentes.
 
-## 3. Aviso antecipado
+## Proteção visual
 
-1. Fechar o caixa.
-2. Abrir **Vendas**.
-3. Confirmar o aviso de caixa fechado antes de iniciar a venda.
-4. Confirmar que Pix, cartão e saldo permanecem disponíveis.
-5. Tentar adicionar dinheiro e confirmar que o sistema oferece a abertura sem perder a venda.
+1. Simular falha de leitura do Firestore.
+2. Confirmar que aparece **Erro ao carregar o caixa**.
+3. Confirmar que existe o botão **Tentar novamente**.
+4. Abrir Vendas e confirmar que o restante da página continua utilizável mesmo se o aviso do caixa falhar.
 
-## 4. Troca Daniele → Evanda sem fechamento
+## Regressão rápida
 
-1. Deixar o caixa aberto como Daniele.
-2. Entrar como Evanda.
-3. Confirmar o aviso de caixa sob responsabilidade de Daniele.
-4. Usar **Conferir e assumir**.
-5. Informar exatamente o saldo esperado.
-6. Confirmar que Evanda assume e pode vender em dinheiro sem pendência financeira.
-
-## 5. Troca com divergência
-
-1. Repetir a troca, informando valor contado diferente do esperado.
-2. Confirmar que Evanda assume pelo valor efetivamente contado.
-3. Confirmar que a venda em dinheiro continua liberada para Evanda.
-4. Verificar que a divergência fica na conta de Daniele e aguarda decisão gerencial.
-
-## 6. Hierarquia
-
-1. Fechar caixa com divergência como operadora e informar justificativa.
-2. Confirmar que a situação fica “Aguardando decisão gerencial”.
-3. Entrar como Lucas e abrir **Caixa**.
-4. Aprovar, rejeitar/pedir esclarecimento, manter pendente ou regularizar.
-5. Abrir/fechar um caixa como Lucas com divergência e confirmar que sua justificativa nasce como decisão gerencial definitiva.
-
-## 7. Entradas e saídas
-
-1. Registrar entrada manual.
-2. Registrar saída por suprimento.
-3. Registrar pagamento a funcionário.
-4. Confirmar descrição, usuário, horário e efeito no saldo esperado.
-5. Fechar o caixa e conferir a memória de movimentações.
-
-## 8. Conta mensal de divergências
-
-1. Criar divergências para mais de um operador.
-2. Conferir a visão mensal individual da operadora.
-3. Conferir, como Lucas, totais por operador e pendências para decisão.
-4. Confirmar que sobras não compensam desfalques automaticamente.
-
-## 9. Permissões e implantação
-
-1. Em **Usuários e acessos**, criar um usuário sem acesso ao caixa e outro como operador.
-2. Confirmar os limites de cada perfil.
-3. Confirmar que o antigo aviso/cartão/modo de implantação não aparece mais no login ou em Usuários e acessos.
-
-## 10. Regressão
-
-Revalidar portal do responsável, checkout InfinitePay, carrinho misto, programação de lanches com múltiplos produtos, venda online e cartão com líquido/bruto.
+- Abrir caixa.
+- Conferir e assumir.
+- Registrar entrada e saída.
+- Fazer venda em dinheiro.
+- Fechar caixa.
+- Abrir Vendas e verificar o aviso antecipado do caixa.

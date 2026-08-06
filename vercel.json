@@ -58,7 +58,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.4-caixa-responsabilidade/(.*)",
+      "source": "/releases/1.6.0-rc2.4.1-caixa-page-hotfix/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

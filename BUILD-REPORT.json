@@ -1,16 +1,11 @@
 {
-  "version": "1.6.0-rc2.4-caixa-responsabilidade",
-  "baseVersion": "1.6.0-rc2.3.2-lanches-multiplos-produtos",
-  "generatedAt": "2026-08-05T18:17:00-03:00",
+  "version": "1.6.0-rc2.4.1-caixa-page-hotfix",
+  "baseVersion": "1.6.0-rc2.4-caixa-responsabilidade",
+  "generatedAt": "2026-08-06T17:16:00-03:00",
   "changes": [
-    "single_secretary_cash_without_shift",
-    "cash_responsibility_periods",
-    "takeover_without_operational_block",
-    "operator_monthly_divergence_account",
-    "manager_final_decision",
-    "cash_entries_and_expenses",
-    "sales_cash_status_banner",
-    "cash_sale_session_sync",
-    "deployment_mode_removed"
+    "fix_legacy_cash_responsibility_operator_reference",
+    "cash_page_loading_state",
+    "cash_page_visible_error_state_and_retry",
+    "sales_cash_banner_failure_isolation"
   ]
 }
