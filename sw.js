@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.4.1-caixa-page-hotfix */
-const VERSION='1.6.0-rc2.4.1-caixa-page-hotfix';
+/* Escola Piaget — service worker V1.6.0-rc2.5-experiencia-auditoria */
+const VERSION='1.6.0-rc2.5-experiencia-auditoria';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.4.1-caixa-page-hotfix/';
+const RELEASE='/releases/1.6.0-rc2.5-experiencia-auditoria/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/00-portal-utils.js`,
@@ -21,6 +21,7 @@ const PRECACHE=[
   `${RELEASE}js/14-catalog-sales.js`,
   `${RELEASE}js/15-operational-views.js`,
   `${RELEASE}js/16-cash-responsibility.js`,
+  `${RELEASE}js/17-integrated-experience.js`,
   '/assets/logo-piaget-icon-v152.png',
   '/assets/logo-piaget-horizontal-v152.png'
 ];

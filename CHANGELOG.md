@@ -1,16 +1,40 @@
-# Changelog — 1.6.0-rc2.4.1-caixa-page-hotfix
+# Changelog — 1.6.0-rc2.5-experiencia-auditoria
 
-## Correções
+## Experiência de venda e carrinho
 
-- Corrigida a criação automática do primeiro período de responsabilidade para caixas abertos em versões anteriores.
-- Substituídas duas referências inválidas a `operadorId` pelo valor correto de `operatorId`.
-- A página Caixa agora mostra estado de carregamento durante a consulta ao Firestore.
-- Uma falha futura deixa mensagem visível e botão **Tentar novamente**, em vez de uma tela vazia.
-- Uma falha ao consultar o caixa não derruba mais a página Vendas; o aviso do caixa passa a falhar de forma isolada.
+- Modal de montagem da venda da Secretaria reorganizado em duas áreas no desktop: catálogo à esquerda e carrinho persistente à direita.
+- Layout responsivo volta a uma coluna em telas menores.
+- Programação de lanches no carrinho agora detalha as datas, produtos e quantidades.
+- A ação da programação usada dentro da venda passou de “Revisar pedido” para “Adicionar ao carrinho”.
+- Programador de lanches do responsável recebeu resumo persistente durante a montagem, preservando a revisão final quando realmente existe uma etapa de confirmação.
+
+## Caixa e auditoria gerencial
+
+- Nova visão gerencial hierárquica: ano → mês → dia → sessões → períodos de responsabilidade → movimentações.
+- Cada sessão do caixa pode ser aberta e auditada.
+- Exibição histórica de saldo inicial, entradas, saídas, saldo esperado, saldo contado e saldo final.
+- Separação gerencial entre despesas reais, transferências de numerário, sangrias e retiradas de sócio.
+- Nova tela de saída do caixa explicita se a operação impacta ou não as despesas da escola.
+- Histórico usa rótulos amigáveis para estados antigos/migrados.
+- Pendências de divergência continuam disponíveis para decisão da Gestão.
+
+## Notificações e navegação
+
+- Matriz central de destinatários por tipo de evento.
+- Gestão deixa de enxergar automaticamente notificações destinadas exclusivamente a outros perfis.
+- Responsável recebe apenas notificações explicitamente relacionadas ao seu aluno/conta.
+- Notificações novas podem carregar aluno, turma, origem/canal e IDs relacionados.
+- “Resolver” aparece apenas em notificações acionáveis.
+- “Marcar como lida” persiste no Firestore e atualiza a interface/contador.
+- Notificações podem ser detalhadas e abrir entidades relacionadas.
+- Nomes de alunos em históricos de vendas/cobranças passam a funcionar como atalhos para a conta administrativa.
 
 ## Preservado
 
-- Caixa único sem turno.
-- Conferência e assunção por novo operador.
-- Conta de divergências e decisão gerencial.
-- Venda presencial, venda online, portal do responsável e checkout InfinitePay.
+- Caixa físico único da Secretaria.
+- Abertura, fechamento, conferência e assunção.
+- Períodos de responsabilidade e divergências.
+- Regra de dinheiro vinculada ao responsável atual do caixa.
+- Pix, cartão e saldo independentes da abertura do caixa.
+- Conta corrente única do aluno.
+- Checkout InfinitePay, venda online e portal do responsável.

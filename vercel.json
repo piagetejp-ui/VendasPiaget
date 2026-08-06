@@ -58,7 +58,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.4.1-caixa-page-hotfix/(.*)",
+      "source": "/releases/1.6.0-rc2.5-experiencia-auditoria/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
