@@ -1,5 +1,5 @@
 const {initFirebase,json,parseBody,nowIso,accountNet,splitNet,audit,notify,getConfig,accountRefForStudent}=require('../server/_utils');
-const {verifyFamilyForStudent}=require('../server/_family-utils');
+const {verifyFamilyForStudent,verifyStaff}=require('../server/_family-utils');
 const cents=v=>Math.round(Number(v||0));
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const validDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||''));
@@ -14,7 +14,7 @@ module.exports=async function handler(req,res){
   try{
     const db=initFirebase(),body=parseBody(req),action=String(body.acao||''),alunoId=String(body.alunoId||''),occurrenceId=String(body.ocorrenciaId||''),actor={id:body.criadoPorId||'portal_responsavel',nome:body.criadoPorNome||'Responsável',perfil:body.criadoPorPerfil||'responsavel'};
     if(!alunoId)throw Object.assign(new Error('Aluno não identificado.'),{status:400});
-    if(actor.perfil==='responsavel')await verifyFamilyForStudent(db,req,alunoId);
+    if(actor.perfil==='responsavel')await verifyFamilyForStudent(db,req,alunoId);else await verifyStaff(db,req,['admin','gestao','secretaria','cantina']);
     if(action==='remarcar'){
       const newDate=String(body.novaData||'');if(!occurrenceId||!validDate(newDate)||newDate<=today())throw Object.assign(new Error('Escolha uma nova data futura.'),{status:400});
       const d=new Date(`${newDate}T12:00:00`);if([0,6].includes(d.getDay()))throw Object.assign(new Error('Escolha um dia útil.'),{status:400});

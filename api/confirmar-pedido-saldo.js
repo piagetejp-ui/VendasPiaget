@@ -1,12 +1,12 @@
 const {initFirebase,json,parseBody,buildCheckoutOperation,confirmCantinaOrderWithoutCheckout,confirmUniformOrderWithoutCheckout,nowIso}=require('../server/_utils');
-const {verifyFamilyForStudent}=require('../server/_family-utils');
+const {verifyFamilyForStudent,verifyStaff}=require('../server/_family-utils');
 function cleanAttemptId(v){const s=String(v||'').trim();return /^[A-Za-z0-9:_-]{8,120}$/.test(s)?s:''}
 module.exports=async function handler(req,res){
   if(req.method!=='POST')return json(res,405,{ok:false,error:'Método não permitido.'});
   let attemptRef=null;
   try{
     const db=initFirebase(),body=parseBody(req),idTentativa=cleanAttemptId(body.idTentativa)||`saldo_${Date.now()}_${Math.random().toString(36).slice(2,10)}`;
-    const perfil=String(body.criadoPorPerfil||body.usuarioPerfil||'responsavel');if(perfil==='responsavel')await verifyFamilyForStudent(db,req,body.alunoId);
+    const perfil=String(body.criadoPorPerfil||body.usuarioPerfil||'responsavel');if(perfil==='responsavel')await verifyFamilyForStudent(db,req,body.alunoId);else await verifyStaff(db,req,['admin','gestao','secretaria','cantina']);
     attemptRef=db.collection('tentativas_confirmacao_saldo').doc(idTentativa);
     const existingSnap=await attemptRef.get();
     let existing=existingSnap.exists?existingSnap.data():null;

@@ -1,53 +1,30 @@
 {
-  "version": "1.6.0-rc2.7.4",
-  "status": "candidate",
-  "baseVersion": "1.6.0-rc2.7.3",
-  "scope": "hotfix-prioridade-alunos-contas-padronizacao-aluno",
-  "features": [
-    "fix isBlocked undefined in family account modal",
-    "correct root HTML release references and load secretaria finalization module",
-    "standard clickable student identity based on Sales/Billing visual style",
-    "student class always visible below name in Sales/Billing/Notifications/Orders",
-    "remove boxed student button appearance from Orders",
-    "preserve RC2.7.3 Secretaria features and cash core"
-  ],
-  "preserved": [
-    "family-first Meu Piaget architecture from rc2.7.2",
-    "multi-student family cart",
-    "multi-student snack copy workflow",
-    "management-only internal Users and Access module",
-    "manual Marco Zero",
-    "physical cash responsibility core"
-  ],
-  "safety": {
-    "automaticResetOnDeploy": false,
-    "firestoreRulesAutomaticallyChanged": false,
-    "broadParentReleaseRecommendedWithCurrentRules": false,
-    "weeklyClosingCreatesNewDebt": false,
-    "retroactiveUniformEntryMutatesInventory": false
+  "version": "1.6.0-rc2.7.6",
+  "release": "RC2.7.6 — Segurança Firestore",
+  "generatedAt": "2026-08-07T15:55:00-03:00",
+  "apiFunctions": 10,
+  "javascriptFilesTotal": 43,
+  "releaseJavaScriptFiles": 23,
+  "releaseCssFiles": 1,
+  "releaseFrontendRawBytes": 1069514,
+  "releaseFrontendGzipBytesApprox": 269518,
+  "firestoreRulesLines": 156,
+  "security": {
+    "anonymousFirestoreAccess": false,
+    "familySessionCookieHttpOnly": true,
+    "familyCustomTokenBridge": true,
+    "manualParentFirebaseAuthImportRequired": false,
+    "familyFinancialAccountDirectWrite": false,
+    "staffServerBootstrap": true,
+    "accessRateLimit": true
   },
   "validation": {
-    "apiFunctionCount": 10,
-    "releaseFolderCount": 1,
-    "cashCoreNormalizedEqualToRc272": true,
-    "movementPairOrderIndependent": true,
-    "javascriptSyntax": "ok",
-    "jsonParsing": "ok",
-    "htmlLocalReferences": "ok",
-    "serviceWorkerPrecache": "ok",
-    "httpSmoke": "ok",
-    "zipIntegrity": "ok",
-    "javascriptFilesChecked": 43,
-    "serviceWorkerChecked": true,
-    "jsonFilesChecked": 4,
-    "htmlLocalReferencesChecked": 83,
-    "htmlInlineScriptsSyntaxChecked": 5,
-    "serviceWorkerPrecacheItemsChecked": 31,
-    "httpSmokePathsChecked": 9,
-    "unrelatedMovementsRemainSeparate": true,
-    "weeklyDebtSplitByStudentTested": true,
-    "scriptOrder": "21 -> 22 -> bootstrap",
-    "staleRuntimeReferences": 0
-  },
-  "vercelHobbyLimitObserved": 12
+    "nodeCheckFiles": 43,
+    "jsonFilesParsed": 4,
+    "htmlLocalReferencesMissing": 0,
+    "apiFunctionLimitOk": true,
+    "cashCoreFunctionallyEqualToRC275": true,
+    "rulesOfficialEmulatorTested": false,
+    "httpSmokePages": 8
+  }
 }

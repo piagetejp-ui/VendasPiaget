@@ -1,9 +1,11 @@
 const { initFirebase, json, parseBody, registerInPersonOperation } = require('../server/_utils');
+const {verifyStaff}=require('../server/_family-utils');
 
 module.exports = async function handler(req, res){
   if(req.method !== 'POST') return json(res, 405, { ok:false, error:'Método não permitido.' });
   try{
     const db=initFirebase();
+    await verifyStaff(db,req,['admin','gestao','secretaria','cantina']);
     const result=await registerInPersonOperation(db,parseBody(req));
     return json(res,200,{ok:true,...result});
   }catch(error){

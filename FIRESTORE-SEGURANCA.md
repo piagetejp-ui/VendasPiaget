@@ -1,6 +1,8 @@
-# Firestore — segurança antes do piloto externo
+# Firestore — segurança RC2.7.6
 
-As regras atualmente informadas são de desenvolvimento:
+## Situação anterior
+
+A regra de desenvolvimento:
 
 ```text
 match /{document=**} {
@@ -8,16 +10,38 @@ match /{document=**} {
 }
 ```
 
-Isso deixa o banco acessível sem autenticação e não é adequado para liberar o Meu Piaget a responsáveis externos.
+não deve permanecer em uso real. Ela permite acesso direto ao banco sem autenticação.
 
-## Por que não substituir automaticamente neste hotfix
+## Arquitetura adotada
 
-O frontend atual ainda realiza leituras e algumas escritas diretamente no Firestore. Fechar as regras de forma genérica agora poderia quebrar Equipe Piaget, Meu Piaget, catálogo, pedidos e notificações.
+### Equipe Piaget
 
-## Próxima etapa obrigatória antes do piloto externo
+Firebase Authentication por e-mail/senha → backend valida ID Token + `usuarios_acesso` → backend mantém `usuarios_auth/{uid}` → Firestore Rules libera o funcionário ativo.
 
-1. mapear as coleções acessadas diretamente pelo Meu Piaget;
-2. definir autenticação Firebase compatível com a sessão familiar ou mover acessos sensíveis para APIs server-side;
-3. criar regras por perfil e por família/aluno;
-4. testar Equipe, Cantina, Secretaria, Gestão e Meu Piaget;
-5. somente então substituir as regras abertas.
+### Meu Piaget
+
+CPF/senha ou CPF/matrícula → API Piaget valida credencial → cookie de sessão HttpOnly → API emite Firebase Custom Token técnico → Firestore Rules reconhece `responsavelId`, `sessionId` e alunos da família.
+
+O responsável não recebe acesso a:
+
+- `responsaveis_acesso`;
+- `responsaveis_financeiros`;
+- `sessoes_meu_piaget`;
+- ativações e resets;
+- auditoria;
+- contas de outras famílias;
+- saldos ou dados de outros alunos.
+
+A sessão citada no Custom Token é conferida novamente pelas Rules, inclusive status e expiração. Assim, bloquear/revogar a sessão interrompe o acesso mesmo antes de vencer o ID Token técnico.
+
+## Gravações do responsável
+
+Direto pelo Firestore ficam apenas operações de baixo risco e estritamente vinculadas à família, como dados do comprador e marcação de leitura de notificações. A conta financeira passa a ser somente leitura no navegador; alterações de autorização/limite passam pela API.
+
+Compras, pagamentos, cancelamentos, remarcações e operações que alteram saldo/estoque continuam em APIs server-side que validam a sessão e o vínculo do aluno.
+
+## Limitação deliberada desta etapa
+
+Para evitar regressão antes da auditoria final da Cantina, um funcionário interno autenticado e ativo ainda tem acesso técnico amplo ao Firestore. A interface continua aplicando os perfis/permissões existentes. Depois de validar completamente o operador de Cantina, é recomendável endurecer as Rules internas por função.
+
+Isso é diferente da situação anterior: acesso anônimo e acesso de uma família aos dados de outra família deixam de existir com as novas Rules.

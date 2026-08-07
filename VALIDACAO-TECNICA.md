@@ -1,20 +1,38 @@
-# Validação técnica — 1.6.0-rc2.7.4
+# Validação técnica — 1.6.0-rc2.7.6
 
-- **10** arquivos JavaScript diretamente em `/api` (abaixo do limite observado de 12 da Vercel Hobby).
-- Única pasta física de release: `releases/1.6.0-rc2.7.4/`.
-- Novo módulo `21-family-shared-experience.js` carregado depois da camada de implantação e antes do bootstrap.
-- Sintaxe JavaScript validada com `node --check` em **43 arquivos** de frontend/API/server/service worker.
-- Todos os arquivos JSON parseados com sucesso.
+## Resultado local
+
+- **43** arquivos JavaScript passaram em `node --check`.
+- **4** JSON foram parseados com sucesso.
+- **10** funções JavaScript físicas em `/api` (mantém margem dentro do limite observado de 12 da Vercel Hobby).
 - `index.html`, `equipe.html`, `meu-piaget.html`, `pagamento.html` e `obrigado.html` sem referências locais ausentes.
-- Service worker atualizado para a nova release e para os módulos 21/22.
-- Backend de carrinho familiar valida que todos os alunos atribuídos compartilham a mesma conta financeira.
-- Pedidos de Cantina, Fardamento e operacionais gerados por vendas multi-aluno mantêm o aluno destinatário individual.
-- Notificações pós-pagamento online corrigidas para usar o aluno de cada pedido, em vez de atribuir todos ao aluno principal.
-- Núcleo de `16-cash-responsibility.js` comparado com a RC2.7.1: conteúdo funcional idêntico, variando apenas o identificador textual da versão.
-- Marco Zero não é automático.
-- Nenhum CPF completo foi incluído no frontend/base estática.
-- HTMLs principais validados para carregar `21-family-shared-experience.js` → `22-secretaria-finalization.js` → bootstrap, sem referências de runtime à RC2.7.2/RC2.7.3.
-- Dependência frágil de `isBlocked` removida da ficha familiar; a checagem agora possui fallback local.
-- Estilo de aluno em Pedidos alterado para `v165-link`, o mesmo padrão-base usado por Vendas/Cobranças.
+- Smoke HTTP local: `/`, páginas principais, `version.json` e `firestore.rules` responderam corretamente.
+- Única release física: `releases/1.6.0-rc2.7.6/`.
+- Nenhuma referência de runtime às releases RC2.7.0–RC2.7.5 nos HTMLs/service worker/configuração Vercel.
+- `firestore.rules` sem `allow read, write: if true`; chaves e parênteses balanceados na validação estática.
+- Nenhum literal de CPF completo identificado no frontend/release estática pela varredura de 11 dígitos e padrão de campo CPF.
+- Nenhuma chave privada PEM/JSON de service account embarcada no pacote.
+- `16-cash-responsibility.js` comparado à RC2.7.5, normalizando apenas a versão: **conteúdo funcional idêntico**.
 
-Observação: a validação local é estrutural/sintática. Fluxos que dependem de Firebase/InfinitePay devem ser confirmados no ambiente publicado antes do Marco Zero.
+## Segurança implementada
+
+- login visível do responsável preservado;
+- cookie familiar `HttpOnly` / `Secure` / `SameSite=Lax`;
+- Firebase Custom Token técnico gerado somente pelo backend;
+- sessão familiar revogável e validada também pelas Firestore Rules;
+- nenhuma necessidade de cadastro manual de responsáveis no Firebase Auth;
+- staff bootstrap validado server-side antes da primeira leitura Firestore da equipe;
+- `usuarios_auth` escrito/sincronizado pelo Admin SDK no fluxo de administração;
+- conta financeira somente leitura para o navegador do responsável;
+- autorização/limite recalculados pela API;
+- rate limit persistente nos endpoints de login/primeiro acesso/reset;
+- sessão antiga em `localStorage` aceita apenas como ponte de migração e removida no novo runtime.
+
+## Limite da validação local
+
+O ambiente de construção não possui Firebase CLI/Emulator + credenciais do projeto real para executar a avaliação semântica oficial das Security Rules e os fluxos reais de Firebase/InfinitePay. Por isso:
+
+1. publicar primeiro o código RC2.7.6 mantendo temporariamente as Rules atuais;
+2. executar o smoke test de Equipe + Meu Piaget;
+3. publicar `firestore.rules` no Firebase Console;
+4. executar a bateria pós-Rules do `GUIA-ATIVACAO-SEGURANCA-RC2.7.6.md` antes do piloto amplo.

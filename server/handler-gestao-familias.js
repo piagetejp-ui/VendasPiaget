@@ -1,5 +1,5 @@
 const {initFirebase,json,parseBody,nowIso}=require('./_utils');
-const {verifyStaff,randomToken,tokenHash,normalizeCpf,validCpf,cpfHash}=require('./_family-utils');
+const {verifyStaff,randomToken,tokenHash,normalizeCpf,validCpf,cpfHash,revokeFamilySessions}=require('./_family-utils');
 
 function familyBaseUrl(req){const raw=String(process.env.PUBLIC_FAMILY_BASE_URL||process.env.PUBLIC_BASE_URL||`https://${req.headers.host}`);try{const u=new URL(raw);const path=u.pathname&&u.pathname!=='/'?u.pathname.replace(/\/$/,''):'/meu-piaget.html';return `${u.origin}${path}`}catch(_){return `https://${req.headers.host}/meu-piaget.html`}}
 module.exports=async(req,res)=>{
@@ -8,7 +8,7 @@ module.exports=async(req,res)=>{
    const responsavelId=String(b.responsavelId||'');if(!responsavelId)return json(res,400,{error:'Responsável não identificado.'});const rs=await db.collection('responsaveis_financeiros').doc(responsavelId).get();if(!rs.exists)return json(res,404,{error:'Responsável não encontrado.'});const token=randomToken(24),ref=db.collection('reset_senha_responsavel').doc(),exp=new Date(Date.now()+2*3600000).toISOString(),now=nowIso();await ref.set({id:ref.id,responsavelId,tokenHash:tokenHash(token),status:'ativo',usoUnico:true,criadoPorId:staff.id,criadoPorNome:staff.nome,criadoEm:now,expiraEm:exp});const base=familyBaseUrl(req),sep=base.includes('?')?'&':'?',url=`${base}${sep}resetFamilia=${encodeURIComponent(ref.id)}&resetToken=${encodeURIComponent(token)}`;return json(res,200,{ok:true,url,expiraEm:exp});
   }
   if(acao==='bloquear_acesso'){
-   const responsavelId=String(b.responsavelId||'');await db.collection('responsaveis_acesso').doc(responsavelId).set({ativo:false,bloqueadoPorId:staff.id,bloqueadoPorNome:staff.nome,bloqueadoEm:nowIso(),atualizadoEm:nowIso()},{merge:true});return json(res,200,{ok:true});
+   const responsavelId=String(b.responsavelId||'');await db.collection('responsaveis_acesso').doc(responsavelId).set({ativo:false,bloqueadoPorId:staff.id,bloqueadoPorNome:staff.nome,bloqueadoEm:nowIso(),atualizadoEm:nowIso()},{merge:true});await revokeFamilySessions(db,responsavelId).catch(()=>{});return json(res,200,{ok:true});
   }
   if(acao==='reativar_acesso'){
    const responsavelId=String(b.responsavelId||'');if(!responsavelId)return json(res,400,{error:'Responsável não identificado.'});const ref=db.collection('responsaveis_acesso').doc(responsavelId),snap=await ref.get();if(!snap.exists||!snap.data()?.senhaHash)return json(res,409,{error:'Este acesso ainda não possui senha. Oriente o primeiro acesso ou gere uma redefinição.'});await ref.set({ativo:true,reativadoPorId:staff.id,reativadoPorNome:staff.nome,reativadoEm:nowIso(),atualizadoEm:nowIso()},{merge:true});return json(res,200,{ok:true});

@@ -1,11 +1,11 @@
 {
   "name": "vendas-piaget-checkout",
-  "version": "1.6.0-rc2.7.4",
+  "version": "1.6.0-rc2.7.6",
   "private": true,
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "dependencies": {
-    "firebase-admin": "^12.7.0"
+    "firebase-admin": "12.7.0"
   }
 }

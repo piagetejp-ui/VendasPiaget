@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.7.4 */
-const VERSION='1.6.0-rc2.7.4';
+/* Escola Piaget — service worker V1.6.0-rc2.7.6 */
+const VERSION='1.6.0-rc2.7.6';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.7.4/';
+const RELEASE='/releases/1.6.0-rc2.7.6/';
 const PRECACHE=[
   '/index.html',
   '/equipe.html',
@@ -9,29 +9,6 @@ const PRECACHE=[
   '/pagamento.html',
   '/obrigado.html',
   `${RELEASE}css/app.css`,
-  `${RELEASE}js/00-portal-utils.js`,
-  `${RELEASE}js/01-core.js`,
-  `${RELEASE}js/02-operations.js`,
-  `${RELEASE}js/03-cash.js`,
-  `${RELEASE}js/04-brand.js`,
-  `${RELEASE}js/05-auth.js`,
-  `${RELEASE}js/06-notifications-navigation.js`,
-  `${RELEASE}js/07-account-checkout.js`,
-  `${RELEASE}js/08-orders-agenda.js`,
-  `${RELEASE}js/09-portal-sales.js`,
-  `${RELEASE}js/10-mobile-runtime.js`,
-  `${RELEASE}js/11-bootstrap.js`,
-  `${RELEASE}js/12-portal-finalization.js`,
-  `${RELEASE}js/13-secretary-online-sales.js`,
-  `${RELEASE}js/14-catalog-sales.js`,
-  `${RELEASE}js/15-operational-views.js`,
-  `${RELEASE}js/16-cash-responsibility.js`,
-  `${RELEASE}js/17-integrated-experience.js`,
-  `${RELEASE}js/18-uniform-variants.js`,
-  `${RELEASE}js/19-orders-workflow.js`,
-  `${RELEASE}js/20-family-implantation.js`,
-  `${RELEASE}js/21-family-shared-experience.js`,
-  `${RELEASE}js/22-secretaria-finalization.js`,
   '/assets/logo-piaget-icon-v152.png',
   '/assets/logo-piaget-horizontal-v152.png'
 ];

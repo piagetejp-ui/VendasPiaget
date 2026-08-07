@@ -1,45 +1,38 @@
-# Changelog — 1.6.0-rc2.7.4
+# Changelog — 1.6.0-rc2.7.6
 
-## Hotfix de prioridade
+## Segurança Firestore sem alterar a experiência do usuário
 
-- Corrigida regressão da ficha de Alunos e Contas (`isBlocked is not defined`).
-- Corrigidas referências antigas dos HTMLs para a RC2.7.2 e incluído o módulo 22 no carregamento real.
-- Padronizado aluno em Notificações, Vendas, Cobranças e Pedidos: nome clicável + turma, usando o estilo visual de Vendas/Cobranças.
-- Removida apresentação em formato de caixa/botão no nome do aluno em Pedidos.
+- Mantido o login visível do Meu Piaget: CPF + senha; primeiro acesso CPF + matrícula.
+- Sessão familiar migrada de token persistido no `localStorage` para cookie `HttpOnly`, `Secure`, `SameSite=Lax`.
+- Compatibilidade de migração: uma sessão antiga RC2.7.5 salva no navegador pode ser convertida uma única vez para o novo cookie.
+- Backend passa a gerar Firebase Custom Token técnico após validar a sessão familiar.
+- Frontend usa `signInWithCustomToken()` somente como ponte para as Firestore Security Rules; não existe cadastro manual de responsáveis no Firebase Auth.
+- Claims técnicas limitadas a `role`, `responsavelId`, `sessionId` e alunos vinculados.
+- Rules novas negam acesso anônimo e limitam famílias a seus próprios dados operacionais.
+- Hashes/salts de senha, sessões, tokens de ativação/reset, responsáveis de outras famílias e auditoria não são legíveis pelo portal.
+- Autorização/limite da conta familiar deixam de ser gravados diretamente pelo navegador e passam pela API, que valida sessão, teto familiar e recalcula bloqueio por limite.
+- Dados do comprador continuam editáveis apenas para aluno pertencente à família.
+- Marcação de notificação como lida continua permitida somente nas notificações pertencentes à família.
+- Consultas do detalhe de pedidos do responsável foram ajustadas para respeitar o modelo "Rules não são filtros".
 
-## Família como contexto principal
+## Equipe
 
-- Removida a lógica de navegar trocando o “perfil” do aluno no Meu Piaget.
-- Famílias com vários alunos agora entram em uma visão consolidada.
-- Aluno passa a funcionar como filtro e como destinatário obrigatório das operações.
-- Saldo/crédito/dívida/limite permanecem únicos na conta financeira familiar.
+- Login interno continua Firebase e-mail/senha.
+- Antes de carregar o Firestore, o backend valida o ID Token e o perfil em `usuarios_acesso`.
+- Criado espelho `usuarios_auth/{uid}` exclusivamente pelo backend para as Rules.
+- Edição/ativação/bloqueio de usuário interno passa pela API de segurança para manter `usuarios_acesso` e `usuarios_auth` sincronizados.
 
-## Carrinho e programação multi-aluno
+## Proteções adicionais
 
-- Meu Piaget: programação de lanche para um ou vários alunos no mesmo checkout.
-- Ao escolher vários alunos, configura-se o primeiro e o sistema oferece copiar a programação para o próximo, permitindo ajustes posteriores.
-- Secretaria presencial e online: um único carrinho pode conter itens de vários alunos vinculados à mesma conta familiar.
-- Cada linha do carrinho mantém `alunoId`, nome, matrícula/turma e vínculo financeiro.
-- Backend valida que todos os alunos atribuídos pertencem à mesma conta familiar.
-- Estoque, fardamento, agenda da Cantina e pedidos continuam individualizados por aluno.
+- Rate limit persistente por origem para login, primeiro acesso, solicitação de reset e redefinição.
+- Revogação server-side das sessões familiares após reset de senha.
+- Cookie de sessão não é acessível ao JavaScript.
+- `/api` permanece com 10 funções físicas no plano Vercel Hobby.
+- Núcleo do caixa físico preservado funcionalmente em relação à RC2.7.5.
 
-## Visões consolidadas
+## Implantação
 
-- Meu Piaget: pedidos, movimentações, notificações e pagamentos pendentes consolidados com filtro por aluno.
-- Secretaria/Gestão: abrir qualquer aluno revela a conta familiar e os demais alunos vinculados.
-- Cantina: vínculo familiar disponível na visão operacional de lanches/pedidos, sem ampliar desnecessariamente dados financeiros.
-- Página pública de pagamento online exibe a atribuição de cada item quando a operação envolve vários alunos.
-
-## Acessos
-
-- Usuários e Acessos permanece apenas para Gestão/Admin e gerencia usuários internos da Equipe Piaget.
-- Secretaria gerencia acesso da família dentro de Alunos e Contas.
-- Mantidos geração de link de redefinição e bloqueio; adicionada reativação de acesso existente.
-- Adicionado download de imagem de primeiro acesso para envio por WhatsApp.
-
-## Preservações técnicas
-
-- 10 funções serverless em `/api`.
-- Marco Zero continua manual.
-- Núcleo de `16-cash-responsibility.js` preservado funcionalmente da RC2.7.1.
-- Nenhuma regra do Firestore foi fechada automaticamente nesta candidata.
+- Adicionado `firestore.rules`.
+- Adicionado `FIRESTORE-RULES-PARA-COLAR.txt`.
+- Adicionado `GUIA-ATIVACAO-SEGURANCA-RC2.7.6.md`.
+- As Rules devem ser publicadas manualmente **depois** do deploy e smoke test da RC2.7.6.
