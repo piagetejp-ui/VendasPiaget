@@ -1,34 +1,24 @@
-# Validação técnica — 1.6.0-rc2.5.1-fardamento-variacoes
+# Validação técnica — 1.6.0-rc2.6-pedidos-fardamento
 
-## Base preservada
+## Base e preservação
 
-A RC2.5.1 foi construída sobre a RC2.5 já publicada e testada pelo usuário sem incorreções identificadas até o momento. O arquivo `16-cash-responsibility.js`, que contém o núcleo validado do caixa físico, foi comparado com a RC2.5 e permanece funcionalmente idêntico, exceto pela identificação da nova versão.
+A candidata foi construída sobre a RC2.5.1. O arquivo `16-cash-responsibility.js`, que contém o núcleo do caixa físico validado nas versões anteriores, foi comparado byte a byte após normalizar somente a identificação da release e permaneceu idêntico funcionalmente.
 
-## Verificações locais
+## Verificações locais previstas/concluídas antes do empacotamento
 
-- Sintaxe de todos os JavaScripts de frontend e APIs com `node --check`.
-- Parse de todos os arquivos JSON.
-- Validação dos caminhos referenciados pelo `index.html`.
-- Validação dos arquivos listados no precache do service worker.
-- Comparação do núcleo do caixa RC2.5 × RC2.5.1.
-- Verificação estática das novas regras de destinatários e estados das notificações.
-- Verificação estática das classificações financeiras de saída do caixa.
-- Verificação do detalhamento do carrinho e da programação por data.
-- Teste HTTP/local do pacote após empacotamento.
-- Integridade CRC do ZIP final.
-
-
-## Validações específicas do fardamento
-
-- Produto canônico único `Camisa de farda`.
-- 16 variações previstas: 6 Infantil/Juvenil, 5 Feminino/Baby Look e 5 Masculino.
-- Estoque-base informado totaliza 35 camisas físicas.
-- Tamanhos sem estoque permanecem visíveis no portal, mas desabilitados.
-- Quantidade selecionada é limitada pelo disponível no frontend.
-- Backend revalida variação e estoque para portal, venda presencial e venda online da Secretaria.
-- Rotas legadas de fardamento da Secretaria também passam pela validação de estoque.
-- Criação de um segundo item de fardamento no catálogo é bloqueada/redirecionada para o produto único.
+- sintaxe de **33 arquivos JavaScript** de frontend e APIs com `node --check`;
+- parse de **4 arquivos JSON**;
+- conferência de referências locais do `index.html`;
+- conferência das **23 entradas** do precache do service worker;
+- consistência entre `version.json`, `index.html`, `sw.js` e release física;
+- comparação normalizada do núcleo do caixa com RC2.5.1;
+- verificação estática da fonte de preço por variação do fardamento;
+- verificação estática da regra de produção mínima e compromisso por aluno;
+- verificação dos registros de pedidos operacionais e notificações;
+- verificação dos filtros sem perda de foco nas telas novas/alteradas;
+- teste HTTP local do pacote com resposta 200 para `index.html`, `version.json`, `sw.js` e módulos principais alterados;
+- teste de integridade do ZIP final.
 
 ## Limite da validação
 
-Não foi realizado deploy desta RC2.5.1 e os novos fluxos de fardamento não foram executados contra o Firestore real do usuário. A versão deve ser tratada como **candidata para teste real**, não como release final validada.
+Os testes feitos aqui são locais/estáticos. Não houve deploy nem execução contra o banco de produção do usuário. A release continua sendo **candidata** até o teste real após publicação.

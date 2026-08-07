@@ -1,6 +1,6 @@
 {
   "name": "vendas-piaget-checkout",
-  "version": "1.6.0-rc2.5.1",
+  "version": "1.6.0-rc2.6-pedidos-fardamento",
   "private": true,
   "engines": {
     "node": "20.x"

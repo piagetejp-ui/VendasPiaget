@@ -1,42 +1,34 @@
-# Sistema de Vendas Escola Piaget — 1.6.0 RC2.5.1
+# Sistema de Vendas Escola Piaget — 1.6.0 RC2.6
 
-**Release:** `1.6.0-rc2.5.1-fardamento-variacoes`  
-**Base:** RC2.4.1 validada pelo usuário em ambiente real quanto ao caixa físico.  
-**Status:** candidato para teste após publicação.
+**Release:** `1.6.0-rc2.6-pedidos-fardamento`  
+**Base:** RC2.5.1, construída sobre a RC2.5 já testada pelo usuário.  
+**Status:** candidata para publicação e teste real.
 
 ## Publicação
 
-Envie **todo o conteúdo desta pasta** ao repositório, preservando:
+Envie **todo o conteúdo deste pacote** para o repositório, preservando `index.html` na raiz, as pastas `api/`, `assets/` e `releases/`, além de `version.json` e `sw.js`.
 
-- `index.html` na raiz;
-- `api/`, `assets/` e `releases/` na hierarquia atual;
-- a pasta física `releases/1.6.0-rc2.5.1-fardamento-variacoes/`;
-- `version.json` e `sw.js` desta mesma versão.
+A pasta física desta release é:
 
-## Escopo da RC2.5
+`releases/1.6.0-rc2.6-pedidos-fardamento/`
 
-- Carrinho persistente durante a montagem das vendas da Secretaria.
-- Programação de lanches detalhada por data, produto e quantidade.
-- Ajuste da experiência equivalente no programador de lanches do responsável.
-- Gestão do caixa com navegação por ano, mês, dia, sessão e períodos de responsabilidade.
-- Auditoria detalhada de cada caixa e suas movimentações.
-- Classificação das saídas entre despesa real, transferência de numerário, sangria e retirada de sócio.
-- Notificações contextualizadas por aluno, turma e origem.
-- Distribuição de notificações por perfil e aluno destinatário.
-- Separação entre notificações informativas e pendências acionáveis.
-- Marcação como lida persistente e navegação contextual para aluno, pedido, venda, entrega, movimento e caixa.
+## Principais mudanças
 
+- **Camisa de farda** permanece como um único produto-pai, agora sem preço geral.
+- Cada tamanho/modelo possui preço próprio, estoque físico, reservado, disponível, em produção e quantidade comprometida com alunos.
+- Preços podem ser alterados individualmente ou em lote.
+- Farda sem estoque pode ser comprada/solicitada normalmente; a falta entra na fila de produção.
+- A reposição automática da variação respeita mínimo de 5 unidades quando não há produção livre suficiente.
+- Unidades de produção que já possuem aluno ficam comprometidas e, ao chegar, são reservadas antes de liberar o saldo para estoque livre.
+- **Pedidos** passa a ser a central operacional única para Cantina, Fardamento, Eventos, Serviços e cobranças, Mensalidades e Negociações.
+- Pagamento e atendimento são exibidos como situações independentes.
+- A Secretaria pode registrar entrega, ausência e estorno de pedidos de Cantina, com autoria preservada.
+- Mudanças relevantes de pedidos são refletidas no portal do responsável e geram notificações quando aplicável.
+- Notificações exibem aluno, turma e origem quando disponíveis e respeitam os destinatários por perfil/aluno.
+- Campos de busca críticos filtram sem perder foco durante a digitação.
+- Cards de resumo que representam subconjuntos de dados funcionam como filtros/atalhos.
+- A interface foi revisada para reduzir nomenclatura técnica de desenvolvimento no uso cotidiano.
 
-## Fardamento na RC2.5.1
+## Importante
 
-- Produto único **Camisa de farda**.
-- Infantil/Juvenil: modelo único, tamanhos 04, 06, 08, 10, 12 e 14 anos.
-- Adulto Feminino: Baby Look, tamanhos P, M, G, GG e EXGG.
-- Adulto Masculino: tamanhos P, M, G, GG e EXGG.
-- Estoque físico, reservado e disponível controlados por variação.
-- Portal do responsável e vendas da Secretaria usam a mesma fonte de estoque.
-- Tamanho sem disponibilidade continua visível no portal, mas não pode ser comprado.
-
-## Regra de segurança
-
-O núcleo do caixa físico validado na RC2.4.1 (`16-cash-responsibility.js`) foi preservado; a RC2.5 adiciona a experiência gerencial em uma camada posterior.
+Esta versão **não foi publicada nem testada contra o ambiente real pelo assistente**. Ela deve ser tratada como candidata até o usuário concluir os testes após publicação.

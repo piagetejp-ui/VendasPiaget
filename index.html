@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="application-version" content="1.6.0-rc2.5.1-fardamento-variacoes">
+  <meta name="application-version" content="1.6.0-rc2.6-pedidos-fardamento">
   <meta name="theme-color" content="#2C3896">
   <link rel="icon" href="/assets/logo-piaget-icon-v152.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/releases/1.6.0-rc2.5.1-fardamento-variacoes/css/app.css">
+  <link rel="stylesheet" href="/releases/1.6.0-rc2.6-pedidos-fardamento/css/app.css">
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -32,7 +32,7 @@
       <div><h1>Escola Piaget</h1><small>Vendas, cantina e atendimento</small></div>
     </div>
     <div class="top-actions">
-      <span class="pill app-version-pill hidden" id="appVersionPill" title="Versão do sistema">v1.6.0-rc2.5.1-fardamento-variacoes</span>
+      <span class="pill app-version-pill hidden" id="appVersionPill" title="Versão do sistema">v1.6.0-rc2.6-pedidos-fardamento</span>
       <button type="button" class="v151-mobile-menu hidden" id="v151MenuBtn" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">☰</button>
       <span class="pill" id="connectionPill">Conectando...</span>
       <span class="pill hidden" id="userPill"></span>
@@ -44,7 +44,7 @@
     <div class="setup">
       <div class="accent"></div>
       <h2>Carregando o sistema</h2>
-      <p class="muted" id="bootText">Conectando ao Firestore...</p>
+      <p class="muted" id="bootText">Preparando o sistema...</p>
       <div class="progress"><i id="bootProgress"></i></div>
       <div class="alert danger hidden" id="bootError" style="margin-top:14px"></div>
       <button type="button" class="btn btn-primary hidden" id="retryBtn" onclick="boot()" style="margin-top:12px">Tentar novamente</button>
@@ -80,24 +80,25 @@
   <div class="hidden" id="reportHost"></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/00-portal-utils.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/01-core.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/02-operations.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/03-cash.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/04-brand.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/05-auth.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/06-notifications-navigation.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/07-account-checkout.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/08-orders-agenda.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/09-portal-sales.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/10-mobile-runtime.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/12-portal-finalization.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/13-secretary-online-sales.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/14-catalog-sales.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/15-operational-views.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/16-cash-responsibility.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/17-integrated-experience.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/18-uniform-variants.js"></script>
-  <script defer src="/releases/1.6.0-rc2.5.1-fardamento-variacoes/js/11-bootstrap.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/00-portal-utils.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/01-core.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/02-operations.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/03-cash.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/04-brand.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/05-auth.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/06-notifications-navigation.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/07-account-checkout.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/08-orders-agenda.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/09-portal-sales.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/10-mobile-runtime.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/12-portal-finalization.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/13-secretary-online-sales.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/14-catalog-sales.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/15-operational-views.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/16-cash-responsibility.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/17-integrated-experience.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/18-uniform-variants.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/19-orders-workflow.js"></script>
+  <script defer src="/releases/1.6.0-rc2.6-pedidos-fardamento/js/11-bootstrap.js"></script>
 </body>
 </html>
