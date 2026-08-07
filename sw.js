@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.7.1-vercel-hobby-hotfix */
-const VERSION='1.6.0-rc2.7.1-vercel-hobby-hotfix';
+/* Escola Piaget — service worker V1.6.0-rc2.7.2-familia-compartilhada */
+const VERSION='1.6.0-rc2.7.2-familia-compartilhada';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.7.1-vercel-hobby-hotfix/';
+const RELEASE='/releases/1.6.0-rc2.7.2-familia-compartilhada/';
 const PRECACHE=[
   '/index.html',
   '/equipe.html',
@@ -30,6 +30,7 @@ const PRECACHE=[
   `${RELEASE}js/18-uniform-variants.js`,
   `${RELEASE}js/19-orders-workflow.js`,
   `${RELEASE}js/20-family-implantation.js`,
+  `${RELEASE}js/21-family-shared-experience.js`,
   '/assets/logo-piaget-icon-v152.png',
   '/assets/logo-piaget-horizontal-v152.png'
 ];

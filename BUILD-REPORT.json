@@ -1,7 +1,7 @@
 {
-  "version": "1.6.0-rc2.7.1-vercel-hobby-hotfix",
+  "version": "1.6.0-rc2.7.2-familia-compartilhada",
   "status": "candidate",
-  "baseVersion": "1.6.0-rc2.7-meu-piaget-familias",
+  "baseVersion": "1.6.0-rc2.7.1-vercel-hobby-hotfix",
   "sourceOfficial2026": {
     "students": 214,
     "financialResponsibles": 187,
@@ -10,32 +10,41 @@
     "cpfPendingCorrection": 1
   },
   "features": [
-    "Meu Piaget family login by CPF",
-    "first access by CPF plus linked enrollment",
-    "family shared financial account",
-    "sibling student selector",
-    "school-year enrollment history foundation",
-    "separate team and family entry pages",
-    "controlled official-base preparation",
-    "manual Marco Zero with internal backup",
-    "family-aware payment and reset URLs"
+    "family-first Meu Piaget view",
+    "shared financial account with student filters",
+    "multi-student snack scheduling with copy-next workflow",
+    "single family cart for Secretariat presencial and online sales",
+    "per-line student assignment validated server-side",
+    "family-wide movements, orders, notifications and pending payments",
+    "family-aware Students and Accounts staff view",
+    "Cantina operational family linkage",
+    "family access management inside Students and Accounts",
+    "internal Users and Access restricted to Management/Admin",
+    "first-access WhatsApp PNG generator",
+    "family access reactivation",
+    "family-aware public online payment summary"
   ],
   "safety": {
     "automaticResetOnDeploy": false,
     "plainCpfInFrontendBase": false,
-    "cashCoreFunctionallyPreservedFromRc26": true
+    "firestoreRulesAutomaticallyChanged": false,
+    "cashCoreFunctionallyPreservedFromRc271": true
   },
   "validation": {
-    "javascriptFilesChecked": 38,
+    "javascriptFilesChecked": 42,
     "serviceWorkerChecked": true,
     "jsonFilesChecked": 4,
-    "htmlLocalReferencesChecked": 78,
-    "serviceWorkerPrecacheItemsChecked": 29,
-    "httpSmokePathsChecked": 7,
+    "htmlLocalReferencesChecked": 80,
+    "apiFunctionCount": 10,
     "staticRosterPiiRemoved": true,
-    "cashCoreNormalizedEqualToRc26": true
+    "cashCoreNormalizedEqualToRc271": true,
+    "serviceWorkerPrecacheItemsChecked": 30,
+    "httpSmokePathsChecked": 8,
+    "htmlInlineScriptsSyntaxChecked": 5,
+    "familySnackNormalizerTested": true,
+    "familyCatalogNormalizerTested": true,
+    "crossFamilyAssignmentRejected": true,
+    "parentNonSnackPayloadRejectedInFamilySnackEndpoint": true
   },
-  "apiFunctionCount": 10,
-  "vercelHobbyLimitObserved": 12,
-  "hotfix": "Consolidação de funções serverless e correção do index.html"
+  "vercelHobbyLimitObserved": 12
 }

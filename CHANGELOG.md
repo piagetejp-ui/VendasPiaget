@@ -1,11 +1,38 @@
-# Changelog — 1.6.0-rc2.7.1-vercel-hobby-hotfix
+# Changelog — 1.6.0-rc2.7.2-familia-compartilhada
 
-## Hotfix de implantação Vercel Hobby
+## Família como contexto principal
 
-- Redução de 14 endpoints executáveis / 17 arquivos JS sob `api` na RC2.7 para **10 funções reais em `/api`**.
-- Consolidação de acesso Meu Piaget, gestão de famílias e implantação em `api/familias.js`.
-- Consolidação de obter/iniciar/gerenciar venda online em `api/venda-online.js`.
-- Compatibilidade preservada por rewrites das URLs antigas.
-- Helpers e base oficial movidos para `/server`, evitando que sejam tratados como funções serverless.
-- Correção do `index.html`, que ainda apontava para assets da RC2.6.
-- Nenhuma alteração funcional intencional no motor do caixa, pedidos, fardamento ou conta familiar.
+- Removida a lógica de navegar trocando o “perfil” do aluno no Meu Piaget.
+- Famílias com vários alunos agora entram em uma visão consolidada.
+- Aluno passa a funcionar como filtro e como destinatário obrigatório das operações.
+- Saldo/crédito/dívida/limite permanecem únicos na conta financeira familiar.
+
+## Carrinho e programação multi-aluno
+
+- Meu Piaget: programação de lanche para um ou vários alunos no mesmo checkout.
+- Ao escolher vários alunos, configura-se o primeiro e o sistema oferece copiar a programação para o próximo, permitindo ajustes posteriores.
+- Secretaria presencial e online: um único carrinho pode conter itens de vários alunos vinculados à mesma conta familiar.
+- Cada linha do carrinho mantém `alunoId`, nome, matrícula/turma e vínculo financeiro.
+- Backend valida que todos os alunos atribuídos pertencem à mesma conta familiar.
+- Estoque, fardamento, agenda da Cantina e pedidos continuam individualizados por aluno.
+
+## Visões consolidadas
+
+- Meu Piaget: pedidos, movimentações, notificações e pagamentos pendentes consolidados com filtro por aluno.
+- Secretaria/Gestão: abrir qualquer aluno revela a conta familiar e os demais alunos vinculados.
+- Cantina: vínculo familiar disponível na visão operacional de lanches/pedidos, sem ampliar desnecessariamente dados financeiros.
+- Página pública de pagamento online exibe a atribuição de cada item quando a operação envolve vários alunos.
+
+## Acessos
+
+- Usuários e Acessos permanece apenas para Gestão/Admin e gerencia usuários internos da Equipe Piaget.
+- Secretaria gerencia acesso da família dentro de Alunos e Contas.
+- Mantidos geração de link de redefinição e bloqueio; adicionada reativação de acesso existente.
+- Adicionado download de imagem de primeiro acesso para envio por WhatsApp.
+
+## Preservações técnicas
+
+- 10 funções serverless em `/api`.
+- Marco Zero continua manual.
+- Núcleo de `16-cash-responsibility.js` preservado funcionalmente da RC2.7.1.
+- Nenhuma regra do Firestore foi fechada automaticamente nesta candidata.

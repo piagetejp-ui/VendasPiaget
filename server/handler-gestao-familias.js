@@ -10,6 +10,9 @@ module.exports=async(req,res)=>{
   if(acao==='bloquear_acesso'){
    const responsavelId=String(b.responsavelId||'');await db.collection('responsaveis_acesso').doc(responsavelId).set({ativo:false,bloqueadoPorId:staff.id,bloqueadoPorNome:staff.nome,bloqueadoEm:nowIso(),atualizadoEm:nowIso()},{merge:true});return json(res,200,{ok:true});
   }
+  if(acao==='reativar_acesso'){
+   const responsavelId=String(b.responsavelId||'');if(!responsavelId)return json(res,400,{error:'Responsável não identificado.'});const ref=db.collection('responsaveis_acesso').doc(responsavelId),snap=await ref.get();if(!snap.exists||!snap.data()?.senhaHash)return json(res,409,{error:'Este acesso ainda não possui senha. Oriente o primeiro acesso ou gere uma redefinição.'});await ref.set({ativo:true,reativadoPorId:staff.id,reativadoPorNome:staff.nome,reativadoEm:nowIso(),atualizadoEm:nowIso()},{merge:true});return json(res,200,{ok:true});
+  }
   if(acao==='corrigir_cpf'){
    if(!['admin','gestao'].includes(staff.perfil))return json(res,403,{error:'Somente a Gestão pode corrigir o CPF.'});const responsavelId=String(b.responsavelId||''),cpf=normalizeCpf(b.cpf);if(!validCpf(cpf))return json(res,400,{error:'Informe um CPF válido.'});const h=cpfHash(cpf),dup=await db.collection('responsaveis_financeiros').where('cpfHash','==',h).limit(1).get();if(dup.docs.length&&dup.docs[0].id!==responsavelId)return json(res,409,{error:'Este CPF já está vinculado a outro responsável.'});await db.collection('responsaveis_financeiros').doc(responsavelId).set({cpfHash:h,cpfFinal:cpf.slice(-4),cpfValido:true,cpfCorrigidoPorId:staff.id,cpfCorrigidoPorNome:staff.nome,cpfCorrigidoEm:nowIso(),atualizadoEm:nowIso()},{merge:true});return json(res,200,{ok:true});
   }

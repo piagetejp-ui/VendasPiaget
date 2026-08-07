@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-store, max-age=0, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="application-version" content="1.6.0-rc2.7.1-vercel-hobby-hotfix">
-<title>Pagamento — Escola Piaget V1.6.0-rc2.7.1-vercel-hobby-hotfix</title>
+<meta name="application-version" content="1.6.0-rc2.7.2-familia-compartilhada">
+<title>Pagamento — Escola Piaget V1.6.0-rc2.7.2-familia-compartilhada</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -26,7 +26,7 @@
 <div class="card">
   <div class="top"><div class="bar"></div><h1>Pagamento InfinitePay</h1><p class="muted">Confirmação rápida do pagamento e atualização do pedido.</p></div>
   <div class="body">
-    <div id="status" class="status warn"><strong>Atualizando...</strong><br>Se o pagamento já foi aprovado, o crédito será aplicado automaticamente na conta do aluno.</div>
+    <div id="status" class="status warn"><strong>Atualizando...</strong><br>Se o pagamento já foi aprovado, o valor será aplicado automaticamente na conta financeira.</div>
     <div id="receipt" class="receipt hide"></div>
     <div id="meta" class="meta"></div>
     <div class="actions">
@@ -62,10 +62,11 @@ function humanDate(v){if(!v)return '-';try{return new Date(v).toLocaleString('pt
 function statusLabel(s){const map={aguardando_pagamento:'Aguardando pagamento',pagamento_localizado_processando:'Pagamento localizado — processando',pagamento_localizado_aguardando_processamento:'Pagamento localizado — aguardando processamento',pago:'Pago',erro_gerar_link:'Erro ao gerar link',erro_sem_url:'Erro sem URL',cancelado:'Cancelado',confirmado:'Confirmado',revisao:'Em revisão',pago_com_saldo:'Pago com saldo da conta'};return map[s]||String(s||'-').replaceAll('_',' ')}
 async function fetchWithTimeout(url,options={},timeout=8000){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);try{return await fetch(url,{...options,signal:controller.signal})}finally{clearTimeout(timer)}}
 function buildReceipt(r={},paid=false){
-  const status=paid?'Pagamento confirmado':statusLabel(r.status||'aguardando_pagamento');
+  const status=paid?'Pagamento confirmado':statusLabel(r.status||'aguardando_pagamento'),family=Array.isArray(r.alunosIds)&&r.alunosIds.length>1;
+  r._family=family;
   receiptState={...r,statusTexto:status,emitidoEm:new Date().toISOString()};
   $('#receipt').classList.remove('hide');
-  $('#receipt').innerHTML=`<div class="receipt-head"><div><strong>Comprovante de pagamento</strong><span class="muted">Escola Piaget · Conta corrente do aluno</span></div><div><span class="muted">Status</span><br><strong>${esc(status)}</strong></div></div><div class="receipt-body"><div class="print-only"><h2>Escola Piaget</h2></div><div class="row"><div class="label">Aluno</div><div class="value">${esc(r.alunoNome||'-')}</div></div><div class="row"><div class="label">Turma / matrícula</div><div class="value">${esc([r.turma,r.matricula].filter(Boolean).join(' · ')||'-')}</div></div><div class="row"><div class="label">Descrição</div><div class="value">${esc(r.descricao||'Entrada na conta do aluno')}</div></div><div class="row"><div class="label">Valor pago</div><div class="value money">${fmt(r.totalCentavos||r.paidAmountCentavos||r.amountCentavos||0)}</div></div>${r.pedidoId?`<div class="row"><div class="label">Pedido relacionado</div><div class="value">${esc(r.pedidoId)}</div></div><div class="row"><div class="label">Total da compra</div><div class="value">${fmt(r.pedidoTotalCentavos||0)}</div></div>`:''}<div class="row"><div class="label">NSU do pedido</div><div class="value">${esc(r.orderNsu||r.id||'-')}</div></div><div class="row"><div class="label">NSU da transação</div><div class="value">${esc(r.transactionNsu||param(['transaction_nsu','transactionNsu','transactionNSU'])||'-')}</div></div><div class="row"><div class="label">Criado em</div><div class="value">${humanDate(r.criadoEm)}</div></div><div class="row"><div class="label">Confirmado em</div><div class="value">${humanDate(r.pagamentoConfirmadoEm||r.confirmadoEm)}</div></div><div class="row"><div class="label">Emissão do comprovante</div><div class="value">${humanDate(receiptState.emitidoEm)}</div></div><p class="muted small">Comprovante interno do Sistema de Vendas Escola Piaget. A confirmação financeira é vinculada à InfinitePay pelo NSU do pedido e da transação.</p></div>`;
+  $('#receipt').innerHTML=`<div class="receipt-head"><div><strong>Comprovante de pagamento</strong><span class="muted">Escola Piaget · ${family?'Conta financeira familiar':'Conta financeira'}</span></div><div><span class="muted">Status</span><br><strong>${esc(status)}</strong></div></div><div class="receipt-body"><div class="print-only"><h2>Escola Piaget</h2></div><div class="row"><div class="label">${family?'Operação':'Aluno'}</div><div class="value">${family?esc(`Conta familiar · ${r.alunosIds.length} alunos`):esc(r.alunoNome||'-')}</div></div>${family?'':`<div class="row"><div class="label">Turma / matrícula</div><div class="value">${esc([r.turma,r.matricula].filter(Boolean).join(' · ')||'-')}</div></div>`}<div class="row"><div class="label">Descrição</div><div class="value">${esc(r.descricao||'Movimentação da conta financeira')}</div></div><div class="row"><div class="label">Valor pago</div><div class="value money">${fmt(r.totalCentavos||r.paidAmountCentavos||r.amountCentavos||0)}</div></div>${r.pedidoId?`<div class="row"><div class="label">Pedido relacionado</div><div class="value">${esc(r.pedidoId)}</div></div><div class="row"><div class="label">Total da compra</div><div class="value">${fmt(r.pedidoTotalCentavos||0)}</div></div>`:''}<div class="row"><div class="label">NSU do pedido</div><div class="value">${esc(r.orderNsu||r.id||'-')}</div></div><div class="row"><div class="label">NSU da transação</div><div class="value">${esc(r.transactionNsu||param(['transaction_nsu','transactionNsu','transactionNSU'])||'-')}</div></div><div class="row"><div class="label">Criado em</div><div class="value">${humanDate(r.criadoEm)}</div></div><div class="row"><div class="label">Confirmado em</div><div class="value">${humanDate(r.pagamentoConfirmadoEm||r.confirmadoEm)}</div></div><div class="row"><div class="label">Emissão do comprovante</div><div class="value">${humanDate(receiptState.emitidoEm)}</div></div><p class="muted small">Comprovante interno do Sistema de Vendas Escola Piaget. A confirmação financeira é vinculada à InfinitePay pelo NSU do pedido e da transação.</p></div>`;
   const btn=$('#receiptBtn');if(btn)btn.disabled=true;
   const ip=$('#ipReceiptOption');if(ip){ip.classList.add('hide');ip.href='#'}
   if(r.receiptUrl){ip.href=r.receiptUrl;ip.classList.remove('hide');}
@@ -84,7 +85,7 @@ async function checkPayment(){
     if(!resp.ok)throw new Error(data.error||'Não foi possível consultar o pagamento.');
     const applied=data.receipt?.statusAplicacao==='aplicado'&&!data.applicationPending;
     if(data.receipt) buildReceipt(data.receipt, !!data.paid&&applied);
-    if(data.paid&&applied){$('#receiptBtn').disabled=false;$('#status').className='status ok';$('#status').innerHTML='<strong>Pagamento confirmado.</strong><br>O valor foi aplicado na conta do aluno. Você já pode imprimir ou baixar o comprovante.';}
+    if(data.paid&&applied){$('#receiptBtn').disabled=false;$('#status').className='status ok';$('#status').innerHTML='<strong>Pagamento confirmado.</strong><br>O valor foi aplicado na conta financeira. Você já pode imprimir ou baixar o comprovante.';}
     else if(data.paid){$('#receiptBtn').disabled=true;$('#status').className='status warn';$('#status').innerHTML='<strong>Pagamento localizado.</strong><br>O pedido ainda está sendo processado pelo sistema. Toque em “Atualizar pagamento” novamente em alguns instantes.';}
     else{$('#receiptBtn').disabled=true;$('#status').className='status warn';$('#status').innerHTML='<strong>Pagamento ainda não confirmado.</strong><br>Se você acabou de pagar, aguarde alguns instantes. O sistema também receberá a confirmação automática da InfinitePay.';}
   }catch(e){const timed=e?.name==='AbortError';$('#status').className=timed?'status warn':'status err';$('#status').innerHTML=timed?'<strong>A consulta demorou mais do que o esperado.</strong><br>Você já pode voltar ao sistema. O webhook continuará processando a confirmação em segundo plano.':'<strong>Não conseguimos atualizar agora.</strong><br>'+esc(e.message)+'<br><br>O webhook pode confirmar automaticamente assim que a InfinitePay reenviar a informação.';}finally{if(retry){retry.disabled=false;retry.textContent='Atualizar pagamento'}}
@@ -100,14 +101,14 @@ function downloadReceiptImage(){
   ctx.fillStyle='#ffffff';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#123a7a';ctx.fillRect(0,0,c.width,150);ctx.fillStyle='#f58220';ctx.fillRect(60,120,150,10);
   ctx.fillStyle='#ffffff';ctx.font='bold 42px Barlow, Arial';ctx.fillText('Escola Piaget',60,72);ctx.font='bold 30px Barlow, Arial';ctx.fillText('Comprovante de pagamento',60,115);
   ctx.fillStyle='#172033';ctx.font='bold 36px Barlow, Arial';ctx.fillText(fmt(receiptState.totalCentavos||receiptState.paidAmountCentavos||receiptState.amountCentavos||0),60,220);
-  let y=300;drawLine(ctx,'Aluno',receiptState.alunoNome||'-',y);y+=82;drawLine(ctx,'Turma / matrícula',[receiptState.turma,receiptState.matricula].filter(Boolean).join(' · ')||'-',y);y+=82;drawLine(ctx,'Descrição',receiptState.descricao||'Entrada na conta do aluno',y);y+=118;drawLine(ctx,'Status',receiptState.statusTexto||statusLabel(receiptState.status),y);y+=82;drawLine(ctx,'NSU do pedido',receiptState.orderNsu||receiptState.id||'-',y);y+=82;drawLine(ctx,'NSU da transação',receiptState.transactionNsu||'-',y);y+=82;drawLine(ctx,'Confirmado em',humanDate(receiptState.pagamentoConfirmadoEm||receiptState.confirmadoEm),y);y+=82;drawLine(ctx,'Emitido em',humanDate(receiptState.emitidoEm),y);
+  let y=300;if(receiptState._family){drawLine(ctx,'Operação',`Conta familiar · ${(receiptState.alunosIds||[]).length} alunos`,y);y+=82}else{drawLine(ctx,'Aluno',receiptState.alunoNome||'-',y);y+=82;drawLine(ctx,'Turma / matrícula',[receiptState.turma,receiptState.matricula].filter(Boolean).join(' · ')||'-',y);y+=82}drawLine(ctx,'Descrição',receiptState.descricao||'Movimentação da conta financeira',y);y+=118;drawLine(ctx,'Status',receiptState.statusTexto||statusLabel(receiptState.status),y);y+=82;drawLine(ctx,'NSU do pedido',receiptState.orderNsu||receiptState.id||'-',y);y+=82;drawLine(ctx,'NSU da transação',receiptState.transactionNsu||'-',y);y+=82;drawLine(ctx,'Confirmado em',humanDate(receiptState.pagamentoConfirmadoEm||receiptState.confirmadoEm),y);y+=82;drawLine(ctx,'Emitido em',humanDate(receiptState.emitidoEm),y);
   ctx.fillStyle='#64748b';ctx.font='20px Barlow, Arial';wrapText(ctx,'Comprovante interno do Sistema de Vendas Escola Piaget. A confirmação financeira é vinculada à InfinitePay pelo NSU do pedido e da transação.',60,1040,860,28);
   const a=document.createElement('a');a.download=`comprovante-piaget-${receiptState.orderNsu||receiptState.id||'pagamento'}.png`;a.href=c.toDataURL('image/png');a.click();
 }
 checkPayment();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js?v=1.6.0-rc2.7.1-vercel-hobby-hotfix',{scope:'/',updateViaCache:'none'}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js?v=1.6.0-rc2.7.2-familia-compartilhada',{scope:'/',updateViaCache:'none'}).catch(()=>{});}
 window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 </script>
-<div id="checkoutVersion" class="no-print" style="position:fixed;right:10px;bottom:8px;font-size:10px;color:#64748b;opacity:.7">v1.6.0-rc2.7.1-vercel-hobby-hotfix</div>
+<div id="checkoutVersion" class="no-print" style="position:fixed;right:10px;bottom:8px;font-size:10px;color:#64748b;opacity:.7">v1.6.0-rc2.7.2-familia-compartilhada</div>
 </body>
 </html>

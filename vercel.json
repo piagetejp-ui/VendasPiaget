@@ -58,7 +58,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.7.1-vercel-hobby-hotfix/(.*)",
+      "source": "/releases/1.6.0-rc2.7.2-familia-compartilhada/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

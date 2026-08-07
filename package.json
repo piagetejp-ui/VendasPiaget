@@ -1,6 +1,6 @@
 {
   "name": "vendas-piaget-checkout",
-  "version": "1.6.0-rc2.7.1-vercel-hobby-hotfix",
+  "version": "1.6.0-rc2.7.2-familia-compartilhada",
   "private": true,
   "engines": {
     "node": "20.x"
