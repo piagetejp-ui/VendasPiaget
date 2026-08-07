@@ -1,4 +1,4 @@
-# Changelog — 1.6.0-rc2.7.6
+# Changelog — 1.6.0-rc2.7.7
 
 ## Segurança Firestore sem alterar a experiência do usuário
 
@@ -36,3 +36,10 @@
 - Adicionado `FIRESTORE-RULES-PARA-COLAR.txt`.
 - Adicionado `GUIA-ATIVACAO-SEGURANCA-RC2.7.6.md`.
 - As Rules devem ser publicadas manualmente **depois** do deploy e smoke test da RC2.7.6.
+
+## RC2.7.7 — hotfix de autorização do checkout
+- Checkout passa a enviar explicitamente o Firebase ID Token tanto para Equipe quanto para a identidade técnica da família.
+- Backend identifica o principal autenticado pelo token real; responsável é validado contra sessão familiar ativa e vínculo do aluno.
+- Cookie familiar permanece como fallback seguro.
+- Falhas ao gerar checkout agora aparecem em diálogo visível e também no modal da operação; não há mais falha silenciosa.
+- Nenhuma regra do Firestore é alterada por este pacote.

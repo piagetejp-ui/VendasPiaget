@@ -1,4 +1,4 @@
-# Validação técnica — 1.6.0-rc2.7.6
+# Validação técnica — 1.6.0-rc2.7.7
 
 ## Resultado local
 
@@ -7,7 +7,7 @@
 - **10** funções JavaScript físicas em `/api` (mantém margem dentro do limite observado de 12 da Vercel Hobby).
 - `index.html`, `equipe.html`, `meu-piaget.html`, `pagamento.html` e `obrigado.html` sem referências locais ausentes.
 - Smoke HTTP local: `/`, páginas principais, `version.json` e `firestore.rules` responderam corretamente.
-- Única release física: `releases/1.6.0-rc2.7.6/`.
+- Única release física: `releases/1.6.0-rc2.7.7/`.
 - Nenhuma referência de runtime às releases RC2.7.0–RC2.7.5 nos HTMLs/service worker/configuração Vercel.
 - `firestore.rules` sem `allow read, write: if true`; chaves e parênteses balanceados na validação estática.
 - Nenhum literal de CPF completo identificado no frontend/release estática pela varredura de 11 dígitos e padrão de campo CPF.

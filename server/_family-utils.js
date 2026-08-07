@@ -46,6 +46,34 @@ async function revokeFamilySessions(db,responsavelId,{exceptId=''}={}){if(!respo
 async function familyFirebaseToken(db,session){if(!session?.responsavelId||!session?.id)throw new Error('Sessão familiar inválida.');const uid=`familia_${String(session.responsavelId).replace(/[^A-Za-z0-9:_-]/g,'_')}`.slice(0,128),students=await studentsForResponsible(db,session.responsavelId),alunosIds=students.map(a=>String(a.id)).slice(0,12);return admin.auth().createCustomToken(uid,{role:'responsavel',responsavelId:String(session.responsavelId),sessionId:String(session.id),alunosIds})}
 async function verifyFamilyForStudent(db,req,alunoId){const token=familySessionTokenFromReq(req),session=await validateFamilySession(db,token);if(!session)throw Object.assign(new Error('Sua sessão do Meu Piaget expirou. Entre novamente.'),{status:401});const id=String(alunoId||'').trim();if(!id)throw Object.assign(new Error('Aluno não identificado.'),{status:400});const snap=await db.collection('alunos').doc(id).get();if(!snap.exists)throw Object.assign(new Error('Aluno não encontrado.'),{status:404});const student={id:snap.id,...snap.data()},rid=String(student.responsavelFinanceiroId||student.contaFinanceiraId||'');if(!rid||rid!==String(session.responsavelId||''))throw Object.assign(new Error('Este aluno não está vinculado ao seu acesso.'),{status:403});return{session,student,responsavelId:session.responsavelId}}
 
+async function verifyFamilyFirebaseForStudent(db,req,alunoId){
+  const header=String(req?.headers?.authorization||'');
+  const token=header.startsWith('Bearer ')?header.slice(7).trim():'';
+  if(!token)throw Object.assign(new Error('Acesso familiar seguro não identificado.'),{status:401});
+  let decoded;
+  try{decoded=await admin.auth().verifyIdToken(token)}catch(_){throw Object.assign(new Error('Sua sessão do Meu Piaget expirou. Entre novamente.'),{status:401})}
+  if(String(decoded.role||'')!=='responsavel'||!decoded.responsavelId||!decoded.sessionId)throw Object.assign(new Error('Este acesso não corresponde a uma conta familiar.'),{status:403});
+  const sessionSnap=await db.collection('sessoes_meu_piaget').doc(String(decoded.sessionId)).get();
+  if(!sessionSnap.exists)throw Object.assign(new Error('Sua sessão do Meu Piaget expirou. Entre novamente.'),{status:401});
+  const session={id:sessionSnap.id,...(sessionSnap.data()||{})};
+  if(session.status!=='ativa'||String(session.responsavelId||'')!==String(decoded.responsavelId||'')||!session.expiraEm||new Date(session.expiraEm)<=new Date())throw Object.assign(new Error('Sua sessão do Meu Piaget expirou. Entre novamente.'),{status:401});
+  const access=await db.collection('responsaveis_acesso').doc(String(decoded.responsavelId)).get().catch(()=>null);
+  if(!access?.exists||access.data()?.ativo===false)throw Object.assign(new Error('Este acesso está bloqueado. Procure a Secretaria.'),{status:403});
+  const id=String(alunoId||'').trim();if(!id)throw Object.assign(new Error('Aluno não identificado.'),{status:400});
+  const snap=await db.collection('alunos').doc(id).get();if(!snap.exists)throw Object.assign(new Error('Aluno não encontrado.'),{status:404});
+  const student={id:snap.id,...snap.data()},rid=String(student.responsavelFinanceiroId||student.contaFinanceiraId||'');
+  if(!rid||rid!==String(decoded.responsavelId))throw Object.assign(new Error('Este aluno não está vinculado ao seu acesso.'),{status:403});
+  return{session,student,responsavelId:String(decoded.responsavelId),firebaseUid:decoded.uid};
+}
+async function verifyCheckoutPrincipal(db,req,alunoId){
+  const header=String(req?.headers?.authorization||''),hasBearer=header.startsWith('Bearer ');
+  if(hasBearer){
+    let decoded=null;try{decoded=await admin.auth().verifyIdToken(header.slice(7).trim())}catch(_){}
+    if(decoded&&String(decoded.role||'')==='responsavel')return{kind:'responsavel',...(await verifyFamilyFirebaseForStudent(db,req,alunoId))};
+    return{kind:'staff',profile:await verifyStaff(db,req,['admin','gestao','secretaria','cantina'])};
+  }
+  return{kind:'responsavel',...(await verifyFamilyForStudent(db,req,alunoId))};
+}
 async function verifyStaff(db,req,allowed=['admin','gestao']){const header=String(req.headers.authorization||'');const token=header.startsWith('Bearer ')?header.slice(7):'';if(!token)throw Object.assign(new Error('Acesso da equipe não identificado.'),{status:401});let decoded;try{decoded=await admin.auth().verifyIdToken(token)}catch(_){throw Object.assign(new Error('Sua sessão da equipe expirou. Entre novamente.'),{status:401})}let profile=null;const byUid=await db.collection('usuarios_acesso').where('authUid','==',decoded.uid).limit(1).get();if(byUid.docs.length)profile={id:byUid.docs[0].id,...byUid.docs[0].data()};if(!profile&&decoded.email){const byEmail=await db.collection('usuarios_acesso').where('email','==',String(decoded.email).toLowerCase()).limit(1).get();if(byEmail.docs.length)profile={id:byEmail.docs[0].id,...byEmail.docs[0].data()}}if(!profile||profile.ativo===false||!allowed.includes(profile.perfil))throw Object.assign(new Error('Seu perfil não possui permissão para esta operação.'),{status:403});return{...profile,authUid:decoded.uid,authEmail:String(decoded.email||'').toLowerCase()}}
 
-module.exports={normalizeCpf,normalizeMatricula,validCpf,cpfHash,tokenHash,randomToken,passwordOk,makePassword,verifyPassword,findResponsibleByCpf,studentsForResponsible,publicStudent,familyPayload,createFamilySession,validateFamilySession,revokeFamilySessions,familySessionTokenFromReq,familyCookieHeader,familyFirebaseToken,verifyFamilyForStudent,verifyStaff,enforceAccessRateLimit,FAMILY_COOKIE};
+module.exports={normalizeCpf,normalizeMatricula,validCpf,cpfHash,tokenHash,randomToken,passwordOk,makePassword,verifyPassword,findResponsibleByCpf,studentsForResponsible,publicStudent,familyPayload,createFamilySession,validateFamilySession,revokeFamilySessions,familySessionTokenFromReq,familyCookieHeader,familyFirebaseToken,verifyFamilyForStudent,verifyFamilyFirebaseForStudent,verifyCheckoutPrincipal,verifyStaff,enforceAccessRateLimit,FAMILY_COOKIE};

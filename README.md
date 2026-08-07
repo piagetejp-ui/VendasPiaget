@@ -1,4 +1,4 @@
-# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.6
+# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.7
 
 **Candidata:** RC2.7.6 — Segurança Firestore / autenticação familiar técnica
 

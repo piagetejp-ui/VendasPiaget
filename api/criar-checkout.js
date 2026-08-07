@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const { initFirebase, json, parseBody, buildCheckoutOperation, createCheckoutLink, checkoutOperationKey, replaceActiveCheckoutsForOperation, nowIso } = require('../server/_utils');
-const {verifyFamilyForStudent,verifyStaff}=require('../server/_family-utils');
+const {verifyCheckoutPrincipal}=require('../server/_family-utils');
 function cleanAttemptId(v){const s=String(v||'').trim();return /^[A-Za-z0-9-]{8,100}$/.test(s)?s:''}
 function bodyFingerprint(body){const copy={...body};delete copy.idTentativa;return crypto.createHash('sha256').update(JSON.stringify(copy)).digest('hex')}
 module.exports=async function handler(req,res){
@@ -8,7 +8,7 @@ module.exports=async function handler(req,res){
   const totalStart=Date.now();let attemptRef=null,fingerprint='';
   try{
     const db=initFirebase(),body=parseBody(req),idTentativa=cleanAttemptId(body.idTentativa),timings={};
-    const perfil=String(body.criadoPorPerfil||body.usuarioPerfil||'responsavel');if(perfil==='responsavel')await verifyFamilyForStudent(db,req,body.alunoId);else await verifyStaff(db,req,['admin','gestao','secretaria','cantina']);
+    await verifyCheckoutPrincipal(db,req,body.alunoId);
     if(idTentativa){
       fingerprint=bodyFingerprint(body);attemptRef=db.collection('tentativas_checkout').doc(idTentativa);let existing=null;
       await db.runTransaction(async tx=>{const snap=await tx.get(attemptRef);if(snap.exists)existing=snap.data();else tx.set(attemptRef,{id:idTentativa,fingerprint,status:'preparando',criadoEm:nowIso(),atualizadoEm:nowIso(),alunoId:body.alunoId||null,tipo:body.tipo||null})});
