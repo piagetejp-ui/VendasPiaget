@@ -1,39 +1,38 @@
 {
-  "version": "1.6.0-rc2.6-pedidos-fardamento",
-  "baseVersion": "1.6.0-rc2.5.1-fardamento-variacoes",
-  "generatedAt": "2026-08-07T09:55:00-03:00",
-  "status": "candidate_for_real_test",
-  "cashCorePreserved": true,
-  "cashCoreNormalizedSha256": "9e6134aa845f360f19da675514fc8ad2c6cca900d72af9dd17f4594bedb6c61e",
-  "localValidation": {
-    "javascriptSyntaxFiles": 33,
-    "jsonFiles": 4,
-    "indexReferencesMissing": 0,
-    "serviceWorkerPrecacheEntries": 23,
-    "serviceWorkerPrecacheMissing": 0,
-    "httpSmoke": "passed",
-    "zipIntegrity": "checked_after_packaging"
+  "version": "1.6.0-rc2.7-meu-piaget-familias",
+  "status": "candidate",
+  "baseVersion": "1.6.0-rc2.6-pedidos-fardamento",
+  "sourceOfficial2026": {
+    "students": 214,
+    "financialResponsibles": 187,
+    "links": 214,
+    "responsiblesWithMultipleStudents": 24,
+    "cpfPendingCorrection": 1
   },
-  "uniformProduct": "Camisa de farda",
-  "uniformVariants": 16,
-  "uniformInitialPhysicalStock": 35,
-  "uniformReplenishmentMinimum": 5,
-  "changes": [
-    "uniform_parent_without_price",
-    "uniform_price_per_variant",
-    "uniform_batch_price_edit",
-    "uniform_physical_reserved_available_production_committed_stock",
-    "uniform_minimum_replenishment_5",
-    "uniform_production_commitment_per_student",
-    "uniform_partial_cancellation_releases_only_committed_units",
-    "unified_orders_hub_by_catalog_category",
-    "payment_status_separated_from_fulfillment_status",
-    "secretary_canteen_fulfillment_actions",
-    "parent_order_status_sync_and_notifications",
-    "profile_scoped_notifications_with_student_class_and_origin",
-    "operational_order_notification_navigation",
-    "continuous_search_without_focus_loss",
-    "clickable_filter_cards",
-    "friendly_operational_ui_language"
-  ]
+  "features": [
+    "Meu Piaget family login by CPF",
+    "first access by CPF plus linked enrollment",
+    "family shared financial account",
+    "sibling student selector",
+    "school-year enrollment history foundation",
+    "separate team and family entry pages",
+    "controlled official-base preparation",
+    "manual Marco Zero with internal backup",
+    "family-aware payment and reset URLs"
+  ],
+  "safety": {
+    "automaticResetOnDeploy": false,
+    "plainCpfInFrontendBase": false,
+    "cashCoreFunctionallyPreservedFromRc26": true
+  },
+  "validation": {
+    "javascriptFilesChecked": 38,
+    "serviceWorkerChecked": true,
+    "jsonFilesChecked": 4,
+    "htmlLocalReferencesChecked": 78,
+    "serviceWorkerPrecacheItemsChecked": 29,
+    "httpSmokePathsChecked": 7,
+    "staticRosterPiiRemoved": true,
+    "cashCoreNormalizedEqualToRc26": true
+  }
 }

@@ -58,7 +58,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.5-experiencia-auditoria/(.*)",
+      "source": "/releases/1.6.0-rc2.7-meu-piaget-familias/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

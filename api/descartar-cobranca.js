@@ -1,10 +1,12 @@
 const { initFirebase, json, parseBody, discardCheckout } = require('./_utils');
+const {verifyFamilyForStudent}=require('./_family-utils');
 
 module.exports=async function handler(req,res){
   if(req.method!=='POST')return json(res,405,{ok:false,error:'Método não permitido.'});
   try{
-    const db=initFirebase();
-    const result=await discardCheckout(db,parseBody(req));
+    const db=initFirebase(),body=parseBody(req);
+    await verifyFamilyForStudent(db,req,body.alunoId);
+    const result=await discardCheckout(db,body);
     return json(res,200,result);
   }catch(error){
     console.error('descartar-cobranca:',error);

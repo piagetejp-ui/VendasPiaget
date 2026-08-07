@@ -1,4 +1,5 @@
-const {initFirebase,json,parseBody,nowIso,accountNet,splitNet,audit,notify,getConfig}=require('./_utils');
+const {initFirebase,json,parseBody,nowIso,accountNet,splitNet,audit,notify,getConfig,accountRefForStudent}=require('./_utils');
+const {verifyFamilyForStudent}=require('./_family-utils');
 const cents=v=>Math.round(Number(v||0));
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const validDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||''));
@@ -13,6 +14,7 @@ module.exports=async function handler(req,res){
   try{
     const db=initFirebase(),body=parseBody(req),action=String(body.acao||''),alunoId=String(body.alunoId||''),occurrenceId=String(body.ocorrenciaId||''),actor={id:body.criadoPorId||'portal_responsavel',nome:body.criadoPorNome||'Responsável',perfil:body.criadoPorPerfil||'responsavel'};
     if(!alunoId)throw Object.assign(new Error('Aluno não identificado.'),{status:400});
+    if(actor.perfil==='responsavel')await verifyFamilyForStudent(db,req,alunoId);
     if(action==='remarcar'){
       const newDate=String(body.novaData||'');if(!occurrenceId||!validDate(newDate)||newDate<=today())throw Object.assign(new Error('Escolha uma nova data futura.'),{status:400});
       const d=new Date(`${newDate}T12:00:00`);if([0,6].includes(d.getDay()))throw Object.assign(new Error('Escolha um dia útil.'),{status:400});
@@ -45,10 +47,10 @@ module.exports=async function handler(req,res){
       return json(res,200,{ok:true,...result});
     }
     if(action==='cancelar'){
-      if(!occurrenceId)throw Object.assign(new Error('Entrega não identificada.'),{status:400});const ref=db.collection('ocorrencias_entrega').doc(occurrenceId);let result={};
+      if(!occurrenceId)throw Object.assign(new Error('Entrega não identificada.'),{status:400});const ref=db.collection('ocorrencias_entrega').doc(occurrenceId),familyAccRef=await accountRefForStudent(db,alunoId);let result={};
       await db.runTransaction(async tx=>{
         const snap=await tx.get(ref);if(!snap.exists)throw new Error('Entrega não encontrada.');const o={id:snap.id,...snap.data()};if(o.alunoId!==alunoId)throw Object.assign(new Error('Esta entrega não pertence ao aluno.'),{status:403});if(!activeStatus(o.status)||o.dataChave<=today())throw new Error('Somente entregas futuras e pendentes podem ser canceladas.');
-        const accRef=db.collection('contas_alunos').doc(alunoId),stockRef=db.collection('disponibilidade_salgados').doc(o.dataChave),orderRef=db.collection('pedidos').doc(o.pedidoId);const [accSnap,stockSnap,orderSnap]=await Promise.all([tx.get(accRef),tx.get(stockRef),tx.get(orderRef)]);const acc=accSnap.exists?accSnap.data():{},stock=stockSnap.exists?stockSnap.data():{},order=orderSnap.exists?orderSnap.data():{},before=accountNet(acc),value=occurrenceValue(o,order),after=before+value,qty=occurrenceSalgados(o,order),now=nowIso(),move=db.collection('movimentos_conta').doc();if(value<=0)throw Object.assign(new Error('Não foi possível identificar o valor desta entrega para realizar a devolução.'),{status:409});
+        const accRef=familyAccRef,stockRef=db.collection('disponibilidade_salgados').doc(o.dataChave),orderRef=db.collection('pedidos').doc(o.pedidoId);const [accSnap,stockSnap,orderSnap]=await Promise.all([tx.get(accRef),tx.get(stockRef),tx.get(orderRef)]);const acc=accSnap.exists?accSnap.data():{},stock=stockSnap.exists?stockSnap.data():{},order=orderSnap.exists?orderSnap.data():{},before=accountNet(acc),value=occurrenceValue(o,order),after=before+value,qty=occurrenceSalgados(o,order),now=nowIso(),move=db.collection('movimentos_conta').doc();if(value<=0)throw Object.assign(new Error('Não foi possível identificar o valor desta entrega para realizar a devolução.'),{status:409});
         tx.set(accRef,{...splitNet(after),bloqueioSaldoSemanal:after<0?Boolean(acc.bloqueioSaldoSemanal):false,bloqueadoPorLimite:false,atualizadoEm:now},{merge:true});tx.set(move,{id:move.id,alunoId,tipo:'credito',subtipo:'credito_cancelamento_programacao',valorCentavos:value,saldoAntesCentavos:before,saldoDepoisCentavos:after,pedidoId:o.pedidoId,ocorrenciaId:o.id,origem:'cancelamento_responsavel',usuarioId:actor.id,usuarioNome:actor.nome,dataChave:o.dataChave,criadoEm:now});tx.set(stockRef,{pedidosConfirmados:Math.max(0,cents(stock.pedidosConfirmados)-qty),atualizadoEm:now},{merge:true});tx.set(ref,{status:'cancelado_responsavel',creditadoCentavos:value,canceladoEm:now,finalizadoEm:now,alteradoPorId:actor.id,alteradoPorNome:actor.nome,atualizadoEm:now},{merge:true});const updatedDays=(Array.isArray(order.dias)?order.dias:[]).map(day=>day.dataChave===o.dataChave?{...day,status:'cancelado_responsavel',creditadoCentavos:value}:day);tx.set(orderRef,{dias:updatedDays,atualizadoEm:now},{merge:true});result={pedidoId:o.pedidoId,dataChave:o.dataChave,creditoCentavos:value,saldoDepoisCentavos:after};
       });
       await audit(db,'programacao_lanche_cancelada',{...result,alunoId,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,descricaoHumana:`${actor.nome} cancelou uma entrega futura e o valor voltou para a conta do aluno.`});

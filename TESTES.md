@@ -1,21 +1,104 @@
-# Roteiro de testes — 1.6.0-rc2.6-pedidos-fardamento
+# Roteiro de teste — RC2.7
 
-## Ordem recomendada
+## Regra principal
 
-1. **Regressão do caixa:** abrir, assumir, movimentar, vender em dinheiro e fechar; confirmar que o comportamento permanece igual ao testado anteriormente.
-2. **Fardamento administrativo:** abrir Catálogo → Camisa de farda; conferir que não há preço geral; editar preços individuais; selecionar vários tamanhos e aplicar preço em lote; salvar e reabrir.
-3. **Fardamento com estoque:** comprar uma variação disponível pelo portal e pela Secretaria; conferir preço, reserva, pedido e baixa após entrega.
-4. **Fardamento sem estoque:** comprar uma variação zerada; confirmar que a compra não é bloqueada, que o pedido entra em produção e que a variação registra produção mínima de 5 quando necessário.
-5. **Recebimento de produção:** receber o lote; confirmar que pedidos já comprometidos viram reserva do aluno e somente a sobra fica disponível.
-6. **Cancelamento parcial:** criar um pedido com parte reservada e parte aguardando produção, cancelar e conferir que apenas a reserva/compromisso do aluno é liberado, mantendo o lote do fornecedor como produção disponível.
-7. **Pedidos unificados:** navegar por Todos, Cantina, Fardamento, Eventos, Serviços e cobranças, Mensalidades e Negociações; testar os cards de filtro e a busca digitando continuamente.
-8. **Cantina pela Secretaria:** abrir um pedido e registrar Entregue; em outro registrar Aluno ausente; em outro registrar Não entrega/estorno; conferir autoria, saldo e notificação do responsável.
-9. **Eventos/serviços:** realizar venda de um item operacional; confirmar que aparece em Pedidos com Pagamento e Atendimento separados; alterar atendimento e conferir o portal do responsável.
-10. **Notificações:** conferir nome, turma e origem; testar Marcar como lida; confirmar que Resolver só aparece em pendências reais; testar nos perfis Gestão, Secretaria, Cantina e Responsável.
-11. **Cards e atalhos:** testar cards do Resumo, Cobranças, Pedidos, Notificações e Gestão do Caixa e confirmar que abrem/filtram os dados correspondentes.
-12. **Mobile/responsável:** repetir compra de farda, consulta a pedidos e notificações em tela estreita.
+**Não executar o Marco Zero no início do teste.** Primeiro validar a nova arquitetura com os dados de teste existentes.
 
-## Pontos de atenção
+## 1. Publicação e versão
 
-- Registros antigos podem não possuir todos os campos de turma/origem ou classificação adicionados nas versões recentes; quando possível, a interface recupera esses dados do cadastro do aluno.
-- Não considerar esta release validada até concluir os testes no ambiente real após publicação.
+- Publicar todo o ZIP.
+- Abrir `/equipe.html` e confirmar **Equipe Piaget**.
+- Abrir `/meu-piaget.html` e confirmar **Meu Piaget**.
+- Confirmar a versão `1.6.0-rc2.7-meu-piaget-familias`.
+
+## 2. Regressão da equipe
+
+Testar com Lucas/Gestão e Secretaria:
+
+- login da equipe;
+- Vendas;
+- Pedidos;
+- fardamento;
+- notificações;
+- abertura de Caixa;
+- assunção/conferência;
+- entrada e saída;
+- venda em dinheiro;
+- fechamento.
+
+O núcleo do caixa não foi refeito nesta release.
+
+## 3. Preparar a base oficial
+
+Em Gestão → Configurações → **Meu Piaget e implantação**:
+
+- clicar em **Preparar base oficial**;
+- confirmar 214 alunos e 187 responsáveis;
+- confirmar que o histórico operacional ainda existe;
+- conferir que saldos de teste não foram zerados por esta etapa;
+- verificar o cadastro com CPF pendente e corrigi-lo com o dado oficial da escola/SIGA.
+
+Não inventar o CPF ausente no relatório.
+
+## 4. Família com um aluno
+
+Escolher um responsável de aluno único:
+
+- primeiro acesso com CPF + matrícula;
+- criar senha;
+- sair;
+- entrar novamente com CPF + senha;
+- conferir aluno, turma, pedidos, saldo e limite;
+- realizar uma compra/pedido de teste;
+- conferir que o comprador pode ser diferente do responsável financeiro.
+
+## 5. Família com irmãos
+
+Escolher um dos responsáveis com mais de um aluno:
+
+- primeiro acesso usando a matrícula de apenas um dos filhos;
+- confirmar que todos os filhos vinculados aparecem;
+- alternar entre alunos;
+- confirmar que pedidos/lanche/farda permanecem vinculados ao filho selecionado;
+- confirmar que saldo, autorização e limite são iguais ao trocar de aluno;
+- conferir extrato da família identificando o aluno de origem de cada movimento;
+- confirmar que o limite máximo considera a quantidade de alunos ativos.
+
+A RC2.7 não cria um carrinho único multi-irmãos: a operação continua sendo montada para o aluno selecionado. O compartilhamento nesta release é de acesso e conta financeira.
+
+## 6. Recuperação de senha
+
+No Meu Piaget:
+
+- solicitar redefinição pelo CPF;
+- na Equipe Piaget, abrir o acesso da família;
+- gerar link temporário;
+- copiar e abrir o link;
+- criar nova senha;
+- confirmar acesso e invalidação do link usado.
+
+## 7. Venda online / InfinitePay
+
+- gerar venda online pela Secretaria;
+- abrir o link público;
+- conferir aluno e itens;
+- editar dados do comprador;
+- testar checkout;
+- conferir retorno em `obrigado.html` e botão de volta ao Meu Piaget.
+
+Antes de usar domínios separados em produção, configurar `PUBLIC_FAMILY_BASE_URL` e `PUBLIC_API_BASE_URL` na Vercel.
+
+## 8. Marco Zero — apenas depois de aprovar os testes
+
+- abrir a prévia;
+- conferir as quantidades de vendas, pedidos, caixa, notificações e demais dados de teste;
+- conferir o que será preservado;
+- confirmar que não há CPF pendente;
+- somente então digitar `INICIAR OPERAÇÃO REAL`;
+- validar criação do backup;
+- confirmar que históricos de teste sumiram das telas;
+- confirmar saldos familiares zerados;
+- confirmar estoque atual preservado;
+- confirmar catálogo/preços preservados;
+- confirmar alunos, turmas, responsáveis e vínculos preservados;
+- abrir um novo caixa e registrar a primeira operação oficial.
