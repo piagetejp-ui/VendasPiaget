@@ -1,19 +1,15 @@
 {
-  "version": "1.6.0-rc2.7.3",
+  "version": "1.6.0-rc2.7.4",
   "status": "candidate",
-  "baseVersion": "1.6.0-rc2.7.2-familia-compartilhada",
-  "scope": "fechamento-etapa-secretaria",
+  "baseVersion": "1.6.0-rc2.7.3",
+  "scope": "hotfix-prioridade-alunos-contas-padronizacao-aluno",
   "features": [
-    "economic movement consolidation in family statements",
-    "centered internal team login",
-    "standard clickable student identity with current class",
-    "two-level order KPI cards",
-    "retroactive manual open-operation entry",
-    "family weekly closing preview and bulk blocking",
-    "one weekly collection PDF per family grouped by student",
-    "collection sent/awaiting/regularized lifecycle",
-    "automatic weekly unblock after financial regularization",
-    "numeric-only visible system version"
+    "fix isBlocked undefined in family account modal",
+    "correct root HTML release references and load secretaria finalization module",
+    "standard clickable student identity based on Sales/Billing visual style",
+    "student class always visible below name in Sales/Billing/Notifications/Orders",
+    "remove boxed student button appearance from Orders",
+    "preserve RC2.7.3 Secretaria features and cash core"
   ],
   "preserved": [
     "family-first Meu Piaget architecture from rc2.7.2",
@@ -41,7 +37,7 @@
     "serviceWorkerPrecache": "ok",
     "httpSmoke": "ok",
     "zipIntegrity": "ok",
-    "javascriptFilesChecked": 42,
+    "javascriptFilesChecked": 43,
     "serviceWorkerChecked": true,
     "jsonFilesChecked": 4,
     "htmlLocalReferencesChecked": 83,
@@ -49,7 +45,9 @@
     "serviceWorkerPrecacheItemsChecked": 31,
     "httpSmokePathsChecked": 9,
     "unrelatedMovementsRemainSeparate": true,
-    "weeklyDebtSplitByStudentTested": true
+    "weeklyDebtSplitByStudentTested": true,
+    "scriptOrder": "21 -> 22 -> bootstrap",
+    "staleRuntimeReferences": 0
   },
   "vercelHobbyLimitObserved": 12
 }

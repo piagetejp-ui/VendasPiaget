@@ -1,41 +1,40 @@
-# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.3
+# Sistema de Vendas Escola Piaget — RC2.7.4
 
-**Release candidata — Fechamento da etapa Secretaria**
+**Release candidata:** `1.6.0-rc2.7.4`
 
-Base: `1.6.0-rc2.7.2`.
+Construída sobre a RC2.7.1 validada no deploy da Vercel. Esta candidata muda a experiência de famílias com mais de um aluno: a família passa a ser a visão principal e o aluno passa a ser uma atribuição/filtro operacional.
 
-Esta candidata consolida as observações levantadas durante o teste da RC2.7.2 e fecha, em princípio, o fluxo operacional da Secretaria antes da revisão específica do perfil Cantina.
 
-## Principais ajustes
+## Hotfix de prioridade RC2.7.4
 
-- **Extrato e Movimentações:** registros técnicos de venda + pagamento pertencentes à mesma operação da Secretaria são exibidos como uma única operação econômica. Os registros originais continuam preservados para auditoria.
-- **Login da Equipe Piaget:** formulário interno de e-mail/senha centralizado, sem o espaço residual do antigo acesso dividido com responsáveis.
-- **Aluno padronizado:** referência de aluno passa a apresentar **nome + turma atual + clique para a ficha**, inclusive em notificações e nas principais listas operacionais.
-- **Pedidos:** dois níveis de indicadores:
-  - cards gerais de urgência acima das categorias;
-  - cards específicos da categoria selecionada abaixo das categorias.
-  Todos os cards funcionam como filtros.
-- **Alunos e Contas:** ação **Lançar pendência anterior** para registrar operações reais que ficaram fora do sistema, inclusive com data retroativa, aluno, categoria, descrição, quantidade, valor e situação operacional.
-- **Conta familiar:** uma pendência manual atualiza o saldo da família, cria o registro/pedido correspondente e fica visível no Meu Piaget.
-- **Fechamento semanal familiar:** prévia das contas negativas, bloqueio em lote, fotografia das pendências, acompanhamento por família, PDF individual para WhatsApp, marcação de envio e regularização/desbloqueio automático quando a conta volta a ficar regular.
-- **Versão na interface:** passa a aparecer somente como `1.6.0-rc2.7.3`, sem nomes promocionais ou mensagens como “Família Compartilhada”.
+- Corrigido erro `isBlocked is not defined` ao abrir **Alunos e Contas**.
+- Corrigido o empacotamento: `index.html`, `equipe.html` e `meu-piaget.html` agora apontam para a release física `1.6.0-rc2.7.4` e carregam `22-secretaria-finalization.js`.
+- Eliminada a mistura acidental de arquivos da RC2.7.2 com a RC2.7.3.
+- Referência de aluno padronizada no estilo de Vendas/Cobranças: **nome clicável** e **turma logo abaixo**, sem caixa/botão visual extra.
+- Pedidos deixa de usar o botão quadrado antigo para o aluno e passa ao mesmo padrão visual.
+- Service worker usa cache próprio da RC2.7.4 e remove caches antigos `piaget-*` ao ativar.
 
-## Regras preservadas
+## O que muda
 
-- A família é a unidade financeira; o aluno é a unidade operacional e de atribuição.
-- Carrinho familiar multi-aluno da RC2.7.2 permanece.
-- Meu Piaget continua com visão consolidada da família e filtros por aluno.
-- “Usuários e Acessos” continua reservado à Gestão para usuários internos; a Secretaria administra acessos familiares em Alunos e Contas.
-- O Marco Zero continua **manual** e não é executado no deploy.
-- O núcleo do caixa físico (`16-cash-responsibility.js`) não recebeu mudança funcional nesta candidata.
-- `/api` permanece com **10 funções serverless**.
+- Meu Piaget abre todos os alunos vinculados ao mesmo responsável em uma única conta familiar.
+- Saldo, crédito, dívida, autorização e limite continuam compartilhados pela família.
+- Pedidos, movimentações, pagamentos pendentes e notificações são consolidados, com filtro por aluno.
+- Programação de lanche aceita um ou vários alunos; para o segundo aluno em diante é possível copiar a programação anterior e editar só o necessário.
+- Secretaria trabalha com um único carrinho familiar presencial ou online, podendo misturar itens destinados a alunos diferentes.
+- Cada item, farda, programação de lanche ou pedido continua gravado com o aluno correto.
+- Ao abrir um aluno em Alunos e Contas, Secretaria/Gestão visualizam a conta familiar e os demais alunos vinculados.
+- Cantina recebe visão familiar apenas no escopo operacional de lanches/pedidos.
+- Acesso das famílias é gerenciado em Alunos e Contas. O módulo Usuários e Acessos permanece reservado à Gestão para usuários internos da equipe.
+- A ficha da família permite gerar imagem de primeiro acesso pronta para WhatsApp.
+- Acesso familiar bloqueado pode ser reativado pela Secretaria/Gestão quando já existir senha.
+- Página pública de uma venda online identifica operações familiares e mostra o aluno de cada item.
 
-## Fechamento semanal
+## Segurança do primeiro acesso
 
-O fechamento semanal **não cria uma nova dívida**. Ele apenas registra uma fotografia das contas familiares que já estão negativas, aplica o bloqueio semanal e abre a fila de acompanhamento da cobrança.
+A base oficial não grava o CPF completo em texto no frontend/Firestore. O cartão gerado mostra `CPF do responsável •••• 1234` e a matrícula exata escolhida como código de primeiro acesso. O responsável informa o CPF completo que já conhece. Não foi inserido CPF completo no código-fonte enquanto as regras do Firestore permanecem abertas.
 
-Cada família recebe um único documento. Quando houver mais de um aluno, as pendências são agrupadas por aluno no PDF. O documento orienta o responsável a regularizar pelo Meu Piaget ou solicitar à Secretaria um link direto de pagamento.
+## Vercel e Firestore
 
-## Segurança antes da abertura externa
-
-As regras do Firestore atualmente informadas continuam abertas para desenvolvimento (`allow read, write: if true`). Esta candidata não altera essas regras automaticamente. O Meu Piaget não deve ser liberado amplamente aos responsáveis antes da etapa específica de segurança.
+- `/api` permanece com **10 funções**, abaixo do limite observado de 12 funções do plano Hobby.
+- O Marco Zero continua exclusivamente manual e não é executado no deploy.
+- As regras atuais do Firestore (`allow read, write: if true`) continuam apropriadas apenas para desenvolvimento. Não liberar o Meu Piaget amplamente para responsáveis externos antes da etapa de segurança.
