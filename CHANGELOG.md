@@ -1,3 +1,32 @@
+# Changelog — 1.6.0-rc2.5.1-fardamento-variacoes
+
+## Fardamento unificado
+
+- Fardamento passa a ter um único produto canônico: **Camisa de farda**.
+- Estrutura: produto → grupo/modelo → tamanho → estoque por variação.
+- Grupos: Infantil/Juvenil (modelo único), Adulto Feminino (Baby Look) e Adulto Masculino.
+- Tamanhos adultos usam `XGG` internamente e exibem **EXGG** na interface.
+- O cadastro administrativo edita preço e estoque físico de cada variação no mesmo modal.
+- Estoque reservado e disponível são exibidos por tamanho.
+- O Catálogo impede a criação de um segundo produto de fardamento e redireciona para a Camisa de farda.
+- O portal do responsável usa os mesmos grupos e estoques; tamanhos zerados ficam visíveis, porém indisponíveis.
+- Venda presencial e venda online da Secretaria validam o estoque da variação e reservam a quantidade vendida.
+- O backend revalida o estoque antes da confirmação, evitando venda de quantidade superior ao disponível.
+- Migração reaproveita estoque já configurado para a mesma variação e usa como base os quantitativos fornecidos em 07/08/2026 para variações ainda não configuradas.
+
+## Estoque-base informado
+
+- Infantil/Juvenil: 04=6, 06=9, 08=0, 10=1, 12=1, 14=0.
+- Feminino/Baby Look: P=2, M=2, G=0, GG=0, EXGG=1.
+- Masculino: P=1, M=6, G=4, GG=0, EXGG=2.
+
+## Preservado
+
+- Todo o escopo da RC2.5 de experiência, auditoria, notificações e histórico gerencial.
+- Núcleo do caixa físico validado anteriormente.
+
+---
+
 # Changelog — 1.6.0-rc2.5-experiencia-auditoria
 
 ## Experiência de venda e carrinho

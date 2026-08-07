@@ -1,7 +1,7 @@
 {
-  "version": "1.6.0-rc2.5-experiencia-auditoria",
-  "baseVersion": "1.6.0-rc2.4.1-caixa-page-hotfix",
-  "generatedAt": "2026-08-06T18:37:00-03:00",
+  "version": "1.6.0-rc2.5.1-fardamento-variacoes",
+  "baseVersion": "1.6.0-rc2.5-experiencia-auditoria",
+  "generatedAt": "2026-08-07T09:23:00-03:00",
   "status": "candidate_for_real_test",
   "cashCorePreserved": true,
   "changes": [
@@ -13,6 +13,14 @@
     "profile_scoped_notifications",
     "informational_vs_actionable_notifications",
     "persistent_read_state",
-    "contextual_entity_navigation"
-  ]
+    "contextual_entity_navigation",
+    "single_uniform_product",
+    "uniform_stock_by_variant",
+    "parent_uniform_stock_gating",
+    "secretary_uniform_stock_validation",
+    "uniform_backend_revalidation"
+  ],
+  "uniformProduct": "Camisa de farda",
+  "uniformVariants": 16,
+  "uniformInitialPhysicalStock": 35
 }

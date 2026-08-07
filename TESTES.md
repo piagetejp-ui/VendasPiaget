@@ -1,4 +1,4 @@
-# Roteiro de testes — 1.6.0-rc2.5-experiencia-auditoria
+# Roteiro de testes — 1.6.0-rc2.5.1-fardamento-variacoes
 
 ## 1. Regressão do caixa físico
 
@@ -67,3 +67,18 @@ Também verificar:
 - Programação de lanche com múltiplos produtos por data.
 - Entrega pela Cantina.
 - Conta e movimentações do aluno.
+## 7. Fardamento unificado
+
+1. Na Gestão, abrir **Catálogo de vendas** e localizar **Camisa de farda**.
+2. Confirmar os três grupos e os 16 estoques por variação.
+3. Conferir que 08 anos, 14 anos, Feminino G/GG e Masculino GG aparecem com estoque zero.
+4. Ativar **Disponível no portal do responsável** e salvar.
+5. No portal do responsável, confirmar que os tamanhos zerados aparecem como **Indisponível** e não podem ser selecionados.
+6. Comprar um tamanho com estoque e confirmar criação do pedido e reserva no estoque.
+7. Repetir em venda presencial da Secretaria.
+8. Repetir em venda online gerada pela Secretaria.
+9. Tentar quantidade acima do disponível e confirmar bloqueio no frontend e no backend.
+10. Entregar um pedido de farda e conferir a baixa conforme o fluxo de estoque já existente.
+11. Tentar criar um segundo item do tipo fardamento no Catálogo e confirmar redirecionamento para o produto único.
+
+

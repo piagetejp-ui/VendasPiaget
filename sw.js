@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.5-experiencia-auditoria */
-const VERSION='1.6.0-rc2.5-experiencia-auditoria';
+/* Escola Piaget — service worker V1.6.0-rc2.5.1-fardamento-variacoes */
+const VERSION='1.6.0-rc2.5.1-fardamento-variacoes';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.5-experiencia-auditoria/';
+const RELEASE='/releases/1.6.0-rc2.5.1-fardamento-variacoes/';
 const PRECACHE=[
   `${RELEASE}css/app.css`,
   `${RELEASE}js/00-portal-utils.js`,
@@ -22,6 +22,7 @@ const PRECACHE=[
   `${RELEASE}js/15-operational-views.js`,
   `${RELEASE}js/16-cash-responsibility.js`,
   `${RELEASE}js/17-integrated-experience.js`,
+  `${RELEASE}js/18-uniform-variants.js`,
   '/assets/logo-piaget-icon-v152.png',
   '/assets/logo-piaget-horizontal-v152.png'
 ];

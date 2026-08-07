@@ -1,6 +1,6 @@
-# Sistema de Vendas Escola Piaget — 1.6.0 RC2.5
+# Sistema de Vendas Escola Piaget — 1.6.0 RC2.5.1
 
-**Release:** `1.6.0-rc2.5-experiencia-auditoria`  
+**Release:** `1.6.0-rc2.5.1-fardamento-variacoes`  
 **Base:** RC2.4.1 validada pelo usuário em ambiente real quanto ao caixa físico.  
 **Status:** candidato para teste após publicação.
 
@@ -10,7 +10,7 @@ Envie **todo o conteúdo desta pasta** ao repositório, preservando:
 
 - `index.html` na raiz;
 - `api/`, `assets/` e `releases/` na hierarquia atual;
-- a pasta física `releases/1.6.0-rc2.5-experiencia-auditoria/`;
+- a pasta física `releases/1.6.0-rc2.5.1-fardamento-variacoes/`;
 - `version.json` e `sw.js` desta mesma versão.
 
 ## Escopo da RC2.5
@@ -25,6 +25,17 @@ Envie **todo o conteúdo desta pasta** ao repositório, preservando:
 - Distribuição de notificações por perfil e aluno destinatário.
 - Separação entre notificações informativas e pendências acionáveis.
 - Marcação como lida persistente e navegação contextual para aluno, pedido, venda, entrega, movimento e caixa.
+
+
+## Fardamento na RC2.5.1
+
+- Produto único **Camisa de farda**.
+- Infantil/Juvenil: modelo único, tamanhos 04, 06, 08, 10, 12 e 14 anos.
+- Adulto Feminino: Baby Look, tamanhos P, M, G, GG e EXGG.
+- Adulto Masculino: tamanhos P, M, G, GG e EXGG.
+- Estoque físico, reservado e disponível controlados por variação.
+- Portal do responsável e vendas da Secretaria usam a mesma fonte de estoque.
+- Tamanho sem disponibilidade continua visível no portal, mas não pode ser comprado.
 
 ## Regra de segurança
 
