@@ -1,7 +1,7 @@
 {
-  "version": "1.6.0-rc2.7-meu-piaget-familias",
+  "version": "1.6.0-rc2.7.1-vercel-hobby-hotfix",
   "status": "candidate",
-  "baseVersion": "1.6.0-rc2.6-pedidos-fardamento",
+  "baseVersion": "1.6.0-rc2.7-meu-piaget-familias",
   "sourceOfficial2026": {
     "students": 214,
     "financialResponsibles": 187,
@@ -34,5 +34,8 @@
     "httpSmokePathsChecked": 7,
     "staticRosterPiiRemoved": true,
     "cashCoreNormalizedEqualToRc26": true
-  }
+  },
+  "apiFunctionCount": 10,
+  "vercelHobbyLimitObserved": 12,
+  "hotfix": "Consolidação de funções serverless e correção do index.html"
 }

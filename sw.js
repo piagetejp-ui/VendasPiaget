@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.7-meu-piaget-familias */
-const VERSION='1.6.0-rc2.7-meu-piaget-familias';
+/* Escola Piaget — service worker V1.6.0-rc2.7.1-vercel-hobby-hotfix */
+const VERSION='1.6.0-rc2.7.1-vercel-hobby-hotfix';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.7-meu-piaget-familias/';
+const RELEASE='/releases/1.6.0-rc2.7.1-vercel-hobby-hotfix/';
 const PRECACHE=[
   '/index.html',
   '/equipe.html',

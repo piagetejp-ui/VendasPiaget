@@ -58,7 +58,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.7-meu-piaget-familias/(.*)",
+      "source": "/releases/1.6.0-rc2.7.1-vercel-hobby-hotfix/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -92,6 +92,32 @@
           "value": "no-store, max-age=0"
         }
       ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/acesso-meu-piaget",
+      "destination": "/api/familias?modulo=acesso"
+    },
+    {
+      "source": "/api/gestao-familias",
+      "destination": "/api/familias?modulo=gestao"
+    },
+    {
+      "source": "/api/implantacao",
+      "destination": "/api/familias?modulo=implantacao"
+    },
+    {
+      "source": "/api/obter-venda-online",
+      "destination": "/api/venda-online?modulo=obter"
+    },
+    {
+      "source": "/api/iniciar-venda-online",
+      "destination": "/api/venda-online?modulo=iniciar"
+    },
+    {
+      "source": "/api/gerenciar-venda-online",
+      "destination": "/api/venda-online?modulo=gerenciar"
     }
   ]
 }
