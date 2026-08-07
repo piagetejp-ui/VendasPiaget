@@ -1,17 +1,36 @@
-# Validação técnica — 1.6.0-rc2.7.2-familia-compartilhada
+# Validação técnica — 1.6.0-rc2.7.3
 
-- **10** arquivos JavaScript diretamente em `/api` (abaixo do limite observado de 12 da Vercel Hobby).
-- Única pasta física de release: `releases/1.6.0-rc2.7.2-familia-compartilhada/`.
-- Novo módulo `21-family-shared-experience.js` carregado depois da camada de implantação e antes do bootstrap.
-- Sintaxe JavaScript validada com `node --check` em **42 arquivos** de frontend/API/server/service worker.
-- Todos os arquivos JSON parseados com sucesso.
-- `index.html`, `equipe.html`, `meu-piaget.html`, `pagamento.html` e `obrigado.html` sem referências locais ausentes.
-- Service worker atualizado para a nova release e para o módulo 21.
-- Backend de carrinho familiar valida que todos os alunos atribuídos compartilham a mesma conta financeira.
-- Pedidos de Cantina, Fardamento e operacionais gerados por vendas multi-aluno mantêm o aluno destinatário individual.
-- Notificações pós-pagamento online corrigidas para usar o aluno de cada pedido, em vez de atribuir todos ao aluno principal.
-- Núcleo de `16-cash-responsibility.js` comparado com a RC2.7.1: conteúdo funcional idêntico, variando apenas o identificador textual da versão.
-- Marco Zero não é automático.
-- Nenhum CPF completo foi incluído no frontend/base estática.
+## Estrutura
 
-Observação: a validação local é estrutural/sintática. Fluxos que dependem de Firebase/InfinitePay devem ser confirmados no ambiente publicado antes do Marco Zero.
+- Única pasta física de release: `releases/1.6.0-rc2.7.3/`.
+- Módulo novo: `22-secretaria-finalization.js`.
+- Ordem de carregamento: módulo 22 após a camada de família compartilhada e antes do bootstrap.
+- `/api` permanece com 10 arquivos JavaScript, abaixo do limite observado de 12 funções da Vercel Hobby.
+
+## Validações locais
+
+- JavaScript externo validado com `node --check` em frontend/API/server.
+- `sw.js` validado e precache atualizado para a release atual, incluindo o módulo 22.
+- Scripts inline dos HTMLs principais validados.
+- JSONs de configuração/build parseados com sucesso.
+- Referências locais dos HTMLs verificadas.
+- Páginas principais verificadas por servidor HTTP local.
+- ZIP final verificado com teste de integridade.
+
+## Testes focados da RC2.7.3
+
+- Consolidação de uma compra da Secretaria testada com os dois registros técnicos em ordens diferentes: venda→pagamento e pagamento→venda.
+- Registros não relacionados não são fundidos.
+- Impacto líquido da operação familiar preservado no registro visual consolidado.
+- Login interno gera o container centralizado esperado.
+- Versão visual normalizada para apenas `1.6.0-rc2.7.3`.
+- Módulo de fechamento semanal mantém snapshot, envio e regularização separados da criação da dívida.
+- Lançamento retroativo registra data de operação e data/hora do registro separadamente.
+
+## Caixa
+
+O conteúdo funcional de `16-cash-responsibility.js` foi comparado com a RC2.7.2, desconsiderando somente o identificador textual de versão. Não houve alteração funcional intencional no núcleo do caixa físico.
+
+## Limitações da validação local
+
+A validação local cobre estrutura, sintaxe e testes isolados. Fluxos que dependem do Firebase publicado, permissões reais, sessão, InfinitePay e dados existentes precisam ser confirmados no deploy antes do Marco Zero.

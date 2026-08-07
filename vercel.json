@@ -58,7 +58,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.7.2-familia-compartilhada/(.*)",
+      "source": "/releases/1.6.0-rc2.7.3/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

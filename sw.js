@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.7.2-familia-compartilhada */
-const VERSION='1.6.0-rc2.7.2-familia-compartilhada';
+/* Escola Piaget — service worker V1.6.0-rc2.7.3 */
+const VERSION='1.6.0-rc2.7.3';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.7.2-familia-compartilhada/';
+const RELEASE='/releases/1.6.0-rc2.7.3/';
 const PRECACHE=[
   '/index.html',
   '/equipe.html',
@@ -31,6 +31,7 @@ const PRECACHE=[
   `${RELEASE}js/19-orders-workflow.js`,
   `${RELEASE}js/20-family-implantation.js`,
   `${RELEASE}js/21-family-shared-experience.js`,
+  `${RELEASE}js/22-secretaria-finalization.js`,
   '/assets/logo-piaget-icon-v152.png',
   '/assets/logo-piaget-horizontal-v152.png'
 ];
