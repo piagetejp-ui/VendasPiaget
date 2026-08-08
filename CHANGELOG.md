@@ -1,4 +1,4 @@
-# Changelog — 1.6.0-rc2.7.8
+# Changelog — 1.6.0-rc2.7.9
 
 ## Domínio oficial e experiência do responsável
 
@@ -53,3 +53,11 @@
 - `/api` permanece com 10 funções físicas para o plano Vercel Hobby.
 - Marco Zero continua exclusivamente manual.
 - Núcleo contábil do caixa, sessões, responsabilidades e divergências foi preservado; a única mudança no módulo de caixa é a UX de seleção da forma de pagamento quando dinheiro está indisponível.
+
+## RC2.7.9 — hotfix de roteamento do domínio
+
+- Corrige a raiz `meupiaget.com.br/` servindo `index.html` da Equipe por precedência do filesystem da Vercel.
+- O domínio familiar agora usa redirect condicional por host antes dos rewrites: `/` e `/index.html` levam a `/meu-piaget.html`.
+- `meu-piaget.html` limpa visualmente o caminho com `history.replaceState`, mantendo `https://meupiaget.com.br` na barra.
+- `index.html` e `equipe.html` receberam fallback client-side por hostname para impedir exposição acidental da tela da Equipe no domínio familiar.
+- Nenhuma regra de negócio, checkout, caixa, Firestore ou InfinitePay foi alterada nesta hotfix.

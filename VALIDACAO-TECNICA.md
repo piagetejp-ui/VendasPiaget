@@ -1,11 +1,11 @@
-# Validação técnica — 1.6.0-rc2.7.8
+# Validação técnica — 1.6.0-rc2.7.9
 
 ## Resultado local
 
 - **43** arquivos JavaScript passaram em `node --check` (release, APIs, servidor e service worker).
 - **4** arquivos JSON finais foram parseados com sucesso.
 - **10** funções JavaScript físicas em `/api`, abaixo do limite observado de 12 da Vercel Hobby.
-- Única release física: `releases/1.6.0-rc2.7.8/`.
+- Única release física: `releases/1.6.0-rc2.7.9/`.
 - **83** referências locais dos cinco HTMLs principais foram conferidas, sem arquivo ausente.
 - Service worker contém **9** itens de precache, todos resolvendo para arquivos existentes (a raiz `/` é rota virtual).
 - Smoke HTTP estático retornou 200 para `/`, `index.html`, `equipe.html`, `meu-piaget.html`, `pagamento.html`, `obrigado.html`, `version.json` e `sw.js`.
@@ -61,3 +61,5 @@ A inspeção deve confirmar ausência de cortes, sobreposição, logo deformada 
 4. configurar as variáveis Vercel recomendadas;
 5. fazer deploy e regressão;
 6. só depois ativar as Firestore Rules restritivas.
+
+- RC2.7.9: removidos rewrites condicionais de `/` e `/index.html`; adicionados redirects condicionais por host e fallbacks client-side para o domínio familiar.

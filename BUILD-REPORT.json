@@ -1,7 +1,7 @@
 {
-  "version": "1.6.0-rc2.7.8",
-  "release": "RC2.7.8 — Domínio e experiência pré-operação",
-  "generatedAt": "2026-08-08T11:46:00-03:00",
+  "version": "1.6.0-rc2.7.9",
+  "release": "RC2.7.9 — Hotfix roteamento domínio",
+  "generatedAt": "2026-08-08T20:55:00-03:00",
   "apiFunctions": 10,
   "javascriptFilesTotal": 43,
   "releaseJavaScriptFiles": 23,
@@ -36,6 +36,7 @@
     "rulesStaticBalanceOk": true,
     "rulesOfficialEmulatorTested": false,
     "runtimePdfVisualTested": false,
-    "httpSmokePages": 8
+    "httpSmokePages": 8,
+    "domainRootRoutingHotfix": true
   }
 }

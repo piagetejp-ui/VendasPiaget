@@ -87,7 +87,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.7.8/(.*)",
+      "source": "/releases/1.6.0-rc2.7.9/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -125,26 +125,6 @@
   ],
   "rewrites": [
     {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "meupiaget.com.br"
-        }
-      ],
-      "destination": "/meu-piaget.html"
-    },
-    {
-      "source": "/index.html",
-      "has": [
-        {
-          "type": "host",
-          "value": "meupiaget.com.br"
-        }
-      ],
-      "destination": "/meu-piaget.html"
-    },
-    {
       "source": "/api/acesso-meu-piaget",
       "destination": "/api/familias?modulo=acesso"
     },
@@ -170,6 +150,28 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "meupiaget.com.br"
+        }
+      ],
+      "destination": "/meu-piaget.html",
+      "permanent": false
+    },
+    {
+      "source": "/index.html",
+      "has": [
+        {
+          "type": "host",
+          "value": "meupiaget.com.br"
+        }
+      ],
+      "destination": "/meu-piaget.html",
+      "permanent": false
+    },
     {
       "source": "/equipe.html",
       "has": [

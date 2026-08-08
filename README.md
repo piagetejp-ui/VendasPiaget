@@ -1,6 +1,6 @@
-# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.8
+# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.9
 
-**Candidata:** RC2.7.8 — Domínio e experiência pré-operação
+**Candidata:** RC2.7.9 — Domínio e experiência pré-operação
 
 Baseada na RC2.7.7, cujo checkout foi validado pelo usuário após o hotfix de autorização. Esta candidata organiza a experiência pública do **Meu Piaget**, os documentos enviados às famílias e pequenos fluxos operacionais da Secretaria, sem redesenhar o pagamento ou a conta familiar.
 
@@ -53,8 +53,12 @@ A segunda variável mantém o webhook da InfinitePay em um endereço técnico es
 
 A arquitetura de segurança preparada na RC2.7.6/RC2.7.7 foi mantida. Os responsáveis não precisam ser cadastrados manualmente no Firebase Authentication; a identidade técnica é criada após o login próprio do Meu Piaget.
 
-**As Firestore Rules restritivas ainda não devem ser ativadas só por subir este ZIP.** Primeiro valide o domínio novo, login, checkout, PDFs e fluxos da Equipe. Depois siga `GUIA-ATIVACAO-SEGURANCA-RC2.7.8.md`.
+**As Firestore Rules restritivas ainda não devem ser ativadas só por subir este ZIP.** Primeiro valide o domínio novo, login, checkout, PDFs e fluxos da Equipe. Depois siga `GUIA-ATIVACAO-SEGURANCA-RC2.7.9.md`.
 
 ## Marco Zero
 
 O Marco Zero continua manual e não é executado no deploy.
+
+
+## Hotfix de domínio RC2.7.9
+A raiz do domínio familiar usa redirect por hostname e fallback no HTML para contornar a precedência do `index.html` físico na Vercel. O endereço exibido ao responsável permanece `https://meupiaget.com.br`.
