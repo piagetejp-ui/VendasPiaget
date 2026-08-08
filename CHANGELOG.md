@@ -1,45 +1,55 @@
-# Changelog — 1.6.0-rc2.7.7
+# Changelog — 1.6.0-rc2.7.8
 
-## Segurança Firestore sem alterar a experiência do usuário
+## Domínio oficial e experiência do responsável
 
-- Mantido o login visível do Meu Piaget: CPF + senha; primeiro acesso CPF + matrícula.
-- Sessão familiar migrada de token persistido no `localStorage` para cookie `HttpOnly`, `Secure`, `SameSite=Lax`.
-- Compatibilidade de migração: uma sessão antiga RC2.7.5 salva no navegador pode ser convertida uma única vez para o novo cookie.
-- Backend passa a gerar Firebase Custom Token técnico após validar a sessão familiar.
-- Frontend usa `signInWithCustomToken()` somente como ponte para as Firestore Security Rules; não existe cadastro manual de responsáveis no Firebase Auth.
-- Claims técnicas limitadas a `role`, `responsavelId`, `sessionId` e alunos vinculados.
-- Rules novas negam acesso anônimo e limitam famílias a seus próprios dados operacionais.
-- Hashes/salts de senha, sessões, tokens de ativação/reset, responsáveis de outras famílias e auditoria não são legíveis pelo portal.
-- Autorização/limite da conta familiar deixam de ser gravados diretamente pelo navegador e passam pela API, que valida sessão, teto familiar e recalcula bloqueio por limite.
-- Dados do comprador continuam editáveis apenas para aluno pertencente à família.
-- Marcação de notificação como lida continua permitida somente nas notificações pertencentes à família.
-- Consultas do detalhe de pedidos do responsável foram ajustadas para respeitar o modelo "Rules não são filtros".
+- O endereço público do Meu Piaget foi centralizado em `https://meupiaget.com.br`.
+- `meupiaget.com.br` passa a ser a origem usada em links de venda online, regularização, primeiro acesso, redefinição de senha e retorno de pagamento.
+- O domínio técnico da Equipe pode continuar na Vercel; o webhook da InfinitePay pode usar `PUBLIC_API_BASE_URL` separadamente.
+- No domínio `meupiaget.com.br`, `/` e `/index.html` são roteados para `meu-piaget.html`; a área da Equipe não é apresentada ao responsável.
+- O `www.meupiaget.com.br` fica como redirecionamento 308 para o domínio raiz na configuração de domínio da Vercel.
 
-## Equipe
+## Retorno da InfinitePay
 
-- Login interno continua Firebase e-mail/senha.
-- Antes de carregar o Firestore, o backend valida o ID Token e o perfil em `usuarios_acesso`.
-- Criado espelho `usuarios_auth/{uid}` exclusivamente pelo backend para as Rules.
-- Edição/ativação/bloqueio de usuário interno passa pela API de segurança para manter `usuarios_acesso` e `usuarios_auth` sincronizados.
+- O botão da página de retorno agora é **Voltar ao Meu Piaget**.
+- O retorno leva a `https://meupiaget.com.br/?retornoCheckout=1`, em vez da raiz da Equipe.
+- Ao retornar, o Meu Piaget atualiza a experiência e mostra confirmação do processamento do pagamento.
+- A autorização de checkout corrigida na RC2.7.7 foi preservada.
 
-## Proteções adicionais
+## Documentos e PDFs
 
-- Rate limit persistente por origem para login, primeiro acesso, solicitação de reset e redefinição.
-- Revogação server-side das sessões familiares após reset de senha.
-- Cookie de sessão não é acessível ao JavaScript.
-- `/api` permanece com 10 funções físicas no plano Vercel Hobby.
-- Núcleo do caixa físico preservado funcionalmente em relação à RC2.7.5.
+- Criado cabeçalho documental comum para documentos voltados à família, com logo oficial, hierarquia visual e identificação Meu Piaget.
+- PDF de primeiro acesso passa a trazer link clicável e QR Code para `meupiaget.com.br`.
+- Instruções distinguem primeiro acesso (CPF + matrícula) de acesso já ativado (CPF + senha criada), com orientação de procurar a Secretaria em caso de dificuldade.
+- PDF do fechamento semanal/regularização foi reorganizado por conta familiar e por aluno, com total, instruções, link e QR Code.
+- Comprovante PDF do responsável foi alinhado à mesma identidade documental.
 
-## Implantação
+## Secretaria — venda presencial
 
-- Adicionado `firestore.rules`.
-- Adicionado `FIRESTORE-RULES-PARA-COLAR.txt`.
-- Adicionado `GUIA-ATIVACAO-SEGURANCA-RC2.7.6.md`.
-- As Rules devem ser publicadas manualmente **depois** do deploy e smoke test da RC2.7.6.
+- Caixa fechado ou sob responsabilidade de outro operador não bloqueia Pix, cartão ou saldo.
+- Somente **Dinheiro** fica indisponível sem caixa aberto sob responsabilidade do operador.
+- A validação de caixa para dinheiro permanece também no momento da confirmação.
+- Venda presencial não concluída passa a ser salva como rascunho local por até 12 horas.
+- Ao retornar à tela de Vendas, aparece **Continuar último carrinho** ou **Descartar**.
+- O rascunho preserva aluno/família, operação, itens, programações, quantidades e filtros; formas de pagamento não são restauradas.
+- Venda concluída ou descarte explícito remove o rascunho, evitando duplicidade.
 
-## RC2.7.7 — hotfix de autorização do checkout
-- Checkout passa a enviar explicitamente o Firebase ID Token tanto para Equipe quanto para a identidade técnica da família.
-- Backend identifica o principal autenticado pelo token real; responsável é validado contra sessão familiar ativa e vínculo do aluno.
-- Cookie familiar permanece como fallback seguro.
-- Falhas ao gerar checkout agora aparecem em diálogo visível e também no modal da operação; não há mais falha silenciosa.
-- Nenhuma regra do Firestore é alterada por este pacote.
+## Meu Piaget — refinamentos
+
+- Removido o menu hambúrguer redundante do cabeçalho do Meu Piaget.
+- Login exibe estado **Entrando…** com indicador de carregamento enquanto a sessão é preparada.
+- Pedidos da família passam a mostrar explicitamente a data/período programado do lanche.
+- A ação **Detalhar** fica visualmente explícita nos cards de pedido.
+- Bloqueio semanal gera notificação acionável **Conta bloqueada por pendência → Regularizar agora**.
+- Regularização/desbloqueio gera notificação **Conta regularizada**.
+
+## Segurança
+
+- Mantida a arquitetura da RC2.7.7: sessão familiar segura + identidade técnica Firebase, sem cadastro manual dos responsáveis no Firebase Authentication.
+- As novas Firestore Rules continuam incluídas no pacote, mas **não devem ser publicadas antes da validação da RC2.7.8 no domínio novo**.
+- Após o DNS ficar ativo, `meupiaget.com.br` deve ser adicionado em Firebase Authentication → Authorized domains antes do teste do Meu Piaget no domínio personalizado.
+
+## Compatibilidade
+
+- `/api` permanece com 10 funções físicas para o plano Vercel Hobby.
+- Marco Zero continua exclusivamente manual.
+- Núcleo contábil do caixa, sessões, responsabilidades e divergências foi preservado; a única mudança no módulo de caixa é a UX de seleção da forma de pagamento quando dinheiro está indisponível.

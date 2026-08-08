@@ -1,35 +1,39 @@
-# Auditoria pré-produção — RC2.7.6
+# Auditoria pré-produção — RC2.7.8
 
-## Resultado executivo
+## Estado da candidata
 
-A principal exposição externa identificada na RC2.7.5 era o Firestore com regra universal de leitura/escrita. A RC2.7.6 contém a arquitetura e as Rules para remover essa exposição sem redesenhar o Meu Piaget.
-
-### Resolvido nesta candidata (após publicação das Rules)
-
-- acesso anônimo ao Firestore;
-- leitura cruzada entre famílias;
-- acesso direto do responsável a hashes/salts de senha, sessões, resets e auditoria;
-- persistência da sessão familiar em token legível pelo JavaScript;
-- confiança em perfil de funcionário enviado pelo navegador nas APIs sensíveis;
-- gravação direta de autorização/limite financeiro pelo navegador do responsável;
-- ausência de throttling nos principais endpoints de acesso.
-
-### Mantido por compatibilidade
-
-- frontend continua HTML/CSS/JS e Firestore Web SDK;
-- experiência do Meu Piaget continua igual;
-- Firebase Auth da equipe continua igual;
-- 10 funções Vercel;
-- módulos, rotas, pagamentos, conta familiar e caixa preservados.
-
-## Riscos residuais / próximos endurecimentos
-
-1. **Permissão técnica interna ampla:** funcionário interno autenticado/ativo ainda satisfaz uma regra ampla do Firestore. Isso preserva Secretaria/Cantina durante o fechamento funcional. Depois da auditoria completa da Cantina, restringir por perfil/coleção.
-2. **App Check:** ainda não é obrigatório. Pode reduzir abuso automatizado de APIs/SDK, mas deve ser implantado depois do piloto controlado para evitar regressão de dispositivos.
-3. **CSP:** há muito JavaScript inline/event handlers legados; uma Content-Security-Policy estrita exige refatoração específica. Os demais headers de segurança permanecem ativos.
-4. **Endpoint público de verificação de pagamento:** precisa permanecer acessível ao fluxo de retorno. Ele revalida a transação no servidor antes de aplicar valores; futuramente pode receber um token de retorno adicional.
-5. **Rules precisam de teste real:** a validação local feita aqui é estrutural. Publicar primeiro o código, depois as Rules, e executar a bateria do guia.
+A RC2.7.8 parte do checkout validado na RC2.7.7 e concentra mudanças de experiência pública, domínio, documentos e pequenos ajustes operacionais. Não há migração automática nem Marco Zero no deploy.
 
 ## Desempenho
 
-A RC2.7.5 já havia aplicado lazy loading de bibliotecas pesadas e cache versionado. A RC2.7.6 não introduz novas bibliotecas no carregamento inicial. O Custom Token adiciona uma etapa curta somente durante login/reabertura da sessão; depois as leituras continuam pelo Firestore Web SDK com as mesmas telas e consultas.
+- Meu Piaget continua orientado a celular e sem dependências novas no carregamento inicial.
+- Bibliotecas de PDF podem ser preparadas apenas quando necessárias no portal do responsável.
+- Arquivos de release permanecem versionados e com cache imutável; HTML, service worker e `version.json` não usam cache persistente.
+- A venda presencial em rascunho usa armazenamento local curto e não cria venda no Firestore antes da confirmação.
+
+## Segurança
+
+Mantidos:
+
+- senha do responsável validada por hash, nunca texto puro;
+- sessão familiar revogável e cookie seguro;
+- identidade técnica Firebase sem cadastro manual dos 187 responsáveis;
+- APIs sensíveis da equipe verificando Firebase ID Token;
+- checkout/confirmacão de pagamento no servidor;
+- validação de URL retornada pela InfinitePay;
+- separação entre domínio público da família e domínio técnico do webhook.
+
+### Firestore
+
+O pacote inclui Rules restritivas, porém elas **não são ativadas pela Vercel**. Enquanto o Firebase real continuar com regra de desenvolvimento, o banco continua exposto tecnicamente. A ativação deve ocorrer apenas depois de validar a RC2.7.8 no domínio `meupiaget.com.br` e adicionar o domínio em Firebase Authentication → Authorized domains.
+
+## Riscos residuais
+
+1. Funcionários internos autenticados ainda possuem permissão técnica ampla nas Rules preparadas para preservar os módulos existentes; restringir por cargo depois da auditoria completa da Cantina.
+2. CSP estrita ainda exigiria retirar handlers/JavaScript inline legados; os demais headers de segurança permanecem ativos.
+3. PDFs são gerados no navegador com dados reais; a validação visual final deve ser feita no ambiente publicado, pois o ambiente local não possui os dados reais do Firestore.
+4. O domínio personalizado depende de DNS/HTTPS/Firebase Authorized Domains externos ao ZIP.
+
+## Recomendação de entrada em operação
+
+DNS → domínio verde na Vercel → Authorized Domains no Firebase → deploy RC2.7.8 → regressão funcional → PDFs/checkout → Rules → regressão pós-Rules → piloto controlado → Marco Zero somente quando autorizado.

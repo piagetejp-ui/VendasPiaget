@@ -1,8 +1,9 @@
-/* Escola Piaget — service worker V1.6.0-rc2.7.7 */
-const VERSION='1.6.0-rc2.7.7';
+/* Escola Piaget — service worker V1.6.0-rc2.7.8 */
+const VERSION='1.6.0-rc2.7.8';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.7.7/';
+const RELEASE='/releases/1.6.0-rc2.7.8/';
 const PRECACHE=[
+  '/',
   '/index.html',
   '/equipe.html',
   '/meu-piaget.html',
@@ -36,7 +37,7 @@ self.addEventListener('fetch',event=>{
     event.respondWith(
       fetch(request,{cache:'no-store'}).then(response=>{
         const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(request,copy)).catch(()=>{});return response;
-      }).catch(()=>caches.match(request).then(hit=>{if(hit)return hit;const fallback=url.pathname==='/meu-piaget.html'?'/meu-piaget.html':url.pathname==='/equipe.html'?'/equipe.html':url.pathname==='/pagamento.html'?'/pagamento.html':url.pathname==='/obrigado.html'?'/obrigado.html':'/index.html';return caches.match(fallback)}))
+      }).catch(()=>caches.match(request).then(hit=>{if(hit)return hit;const familyHost=url.hostname==='meupiaget.com.br'||url.hostname==='www.meupiaget.com.br',fallback=(url.pathname==='/meu-piaget.html'||(familyHost&&(url.pathname==='/'||url.pathname==='/index.html')))?'/meu-piaget.html':url.pathname==='/equipe.html'?'/equipe.html':url.pathname==='/pagamento.html'?'/pagamento.html':url.pathname==='/obrigado.html'?'/obrigado.html':'/index.html';return caches.match(fallback)}))
     );
     return;
   }

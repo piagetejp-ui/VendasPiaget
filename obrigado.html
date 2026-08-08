@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-store, max-age=0, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="application-version" content="1.6.0-rc2.7.7">
-<title>Pagamento — Escola Piaget V1.6.0-rc2.7.7</title>
+<meta name="application-version" content="1.6.0-rc2.7.8">
+<title>Pagamento — Escola Piaget V1.6.0-rc2.7.8</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -30,7 +30,7 @@
     <div id="receipt" class="receipt hide"></div>
     <div id="meta" class="meta"></div>
     <div class="actions">
-      <a class="btn primary" id="backBtn" href="/?modo=pai&retornoCheckout=1">Voltar ao sistema</a>
+      <a class="btn primary" id="backBtn" href="https://meupiaget.com.br/?retornoCheckout=1">Voltar ao Meu Piaget</a>
       <button class="btn light" id="retryBtn" onclick="checkPayment()">Atualizar pagamento</button>
       <button class="btn orange" id="receiptBtn" onclick="openReceiptMenu()" disabled>Comprovante</button>
     </div>
@@ -55,6 +55,7 @@ const $=s=>document.querySelector(s);
 let receiptState=null;
 function showPageMessage(message,title='Atenção'){const back=$('#pageMessageBack');$('#pageMessageTitle').textContent=title;$('#pageMessageText').textContent=String(message||'');back.classList.remove('hide');}
 function closePageMessage(){$('#pageMessageBack').classList.add('hide');}
+const FAMILY_RETURN_URL_V178='https://meupiaget.com.br/?retornoCheckout=1';const backBtnV178=document.getElementById('backBtn');if(backBtnV178)backBtnV178.href=FAMILY_RETURN_URL_V178;
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 function param(names){const qs=new URLSearchParams(location.search);for(const n of names){const v=qs.get(n);if(v)return v}return ''}
 function fmt(c){return 'R$ '+(Math.round(Number(c||0))/100).toFixed(2).replace('.',',')}
@@ -106,9 +107,9 @@ function downloadReceiptImage(){
   const a=document.createElement('a');a.download=`comprovante-piaget-${receiptState.orderNsu||receiptState.id||'pagamento'}.png`;a.href=c.toDataURL('image/png');a.click();
 }
 checkPayment();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js?v=1.6.0-rc2.7.7',{scope:'/',updateViaCache:'none'}).catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js?v=1.6.0-rc2.7.8',{scope:'/',updateViaCache:'none'}).catch(()=>{});}
 window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
 </script>
-<div id="checkoutVersion" class="no-print" style="position:fixed;right:10px;bottom:8px;font-size:10px;color:#64748b;opacity:.7">v1.6.0-rc2.7.7</div>
+<div id="checkoutVersion" class="no-print" style="position:fixed;right:10px;bottom:8px;font-size:10px;color:#64748b;opacity:.7">v1.6.0-rc2.7.8</div>
 </body>
 </html>

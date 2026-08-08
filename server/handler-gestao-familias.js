@@ -1,7 +1,7 @@
 const {initFirebase,json,parseBody,nowIso}=require('./_utils');
 const {verifyStaff,randomToken,tokenHash,normalizeCpf,validCpf,cpfHash,revokeFamilySessions}=require('./_family-utils');
 
-function familyBaseUrl(req){const raw=String(process.env.PUBLIC_FAMILY_BASE_URL||process.env.PUBLIC_BASE_URL||`https://${req.headers.host}`);try{const u=new URL(raw);const path=u.pathname&&u.pathname!=='/'?u.pathname.replace(/\/$/,''):'/meu-piaget.html';return `${u.origin}${path}`}catch(_){return `https://${req.headers.host}/meu-piaget.html`}}
+function familyBaseUrl(req){const raw=String(process.env.PUBLIC_FAMILY_BASE_URL||'https://meupiaget.com.br');try{return new URL(raw).origin}catch(_){return 'https://meupiaget.com.br'}}
 module.exports=async(req,res)=>{
  if(req.method!=='POST')return json(res,405,{error:'Método não permitido.'});const db=initFirebase(),b=parseBody(req);try{const staff=await verifyStaff(db,req,['admin','gestao','secretaria']);const acao=String(b.acao||'');
   if(acao==='gerar_reset'){

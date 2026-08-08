@@ -1,38 +1,63 @@
-# Validação técnica — 1.6.0-rc2.7.7
+# Validação técnica — 1.6.0-rc2.7.8
 
 ## Resultado local
 
-- **43** arquivos JavaScript passaram em `node --check`.
-- **4** JSON foram parseados com sucesso.
-- **10** funções JavaScript físicas em `/api` (mantém margem dentro do limite observado de 12 da Vercel Hobby).
-- `index.html`, `equipe.html`, `meu-piaget.html`, `pagamento.html` e `obrigado.html` sem referências locais ausentes.
-- Smoke HTTP local: `/`, páginas principais, `version.json` e `firestore.rules` responderam corretamente.
-- Única release física: `releases/1.6.0-rc2.7.7/`.
-- Nenhuma referência de runtime às releases RC2.7.0–RC2.7.5 nos HTMLs/service worker/configuração Vercel.
-- `firestore.rules` sem `allow read, write: if true`; chaves e parênteses balanceados na validação estática.
-- Nenhum literal de CPF completo identificado no frontend/release estática pela varredura de 11 dígitos e padrão de campo CPF.
-- Nenhuma chave privada PEM/JSON de service account embarcada no pacote.
-- `16-cash-responsibility.js` comparado à RC2.7.5, normalizando apenas a versão: **conteúdo funcional idêntico**.
+- **43** arquivos JavaScript passaram em `node --check` (release, APIs, servidor e service worker).
+- **4** arquivos JSON finais foram parseados com sucesso.
+- **10** funções JavaScript físicas em `/api`, abaixo do limite observado de 12 da Vercel Hobby.
+- Única release física: `releases/1.6.0-rc2.7.8/`.
+- **83** referências locais dos cinco HTMLs principais foram conferidas, sem arquivo ausente.
+- Service worker contém **9** itens de precache, todos resolvendo para arquivos existentes (a raiz `/` é rota virtual).
+- Smoke HTTP estático retornou 200 para `/`, `index.html`, `equipe.html`, `meu-piaget.html`, `pagamento.html`, `obrigado.html`, `version.json` e `sw.js`.
+- Nenhuma referência de runtime às releases RC2.7.0–RC2.7.7.
+- Nenhuma referência de runtime ao domínio provisório `meu-piaget.vercel.app`.
+- Nenhum CPF real completo foi encontrado na base estática; apenas máscaras/placeholder podem existir na interface.
+- Nenhuma chave privada PEM/service-account foi encontrada no pacote.
 
-## Segurança implementada
+## Caixa
 
-- login visível do responsável preservado;
-- cookie familiar `HttpOnly` / `Secure` / `SameSite=Lax`;
-- Firebase Custom Token técnico gerado somente pelo backend;
-- sessão familiar revogável e validada também pelas Firestore Rules;
-- nenhuma necessidade de cadastro manual de responsáveis no Firebase Auth;
-- staff bootstrap validado server-side antes da primeira leitura Firestore da equipe;
-- `usuarios_auth` escrito/sincronizado pelo Admin SDK no fluxo de administração;
-- conta financeira somente leitura para o navegador do responsável;
-- autorização/limite recalculados pela API;
-- rate limit persistente nos endpoints de login/primeiro acesso/reset;
-- sessão antiga em `localStorage` aceita apenas como ponte de migração e removida no novo runtime.
+`16-cash-responsibility.js` foi comparado com a RC2.7.7 validada. O diff possui somente dois pontos:
 
-## Limite da validação local
+1. identificador da versão;
+2. wrapper de abertura das formas de pagamento.
 
-O ambiente de construção não possui Firebase CLI/Emulator + credenciais do projeto real para executar a avaliação semântica oficial das Security Rules e os fluxos reais de Firebase/InfinitePay. Por isso:
+Sessões, responsabilidade, divergências, cálculo de saldo e confirmação em dinheiro não foram reescritos. Quando o caixa não está apto, o wrapper bloqueia apenas Dinheiro e deixa Pix/cartão/saldo disponíveis.
 
-1. publicar primeiro o código RC2.7.6 mantendo temporariamente as Rules atuais;
-2. executar o smoke test de Equipe + Meu Piaget;
-3. publicar `firestore.rules` no Firebase Console;
-4. executar a bateria pós-Rules do `GUIA-ATIVACAO-SEGURANCA-RC2.7.6.md` antes do piloto amplo.
+## Checkout
+
+A correção de autorização da RC2.7.7 foi preservada. A RC2.7.8 altera apenas a separação de URL pública da família e URL técnica do webhook:
+
+- redirect da InfinitePay → `PUBLIC_FAMILY_BASE_URL` / `meupiaget.com.br`;
+- webhook → `PUBLIC_API_BASE_URL` / host técnico.
+
+O destino financeiro/handle e a validação server-side do pagamento não foram alterados nesta rodada.
+
+## Firestore Rules
+
+- `firestore.rules` tem **156** linhas.
+- Validação estática confirmou chaves/parênteses balanceados.
+- Não existe `allow read, write: if true` no arquivo preparado.
+- O emulador oficial do Firebase não foi executado neste ambiente; a avaliação semântica final deve ser feita no Firebase real.
+- **As Rules preparadas não devem ser publicadas antes da regressão da RC2.7.8 no domínio personalizado.**
+
+## PDFs
+
+Os PDFs desta candidata são gerados em runtime com dados do Firestore. Foram validados estruturalmente no código, incluindo logo, textos, links e QR Code, mas não foi possível renderizar uma amostra fiel com dados reais neste ambiente.
+
+Antes do piloto real, gerar e inspecionar visualmente no ambiente publicado:
+
+- primeiro acesso;
+- fechamento semanal/regularização;
+- comprovante do responsável;
+- comprovante de venda/fechamento de caixa quando aplicável.
+
+A inspeção deve confirmar ausência de cortes, sobreposição, logo deformada e links incorretos.
+
+## Dependências externas ainda necessárias
+
+1. terminar a transição DNS no Registro.br e criar os registros pedidos pela Vercel;
+2. aguardar domínio/HTTPS ficarem válidos na Vercel;
+3. adicionar `meupiaget.com.br` aos Authorized Domains do Firebase Authentication;
+4. configurar as variáveis Vercel recomendadas;
+5. fazer deploy e regressão;
+6. só depois ativar as Firestore Rules restritivas.

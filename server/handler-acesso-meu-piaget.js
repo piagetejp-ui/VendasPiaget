@@ -1,7 +1,7 @@
 const {initFirebase,json,parseBody,nowIso,audit}=require('./_utils');
 const {normalizeCpf,normalizeMatricula,tokenHash,randomToken,makePassword,verifyPassword,findResponsibleByCpf,familyPayload,createFamilySession,validateFamilySession,revokeFamilySessions,familySessionTokenFromReq,familyCookieHeader,familyFirebaseToken,enforceAccessRateLimit}=require('./_family-utils');
 
-function familyBaseUrl(req){const raw=String(process.env.PUBLIC_FAMILY_BASE_URL||process.env.PUBLIC_BASE_URL||`https://${req.headers.host}`);try{const u=new URL(raw);const path=u.pathname&&u.pathname!=='/'?u.pathname.replace(/\/$/,''):'/meu-piaget.html';return `${u.origin}${path}`}catch(_){return `https://${req.headers.host}/meu-piaget.html`}}
+function familyBaseUrl(req){const raw=String(process.env.PUBLIC_FAMILY_BASE_URL||'https://meupiaget.com.br');try{return new URL(raw).origin}catch(_){return 'https://meupiaget.com.br'}}
 function resetUrl(req,resetId,token){const base=familyBaseUrl(req);const sep=base.includes('?')?'&':'?';return `${base}${sep}resetFamilia=${encodeURIComponent(resetId)}&resetToken=${encodeURIComponent(token)}`}
 function secureCookie(req){return !/^localhost(?::\d+)?$/i.test(String(req.headers.host||''))&&!/^127\.0\.0\.1(?::\d+)?$/.test(String(req.headers.host||''))}
 function setFamilyCookie(req,res,token){res.setHeader('Set-Cookie',familyCookieHeader(token,{secure:secureCookie(req)}))}

@@ -1,55 +1,60 @@
-# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.7
+# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.8
 
-**Candidata:** RC2.7.6 — Segurança Firestore / autenticação familiar técnica
+**Candidata:** RC2.7.8 — Domínio e experiência pré-operação
 
-Esta versão foi construída sobre a RC2.7.5 e tem um objetivo deliberadamente restrito: **fechar o acesso anônimo ao Firestore sem redesenhar a experiência já validada da Equipe Piaget e do Meu Piaget**.
+Baseada na RC2.7.7, cujo checkout foi validado pelo usuário após o hotfix de autorização. Esta candidata organiza a experiência pública do **Meu Piaget**, os documentos enviados às famílias e pequenos fluxos operacionais da Secretaria, sem redesenhar o pagamento ou a conta familiar.
 
-## O que NÃO muda para o responsável
+## Domínios
 
-- primeiro acesso continua sendo CPF + matrícula;
-- depois do primeiro acesso, CPF + senha criada pelo responsável;
-- recuperação de senha continua sendo liberada pela Secretaria por link temporário;
-- telas, carrinho familiar, filtros, pedidos, movimentações, notificações, saldo, limite e checkout mantêm o fluxo atual;
-- o responsável não precisa criar e-mail, conta Firebase ou fazer qualquer etapa nova.
+### Responsáveis
 
-## O que muda por baixo do capô
+`https://meupiaget.com.br`
 
-1. O servidor valida o CPF/senha da forma já existente (hash `scrypt`, nunca senha em texto puro).
-2. A sessão principal da família passa a ficar em cookie `HttpOnly`, `Secure` e `SameSite=Lax`.
-3. Depois de validar a nossa sessão, o servidor emite um **Firebase Custom Token técnico**. O navegador usa esse token somente para que as Firestore Security Rules reconheçam qual família está acessando o banco.
-4. Não existe cadastro manual dos responsáveis no Firebase Authentication. A identidade técnica `familia_*` nasce automaticamente quando aquela família entra pela primeira vez.
-5. As Rules verificam, em cada acesso familiar, a família, os alunos vinculados, a sessão ativa e o prazo da sessão.
-6. Documentos de senha/hash, solicitações de reset, sessões, auditoria e cadastros de outros responsáveis não são liberados ao navegador do responsável.
-7. Alterações financeiras sensíveis continuam server-side. Até autorização/limite da família agora são recalculados pela API; o responsável só lê a conta financeira diretamente.
+O domínio raiz é o endereço canônico. No mesmo projeto Vercel, acessos ao `/` por esse hostname são servidos como Meu Piaget. `www.meupiaget.com.br` deve redirecionar para o domínio raiz na configuração da Vercel.
 
-## Equipe Piaget
+### Equipe
 
-A equipe continua usando Firebase Authentication por e-mail/senha. Antes de liberar o Firestore no navegador, o backend valida o ID Token contra `usuarios_acesso` e cria/atualiza um espelho server-only em `usuarios_auth/{uid}`. Usuários inativos deixam de satisfazer as Rules.
+A Equipe Piaget pode continuar no domínio técnico já usado na Vercel. O domínio da Equipe não precisa aparecer em PDFs, QR Codes ou mensagens destinadas aos responsáveis.
 
-Nesta candidata, funcionários internos ativos continuam com acesso Firestore amplo para preservar Secretaria, Gestão e Cantina já existentes. A restrição técnica por cargo pode ser aprofundada depois que o fluxo da Cantina estiver integralmente auditado, sem misturar essa mudança com a abertura do piloto externo.
+### Variáveis recomendadas na Vercel
 
-## Proteções adicionais
+```text
+PUBLIC_FAMILY_BASE_URL=https://meupiaget.com.br
+PUBLIC_API_BASE_URL=https://vendas-piaget.vercel.app
+```
 
-- throttling server-side para login, primeiro acesso e redefinição de senha;
-- sessão familiar revogável e com expiração;
-- logout encerra a sessão no servidor;
-- troca/reset de senha revoga sessões anteriores;
-- APIs sensíveis da equipe validam Firebase ID Token;
-- APIs sensíveis do responsável validam cookie/sessão e o vínculo do aluno com a família;
-- checkout e confirmação de pagamento continuam validados server-side;
-- nenhum CPF completo é embarcado na base estática do frontend.
+A segunda variável mantém o webhook da InfinitePay em um endereço técnico estável. Se não for definida, o backend usa o host técnico da requisição quando adequado.
 
-## ATENÇÃO — ordem correta de ativação
+## Fluxos preservados
 
-**Não publique `firestore.rules` antes de subir e testar o código RC2.7.6.**
+- primeiro acesso: CPF + matrícula;
+- acessos seguintes: CPF + senha criada;
+- recuperação de senha por link gerado pela Secretaria;
+- conta financeira familiar compartilhada;
+- carrinho multi-aluno;
+- programação de lanches por aluno, com cópia entre irmãos;
+- checkout e confirmação InfinitePay server-side;
+- venda online da Secretaria;
+- caixa físico com sessões e períodos de responsabilidade;
+- Marco Zero manual.
 
-1. publique o ZIP RC2.7.6 na Vercel/GitHub;
-2. com as regras antigas ainda ativas, teste um login da Equipe e um login do Meu Piaget;
-3. só então copie `firestore.rules` para Firebase Console → Firestore Database → Rules e clique em **Publicar**;
-4. repita a bateria de segurança/regressão descrita em `GUIA-ATIVACAO-SEGURANCA-RC2.7.6.md`.
+## Mudanças desta candidata
 
-O arquivo de regras não é aplicado pela Vercel automaticamente.
+- retorno pós-InfinitePay volta ao Meu Piaget;
+- PDFs familiares padronizados e direcionados ao domínio oficial;
+- login do Meu Piaget com feedback visual de carregamento;
+- notificações de bloqueio e regularização da conta;
+- dinheiro indisponível não bloqueia Pix/cartão/saldo quando o caixa está fechado;
+- carrinho presencial não concluído pode ser recuperado;
+- menu redundante removido do Meu Piaget;
+- pedidos familiares mostram período do lanche e ação Detalhar.
+
+## Segurança
+
+A arquitetura de segurança preparada na RC2.7.6/RC2.7.7 foi mantida. Os responsáveis não precisam ser cadastrados manualmente no Firebase Authentication; a identidade técnica é criada após o login próprio do Meu Piaget.
+
+**As Firestore Rules restritivas ainda não devem ser ativadas só por subir este ZIP.** Primeiro valide o domínio novo, login, checkout, PDFs e fluxos da Equipe. Depois siga `GUIA-ATIVACAO-SEGURANCA-RC2.7.8.md`.
 
 ## Marco Zero
 
-O Marco Zero continua manual e **não é executado no deploy**.
+O Marco Zero continua manual e não é executado no deploy.

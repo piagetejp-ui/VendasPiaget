@@ -1,21 +1,28 @@
 {
-  "version": "1.6.0-rc2.7.7",
-  "release": "RC2.7.6 — Segurança Firestore",
-  "generatedAt": "2026-08-07T15:55:00-03:00",
+  "version": "1.6.0-rc2.7.8",
+  "release": "RC2.7.8 — Domínio e experiência pré-operação",
+  "generatedAt": "2026-08-08T11:46:00-03:00",
   "apiFunctions": 10,
   "javascriptFilesTotal": 43,
   "releaseJavaScriptFiles": 23,
   "releaseCssFiles": 1,
-  "releaseFrontendRawBytes": 1069514,
-  "releaseFrontendGzipBytesApprox": 269518,
+  "releaseFrontendRawBytes": 1079651,
+  "releaseFrontendGzipBytesApprox": 272574,
+  "htmlLocalReferencesChecked": 83,
+  "serviceWorkerPrecacheItems": 9,
   "firestoreRulesLines": 156,
+  "domain": {
+    "family": "https://meupiaget.com.br",
+    "wwwRedirect": "https://meupiaget.com.br",
+    "team": "Vercel technical domain (unchanged)",
+    "dnsActivationExternal": true
+  },
   "security": {
-    "anonymousFirestoreAccess": false,
     "familySessionCookieHttpOnly": true,
     "familyCustomTokenBridge": true,
     "manualParentFirebaseAuthImportRequired": false,
-    "familyFinancialAccountDirectWrite": false,
-    "staffServerBootstrap": true,
+    "restrictiveFirestoreRulesPackaged": true,
+    "restrictiveFirestoreRulesMustNotBeActivatedBeforeRegression": true,
     "accessRateLimit": true
   },
   "validation": {
@@ -23,8 +30,12 @@
     "jsonFilesParsed": 4,
     "htmlLocalReferencesMissing": 0,
     "apiFunctionLimitOk": true,
-    "cashCoreFunctionallyEqualToRC275": true,
+    "cashDiffOnlyVersionAndPaymentAvailabilityWrapper": true,
+    "realCpfLiteralsInStaticFrontend": 0,
+    "privateKeysEmbedded": false,
+    "rulesStaticBalanceOk": true,
     "rulesOfficialEmulatorTested": false,
+    "runtimePdfVisualTested": false,
     "httpSmokePages": 8
   }
 }
