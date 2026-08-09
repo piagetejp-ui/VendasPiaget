@@ -85,3 +85,11 @@ Com caixa aberto sob responsabilidade do operador:
 ## 9. Firestore Rules
 
 **Não fazer esta etapa até todos os testes acima passarem.** Depois seguir `GUIA-ATIVACAO-SEGURANCA-RC2.7.8.md`.
+
+
+## Teste prioritário — RC2.7.10
+1. Gestão → Alunos e Contas → Gerar cobrança → confirmar comprador → link deve ser criado.
+2. Meu Piaget → Regularize agora → confirmar comprador → deve abrir InfinitePay.
+3. Em ambos os casos, se houver falha antes da API, uma mensagem explícita deve aparecer; o fluxo não pode fechar silenciosamente.
+4. Confirmar que Pagamentos pendentes recebe o registro ao iniciar a cobrança.
+5. Regressão curta: venda online da Secretaria continua gerando link normalmente.

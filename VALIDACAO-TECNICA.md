@@ -1,11 +1,11 @@
-# Validação técnica — 1.6.0-rc2.7.9
+# Validação técnica — 1.6.0-rc2.7.10
 
 ## Resultado local
 
 - **43** arquivos JavaScript passaram em `node --check` (release, APIs, servidor e service worker).
 - **4** arquivos JSON finais foram parseados com sucesso.
 - **10** funções JavaScript físicas em `/api`, abaixo do limite observado de 12 da Vercel Hobby.
-- Única release física: `releases/1.6.0-rc2.7.9/`.
+- Única release física: `releases/1.6.0-rc2.7.10/`.
 - **83** referências locais dos cinco HTMLs principais foram conferidas, sem arquivo ausente.
 - Service worker contém **9** itens de precache, todos resolvendo para arquivos existentes (a raiz `/` é rota virtual).
 - Smoke HTTP estático retornou 200 para `/`, `index.html`, `equipe.html`, `meu-piaget.html`, `pagamento.html`, `obrigado.html`, `version.json` e `sw.js`.
@@ -63,3 +63,16 @@ A inspeção deve confirmar ausência de cortes, sobreposição, logo deformada 
 6. só depois ativar as Firestore Rules restritivas.
 
 - RC2.7.9: removidos rewrites condicionais de `/` e `/index.html`; adicionados redirects condicionais por host e fallbacks client-side para o domínio familiar.
+
+
+## RC2.7.10
+- Hotfix restrita ao fluxo direto de cobrança em `12-portal-finalization.js`, além de versionamento/documentação.
+- Dependência não pública `actorV141()` eliminada do fluxo corrigido.
+- Fluxo inteiro agora protegido por `try/catch` com erro visível.
+- `node --check` executado com sucesso em 43 arquivos JavaScript.
+- 10 funções serverless em `/api` preservadas; nenhum endpoint foi adicionado/removido.
+- 83 referências locais dos cinco HTMLs principais verificadas sem arquivo ausente.
+- Smoke HTTP local: `/`, `index.html`, `equipe.html`, `meu-piaget.html`, `pagamento.html`, `obrigado.html`, `version.json` e o módulo corrigido responderam 200.
+- Teste isolado do fluxo corrigido com dependências simuladas confirmou chamada a `requestCheckoutV157` tanto em contexto Gestão quanto Responsável; no contexto Responsável confirmou redirecionamento e no contexto Gestão confirmou renderização do link.
+- `16-cash-responsibility.js` comparado à RC2.7.9 com normalização apenas da versão: funcionalmente idêntico.
+- Diretório `/api` comparado à RC2.7.9 com normalização apenas da versão: sem alterações funcionais.

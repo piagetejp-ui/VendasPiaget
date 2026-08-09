@@ -1,4 +1,4 @@
-# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.9
+# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.10
 
 **Candidata:** RC2.7.9 — Domínio e experiência pré-operação
 
@@ -62,3 +62,7 @@ O Marco Zero continua manual e não é executado no deploy.
 
 ## Hotfix de domínio RC2.7.9
 A raiz do domínio familiar usa redirect por hostname e fallback no HTML para contornar a precedência do `index.html` físico na Vercel. O endereço exibido ao responsável permanece `https://meupiaget.com.br`.
+
+
+## RC2.7.10 — hotfix de cobrança direta
+Correção isolada do fluxo de regularização/entrada na conta após a RC2.7.9. A experiência e os demais módulos permanecem preservados.

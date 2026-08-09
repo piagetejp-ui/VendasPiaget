@@ -1,4 +1,13 @@
-# Changelog — 1.6.0-rc2.7.9
+# Changelog — 1.6.0-rc2.7.10
+
+## Hotfix de cobrança direta
+- Corrigido o fluxo **Gerar cobrança / Regularizar saldo** usado pela Gestão e pelo Meu Piaget.
+- Removida dependência de `actorV141()`, função interna do módulo legado que não era pública e podia interromper o fluxo logo após fechar o diálogo de comprador.
+- Toda a sequência, do valor informado até a resposta de `/api/criar-checkout`, passa a ter tratamento de erro visível.
+- Se o modal-base não estiver mais disponível após a geração, o link é apresentado em diálogo de fallback em vez de desaparecer silenciosamente.
+- Nenhuma alteração funcional em venda online da Secretaria, domínio, Caixa, regras do Firestore ou integração server-side da InfinitePay.
+
+# Changelog — 1.6.0-rc2.7.10
 
 ## Domínio oficial e experiência do responsável
 
