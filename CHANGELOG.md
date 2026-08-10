@@ -1,60 +1,42 @@
-# Changelog — 1.6.0-rc2.7.15
+# Changelog — 1.6.0-rc2.7.16
 
-## Hotfix — autenticação consolidada da equipe + Meu Piaget
+## Marco Zero por origem da operação
 
-Esta release corrige a regressão em que o hotfix familiar da RC2.7.13 fazia Gestão/Secretaria voltarem a receber `Missing or insufficient permissions`.
+Esta release corrige a classificação do Marco Zero sem alterar autenticação, Firestore Rules, checkout ou InfinitePay.
 
-### Equipe
+### Correções
 
-- Restaura a lógica do hotfix de equipe que já havia funcionado no piloto.
-- `staffMirrorExists()` volta a depender apenas de sessão Firebase válida + `usuarios_auth/{uid}`; não depende de `!isFamily()`.
-- Claims opcionais são lidos com `request.auth.token.get(..., valorPadrao)`, evitando que tokens internos sem claims familiares quebrem a avaliação das Rules.
-- Mantém `usuarios_auth/{uid}` como caminho principal.
-- Mantém, durante o piloto, o fallback dos perfis internos conhecidos `lucas`, `daniele`, `evanda` e `ruan`, validados por UID ou e-mail contra `usuarios_acesso`.
+- Programações criadas antes de 10/08 não são mais preservadas apenas porque possuem entregas em 10/08 ou depois.
+- `dataChave`, `dataOperacao` e `atualizadoEm` deixam de decidir a origem de operações normais.
+- Documentos filhos passam a herdar a classificação da operação raiz quando existe vínculo operacional.
+- Lançamentos retroativos reais usam `registradoEm`/`criadoEm` como origem de implantação, preservando pendências antigas lançadas pela Secretaria a partir de 10/08.
+- Novos lançamentos retroativos gravam `retroativo: true`, `origem: secretaria_lancamento_manual`, `dataOperacao`, `registradoEm` e `criadoEm` de forma consistente.
+- Reconstrução financeira passa a considerar movimentos reais preservados, inclusive retroativos.
+- Após o corte, a capacidade futura de salgados é reconciliada para remover efeitos de programações de teste.
+- Reservas e compromissos operacionais de farda são reconciliados a partir dos pedidos preservados, sem alterar quantidade física do estoque.
+- Tela de revisão separa implantação, retroativos reais e testes a arquivar.
 
-### Família
+### Preservado sem alteração funcional
 
-- Preserva integralmente o hotfix da RC2.7.13.
-- `familias_auth/{sessionId}` continua sendo criado pelo backend antes do Custom Token.
-- O responsável continua restrito aos próprios alunos/conta/registros.
-- Logout/revogação continuam inativando o espelho familiar.
-- O `family_auth_probe` continua validando claims e espelho antes das leituras do portal.
-
-### Separação de trilhos
-
-- A autorização da equipe e a autorização da família são independentes.
-- Nenhuma das duas autenticações é definida como “não ser a outra”.
-- O `match /{document=**}` continua concedendo acesso global somente quando `staffActive()` é verdadeiro.
-- As permissões específicas do Meu Piaget continuam limitadas por `familyActive()`, vínculos de alunos e família.
-
-## Compatibilidade preservada
-
-- Marco Zero por data da RC2.7.12 preservado: corte em 10/08/2026 00:00 — America/Fortaleza.
-- Dados de 10/08/2026 em diante continuam protegidos como implantação piloto.
-- Logo simples nos PDFs preservada.
-- Checkout/InfinitePay, Caixa, carrinho multi-aluno, domínio e roteamento não foram redesenhados.
-- O pacote não publica Firestore Rules nem executa deploy automaticamente.
-- O Marco Zero continua manual.
-- Pacote de implantação enxuto: somente a release ativa permanece dentro de `releases/`.
-
----
+- Firestore Rules da RC2.7.15.
+- Login de Gestão e Secretaria.
+- Login do Meu Piaget.
+- `usuarios_auth` e fallback de equipe do piloto.
+- `familias_auth` e Custom Token familiar.
+- Checkout/InfinitePay.
+- Domínios e roteamento.
+- PDFs com logo simples.
 
 ## Histórico resumido
 
+### RC2.7.15 — isolamento do Meu Piaget nas Rules
+- Requisições familiares deixaram de percorrer o trilho de autorização da equipe.
+
+### RC2.7.14 — autenticação consolidada
+- Uniu o hotfix funcional da equipe com o espelho familiar `familias_auth`.
+
 ### RC2.7.13 — hotfix do Meu Piaget
-- Criou `familias_auth/{sessionId}` e o handshake familiar seguro com Custom Token.
+- Criou `familias_auth/{sessionId}` e handshake familiar seguro.
 
-### RC2.7.12 — Marco Zero por data + logo simples nos PDFs
-- Marco Zero passou de reset global para corte por data.
-- Registros até 09/08/2026 são arquivados; registros de 10/08/2026 em diante são preservados.
-- Contas familiares são reconstruídas pelas movimentações pós-corte, sem zeragem indiscriminada.
-- Cabeçalhos dos PDFs passaram a usar `logo-piaget-icon-v152.png`.
-
-### RC2.7.11 — relatórios, PDFs e refinamentos
-- Relatórios de Vendas, Cobranças, Caixa, Pedidos, Movimentações e Contas.
-- Documentos individuais padronizados.
-- Status financeiro Regular/Pendente.
-- Persistência do aviso do caixa na tela de Vendas.
-
-### RC2.7.10 — hotfix de cobrança direta
-- Corrigido Gerar cobrança / Regularizar saldo na Gestão e no Meu Piaget.
+### RC2.7.12 — Marco Zero por data + logo simples
+- Introduziu corte em 10/08/2026 e reconstrução das contas.

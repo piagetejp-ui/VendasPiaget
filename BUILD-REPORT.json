@@ -1,46 +1,46 @@
 {
-  "version": "1.6.0-rc2.7.15",
-  "release": "RC2.7.15 — hotfix Meu Piaget sem alterar autenticação da equipe",
-  "generatedAt": "2026-08-10T11:07:00-03:00",
-  "base": "1.6.0-rc2.7.14",
+  "version": "1.6.0-rc2.7.16",
+  "release": "RC2.7.16 — Marco Zero por origem da operação",
+  "generatedAt": "2026-08-10T11:32:00-03:00",
+  "base": "1.6.0-rc2.7.15",
   "apiFunctions": 10,
   "serverModules": 10,
   "releaseJavaScriptFiles": 24,
   "releaseCssFiles": 1,
-  "releaseFrontendRawBytes": 1125034,
-  "releaseFrontendGzipBytesApprox": 285628,
+  "releaseFrontendRawBytes": 1126882,
+  "releaseFrontendGzipBytesApprox": 286109,
   "htmlLocalReferencesChecked": 86,
   "htmlLocalReferencesMissing": 0,
   "serviceWorkerPrecacheItems": 9,
   "firestoreRulesLines": 189,
-  "deployFileCount": 89,
+  "deployFileCount": 90,
   "changes": {
-    "familyRulesIsolation": {
-      "staffGuardByRoleClaim": true,
-      "familyRequestsSkipStaffDocumentLookups": true,
-      "familyMirrorCollection": "familias_auth"
+    "marcoZero": {
+      "cutoff": "2026-08-10T03:00:00.000Z",
+      "criterion": "origem_operacao",
+      "futureTargetDatesDoNotProtectOldTests": true,
+      "childrenInheritOperationalRoot": true,
+      "unknownOriginPreservedBySafety": true
     },
-    "staffAuthPreserved": {
-      "primaryMirrorCollection": "usuarios_auth",
-      "pilotKnownProfilesFallback": [
-        "lucas",
-        "daniele",
-        "evanda",
-        "ruan"
-      ],
-      "fallbackMatchesUidOrEmail": true,
-      "staffLoginCodeChanged": false,
-      "staffBootstrapChanged": false
+    "retroactiveReal": {
+      "registrationTimeDeterminesImplantationOrigin": true,
+      "dataOperacaoMayBeBeforeCutoff": true,
+      "newRecordsSetRetroativoTrue": true,
+      "includedInAccountRebuild": true
     },
-    "preserved": {
-      "marcoZeroCutoff": "2026-08-10T03:00:00.000Z",
-      "pdfSimpleLogo": "/assets/logo-piaget-icon-v152.png",
-      "checkoutInfinitePayUnchanged": true,
-      "familyCustomTokenFlowUnchanged": true
+    "derivedReconciliation": {
+      "dailySnackCapacity": true,
+      "uniformReservationsAndProductionCommitments": true,
+      "physicalStockChanged": false
+    },
+    "authenticationPreserved": {
+      "firestoreRulesChanged": false,
+      "staffAuthChanged": false,
+      "familyAuthChanged": false
     },
     "deploymentPackage": {
       "onlyActiveReleaseIncluded": true,
-      "activeRelease": "1.6.0-rc2.7.15",
+      "activeRelease": "1.6.0-rc2.7.16",
       "fileCountBelow100": true
     }
   },
@@ -52,18 +52,18 @@
     "jsonFilesParsed": 4,
     "htmlLocalReferencesOk": true,
     "activeReleaseReferencesOk": true,
-    "firestoreRulesCopiesEqual": true,
+    "firestoreRulesIdenticalToRc2715": true,
     "blanketOpenRuleAbsent": true,
-    "teamHotfixFallbackMerged": true,
-    "familyHotfixPreserved": true,
-    "firestoreRulesCompilerTested": false,
+    "originClassifierMockTested": true,
+    "rootInheritanceMockTested": true,
+    "retroactiveBalanceMockTested": true,
+    "snackReconciliationMockTested": true,
+    "uniformReconciliationMockTested": true,
     "firestoreRuntimeTested": false,
-    "marcoZeroLogicPreserved": true,
-    "staffRuntimeCodeUnchangedFromBase": true,
-    "familyRequestsGuardedFromStaffLookups": true
+    "marcoZeroExecuted": false
   },
   "deployment": {
     "performed": false,
-    "note": "Pacote gerado localmente. Publicar as Firestore Rules da RC2.7.15 e testar primeiro Secretaria, depois Gestão, depois Meu Piaget. Nenhum deploy foi realizado por este processo."
+    "note": "Pacote gerado e validado localmente. As Firestore Rules são idênticas às da RC2.7.15; não é necessário republicá-las para esta release. Antes do Marco Zero, publicar a aplicação e revisar as três listas do corte."
   }
 }

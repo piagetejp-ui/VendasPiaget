@@ -1,49 +1,31 @@
-# Validação técnica — 1.6.0-rc2.7.15
+# Validação técnica — 1.6.0-rc2.7.16
 
 ## Escopo
 
-RC2.7.15 foi derivada diretamente da RC2.7.13. A mudança funcional desta candidata está concentrada nas Firestore Rules para consolidar, na mesma publicação, os dois trilhos de autenticação:
+RC2.7.16 foi derivada diretamente da RC2.7.15. Mudanças funcionais restritas a:
 
-1. equipe por Firebase Authentication + `usuarios_auth`;
-2. fallback de piloto por `usuarios_acesso` para os perfis internos já conhecidos;
-3. família por Custom Token + `familias_auth/{sessionId}`;
-4. leitura segura de claims opcionais com `request.auth.token.get(..., padrão)`;
-5. remoção da dependência de `!isFamily()` no reconhecimento da equipe.
+1. `server/handler-implantacao.js` — classificação por origem, herança da raiz, reconstrução financeira e reconciliações derivadas;
+2. `20-family-implantation.js` — revisão visual do Marco Zero por origem;
+3. `22-secretaria-finalization.js` — semântica explícita de novos lançamentos retroativos.
 
-O backend e o frontend de autenticação familiar da RC2.7.13 foram preservados funcionalmente, assim como Marco Zero por data e logo simples nos PDFs.
+Firestore Rules e autenticação não foram alteradas funcionalmente.
 
-## Validações estáticas executadas
+## Casos locais exercitados
 
-- `node --check` nos 24 JavaScript da release ativa;
-- `node --check` nas 10 funções `/api`;
-- `node --check` nos 10 módulos `/server`;
-- `node --check` no `sw.js`;
-- parse dos 4 JSONs ativos;
-- verificação de 86 referências locais dos HTMLs, sem referência ausente;
-- HTMLs, Vercel e service worker apontando para `releases/1.6.0-rc2.7.15/`;
-- somente uma pasta dentro de `releases/`;
-- pacote com 89 arquivos, abaixo do limite de 100 arquivos que vinha bloqueando a subida pela interface do GitHub;
-- igualdade entre `firestore.rules`, `FIRESTORE-RULES-PARA-COLAR.txt` e `FIRESTORE-RULES-RC2.7.15-AUTENTICACAO-CONSOLIDADA.txt`;
-- ausência de `allow read, write: if true`;
-- presença simultânea de `familias_auth` e `usuarios_auth`;
-- presença do fallback `staffKnownProfile()` para `lucas`, `daniele`, `evanda` e `ruan`;
-- confirmação de que `staffMirrorExists()` não depende de `!isFamily()`;
-- comparação de `_family-utils.js`, `handler-acesso-meu-piaget.js`, `handler-security.js`, `05-auth.js` e `20-family-implantation.js` contra a RC2.7.13: sem alteração funcional além do número da versão.
+- programação criada em 08/08 com entrega futura em 12/08 → pré-corte;
+- documento de entrega sem `criadoEm`, vinculado a pedido pré-corte → herda pré-corte;
+- registro criado em 09/08 e apenas atualizado em 10/08 → pré-corte;
+- lançamento retroativo com `dataOperacao` em 05/08 e `registradoEm` em 10/08 → retroativo real;
+- movimento e pedido filhos de lançamento manual → preservados como retroativo real;
+- checkout criado em 09/08 e venda/pagamento concluídos em 10/08 → herdam a origem pré-corte do checkout;
+- reconstrução financeira soma operação de 10/08 + retroativo real e exclui movimento de teste de 09/08;
+- capacidade de salgados remove reserva de pedido de teste e recalcula `pedidosConfirmados` apenas com ocorrências preservadas;
+- reserva/compromisso de farda é recalculado a partir de pedidos preservados sem modificar quantidade física.
 
-## Teste obrigatório publicado
+## Limites
 
-Depois de publicar **aplicação + Firestore Rules da RC2.7.15** na mesma implantação:
-
-1. Gestão: entrar e carregar o Resumo;
-2. Secretaria: entrar e abrir Vendas;
-3. Meu Piaget: entrar com CPF + senha e carregar a família;
-4. repetir o Meu Piaget no celular se necessário;
-5. somente se os três perfis passarem, voltar à revisão do Marco Zero.
-
-## Limite da validação local
-
-Não houve conexão desta geração com o Firestore publicado, compilação das Rules pelo Firebase nem deploy. A validação definitiva é o teste na implantação real.
+Não houve conexão com o Firestore publicado nem execução real do Marco Zero. A revisão exibida no ambiente publicado continua sendo a última barreira antes da confirmação definitiva.
 
 ## Deploy
 
-Este pacote foi apenas gerado e validado localmente. Nenhum deploy é afirmado por esta documentação.
+Nenhum deploy foi realizado durante a geração deste pacote.
