@@ -1,74 +1,47 @@
-# Validação técnica — 1.6.0-rc2.7.11
+# Validação técnica — 1.6.0-rc2.7.13
 
-## Resultado local
+## Escopo
 
-- **24** JavaScripts da release passaram em `node --check`.
-- **10** JavaScripts de `/api` passaram em `node --check`.
-- **9** JavaScripts de `/server` passaram em `node --check`.
-- `sw.js` também passou em `node --check`.
-- Total verificado: **44** arquivos JavaScript incluindo o service worker.
-- **4** arquivos JSON foram parseados com sucesso.
-- `/api` mantém **10** funções físicas, abaixo do limite de 12 observado no plano Vercel Hobby.
-- Única release física ativa: `releases/1.6.0-rc2.7.11/`.
-- **86** referências locais dos cinco HTMLs principais foram verificadas; **0** arquivo ausente.
-- Service worker possui **9** entradas no precache.
-- `firestore.rules` possui **156** linhas.
+RC2.7.13 foi derivada diretamente da RC2.7.12. As mudanças funcionais desta candidata estão limitadas a:
 
-## Preservação da RC2.7.10
+1. novo espelho de autorização familiar `familias_auth`;
+2. espelho de autorização por sessão, mantendo UID Firebase estável por família;
+3. Firestore Rules da família baseadas no espelho seguro;
+4. inativação do espelho em logout/revogação;
+5. probe de autenticação antes da primeira leitura do Firestore;
+6. diagnóstico explícito quando backend e Rules publicados estiverem desencontrados;
+7. atualização de versão/manifestos/documentação.
 
-Foi feita comparação normalizada, substituindo somente o literal de versão:
+Marco Zero por data e logo simples nos PDFs foram preservados da RC2.7.12.
 
-- `/api`: **nenhuma diferença funcional** versus RC2.7.10;
-- `/server`: **nenhuma diferença funcional** versus RC2.7.10.
+## Validações estáticas executadas
 
-Assim, a lógica server-side de checkout, cobrança direta, confirmação e InfinitePay da base validada não foi reescrita nesta candidata.
+- `node --check` em todos os JavaScript da release ativa;
+- `node --check` nas funções `/api` e módulos `/server`;
+- `node --check` no `sw.js`;
+- parse dos JSONs ativos;
+- verificação das referências locais dos HTMLs;
+- conferência de que HTMLs e service worker apontam para `releases/1.6.0-rc2.7.13/`;
+- conferência de igualdade entre `firestore.rules` e `FIRESTORE-RULES-PARA-COLAR.txt`;
+- inspeção estática do fluxo: sessão → espelho → Custom Token → probe → Firestore.
 
-## Relatórios
+## Teste obrigatório publicado
 
-O novo `23-document-reports.js` passou por teste isolado com dependências simuladas para:
+Após publicar **a aplicação e as Firestore Rules da RC2.7.13**:
 
-- Relatório de Vendas;
-- Relatório de Cobranças;
-- Relatório de Pedidos;
-- Relatório de Contas;
-- Relatório de Caixa;
-- Relatório de Movimentações da Equipe;
-- Relatório de Movimentações do Meu Piaget;
-- Fechamento de Caixa individual.
+1. entrar no Meu Piaget com o mesmo responsável que apresentou `Missing or insufficient permissions`;
+2. confirmar que o portal abre a tela inicial e carrega os alunos;
+3. sair e entrar novamente;
+4. testar no PC e no celular;
+5. confirmar que Gestão e Secretaria continuam entrando normalmente;
+6. somente depois voltar para a revisão do Marco Zero.
 
-Nos mocks, as rotinas chegaram à etapa de salvar os arquivos com os nomes esperados.
+Se o backend estiver novo e as Rules antigas, a interface deve sinalizar a necessidade de publicar as Rules da RC2.7.13.
 
-## PDF / identidade visual
+## Limite da validação local
 
-Foi produzida uma amostra programática A4 do padrão do Relatório de Vendas usando a logo oficial e a paleta Piaget. A amostra foi renderizada para PNG a 160 DPI e inspecionada visualmente. O padrão apresentou:
+Não houve conexão desta geração com o Firestore publicado nem deploy. Portanto, o sucesso definitivo do handshake depende do teste no ambiente publicado.
 
-- logo sem deformação;
-- cabeçalho legível;
-- linha institucional laranja;
-- metadados/filtros;
-- totalizadores;
-- tabela legível;
-- rodapé e paginação sem corte.
+## Deploy
 
-Essa amostra valida o padrão visual, não substitui o teste dos PDFs reais em runtime com dados do Firestore. Os seis documentos individuais e os relatórios devem ser gerados e inspecionados no ambiente publicado antes do piloto.
-
-## Status financeiro
-
-As renderizações principal e fallback do Meu Piaget foram verificadas no código para usar:
-
-- **Regular** quando o saldo é não negativo;
-- **Pendente** quando o saldo é negativo;
-- **Conta bloqueada** como indicação independente.
-
-## Aviso do Caixa em Vendas
-
-O novo módulo observa re-renderizações da página Vendas e recria o aviso do estado real do Caixa quando o componente desaparece. O objetivo específico é preservar o aviso após abrir e fechar/cancelar uma venda pelo X.
-
-Esse comportamento depende de DOM/Firestore reais e deve ser confirmado no deploy conforme `TESTES.md`.
-
-## Segurança
-
-- As Rules restritivas continuam empacotadas.
-- Este ZIP **não ativa** as Rules no Firebase.
-- Não executar Marco Zero pelo deploy.
-- A ativação das Rules continua condicionada à regressão funcional completa desta candidata.
+Este pacote foi apenas gerado e validado localmente. Nenhum deploy é afirmado por esta documentação.

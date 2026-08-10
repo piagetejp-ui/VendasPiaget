@@ -17,18 +17,23 @@ service cloud.firestore {
       return request.auth.token.responsavelId;
     }
 
-    function familySessionValid() {
+    // RC2.7.13 — a família usa o mesmo padrão de espelho seguro já validado
+    // para a equipe. O backend cria familias_auth/{sessionId} antes de
+    // entregar o Custom Token. As Rules validam identidade, sessão e expiração
+    // usando campos simples do espelho, sem depender de leituras encadeadas em
+    // sessoes_meu_piaget / responsaveis_acesso durante cada consulta do portal.
+    function familyMirrorValid() {
       return isFamily()
-        && exists(/databases/$(database)/documents/sessoes_meu_piaget/$(request.auth.token.sessionId))
-        && get(/databases/$(database)/documents/sessoes_meu_piaget/$(request.auth.token.sessionId)).data.status == 'ativa'
-        && get(/databases/$(database)/documents/sessoes_meu_piaget/$(request.auth.token.sessionId)).data.responsavelId == familyId()
-        && get(/databases/$(database)/documents/sessoes_meu_piaget/$(request.auth.token.sessionId)).data.expiraEmTs > request.time;
+        && exists(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId))
+        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId)).data.ativo == true
+        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId)).data.firebaseUid == request.auth.uid
+        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId)).data.responsavelId == familyId()
+        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId)).data.sessionId == request.auth.token.sessionId
+        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId)).data.expiraEmMs > request.time.toMillis();
     }
 
     function familyActive() {
-      return familySessionValid()
-        && exists(/databases/$(database)/documents/responsaveis_acesso/$(familyId()))
-        && get(/databases/$(database)/documents/responsaveis_acesso/$(familyId())).data.ativo == true;
+      return familyMirrorValid();
     }
 
     function ownsStudent(studentId) {

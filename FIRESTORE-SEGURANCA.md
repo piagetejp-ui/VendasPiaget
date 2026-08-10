@@ -1,8 +1,8 @@
-# Firestore — segurança RC2.7.8
+# Firestore — segurança RC2.7.13
 
-## Situação de desenvolvimento
+## Situação de produção/piloto
 
-A regra abaixo não é adequada para operação real:
+A regra aberta abaixo é apenas referência histórica de desenvolvimento e **não deve ser usada**:
 
 ```text
 match /{document=**} {
@@ -10,29 +10,40 @@ match /{document=**} {
 }
 ```
 
-## Arquitetura preparada
+A RC2.7.13 mantém o Firestore fechado e separa a autorização da equipe da autorização das famílias.
 
-### Equipe Piaget
+## Equipe Piaget
 
-Firebase Authentication por e-mail/senha → backend valida ID Token + cadastro interno → Firestore Rules reconhece funcionário ativo.
+Fluxo mantido:
 
-### Meu Piaget
+Firebase Authentication por e-mail/senha → backend valida ID Token + `usuarios_acesso` → backend sincroniza `usuarios_auth/{uid}` → Firestore Rules reconhece funcionário ativo.
 
-CPF/senha ou CPF/matrícula → API Piaget valida credencial → cookie de sessão HttpOnly → API emite Firebase Custom Token técnico → Firestore Rules reconhece a família e os alunos vinculados.
+## Meu Piaget
 
-Não é necessário cadastrar manualmente todos os responsáveis no Firebase Authentication.
+Fluxo da RC2.7.13:
 
-## Domínio personalizado
+CPF/senha → API Piaget valida a credencial → cria `sessoes_meu_piaget/{sessionId}` → cria `familias_auth/{sessionId}` → emite Firebase Custom Token → navegador valida os claims → backend executa `family_auth_probe` → Firestore Rules reconhecem a sessão familiar.
 
-Antes de testar a identidade técnica no domínio oficial:
+O UID Firebase permanece estável por família. O documento `familias_auth/{sessionId}` é específico da sessão e contém:
 
-1. DNS de `meupiaget.com.br` deve estar válido na Vercel;
-2. HTTPS deve estar ativo;
-3. adicionar `meupiaget.com.br` em Firebase Authentication → Settings → Authorized domains;
-4. se a chave web do Firebase tiver restrições manuais por HTTP referrer no Google Cloud, adicionar o domínio também nessa lista.
+- `firebaseUid`;
+- `responsavelId`;
+- `sessionId`;
+- `alunosIds`;
+- `ativo`;
+- `expiraEm` / `expiraEmMs`.
 
-## Ativação das Rules
+As Rules verificam o espelho antes de permitir leituras do portal. Logout, bloqueio de acesso e revogação de sessões inativam o espelho correspondente.
 
-O pacote contém `firestore.rules` e `FIRESTORE-RULES-PARA-COLAR.txt`, mas **não publique essas Rules antes de validar a RC2.7.8 com as regras atuais**.
+Não é necessário cadastrar manualmente cada responsável no Firebase Authentication.
 
-A sequência completa está em `GUIA-ATIVACAO-SEGURANCA-RC2.7.11.md`.
+## Publicação das Rules
+
+O pacote contém duas cópias equivalentes:
+
+- `firestore.rules`;
+- `FIRESTORE-RULES-PARA-COLAR.txt`.
+
+Para o hotfix do Meu Piaget funcionar, **a aplicação RC2.7.13 e as Rules RC2.7.13 precisam estar publicadas**. O pacote não publica Rules automaticamente.
+
+Consulte `GUIA-HOTFIX-MEU-PIAGET-RC2.7.13.md` para o teste mínimo.

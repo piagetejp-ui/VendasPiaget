@@ -1,76 +1,73 @@
-# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.11
+# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.13
 
-**Candidata:** RC2.7.11 — Relatórios, PDFs e refinamentos
+**Candidata:** RC2.7.13 — hotfix de autenticação familiar + Marco Zero por data
 
-Base direta da RC2.7.10, cujo fluxo de cobrança direta foi validado pelo usuário em ambiente publicado. Esta candidata não redesenha checkout, InfinitePay, Caixa, API nem modelo financeiro: concentra a padronização documental e dois refinamentos de interface.
+Base direta: RC2.7.12. Esta candidata corrige o handshake entre o login do responsável e as Firestore Rules sem redesenhar os fluxos de checkout, InfinitePay, Caixa, carrinho multi-aluno ou a arquitetura financeira familiar.
 
-## O que entra nesta candidata
+## 1. Hotfix do Meu Piaget
 
-### Relatórios em PDF
+O fluxo esperado passa a ser:
 
-O usuário que já possui acesso à página pode emitir o relatório correspondente. O PDF não concede nenhuma permissão adicional e materializa o recorte já visível/autorizado no sistema.
+1. responsável informa CPF + senha;
+2. backend valida `responsaveis_financeiros` e `responsaveis_acesso`;
+3. backend cria `sessoes_meu_piaget/{sessionId}`;
+4. backend cria/atualiza `familias_auth/{sessionId}` para aquela sessão;
+5. backend emite Firebase Custom Token com `role=responsavel`, `responsavelId`, `sessionId` e `alunosIds`;
+6. navegador faz `signInWithCustomToken`;
+7. navegador confere os claims e chama `family_auth_probe`;
+8. somente após o probe o portal inicia leituras diretas permitidas pelo Firestore.
 
-Relatórios disponíveis:
+### Espelho `familias_auth`
 
-1. **Relatório de Vendas** — respeita o filtro ativo de Vendas.
-2. **Relatório de Cobranças** — respeita o filtro ativo de Cobranças.
-3. **Relatório de Caixa** — usa o recorte atual do Caixa (dia/mês/ano conforme a visão autorizada).
-4. **Relatório de Pedidos** — respeita categoria, situação, indicadores e busca aplicados na página.
-5. **Relatório de Movimentações** — disponível na conta familiar e no Meu Piaget, respeitando o filtro por aluno.
-6. **Relatório de Contas** — usa a busca ativa de Alunos e Contas e consolida a unidade financeira familiar.
+O UID Firebase continua estável por família. Cada sessão recebe seu próprio documento espelho, identificado pelo `sessionId`. O documento registra:
 
-Os relatórios usam A4, logo oficial da Escola Piaget, paleta azul/laranja do sistema, cabeçalho simples, filtros utilizados, totalizadores pertinentes, tabela paginada, data/hora e identificação de quem emitiu.
+- `firebaseUid`;
+- `responsavelId`;
+- `sessionId`;
+- `alunosIds`;
+- `ativo`;
+- `expiraEm`;
+- `expiraEmMs`;
+- `atualizadoEm`.
 
-### Documentos e comprovantes
+As Firestore Rules usam esse espelho para autorizar a família. Logout e revogação de sessões marcam o espelho como inativo.
 
-O conjunto documental fica padronizado nos seguintes nomes/funções:
+### Publicação obrigatória do hotfix
 
-1. **Comprovante de Venda** — composição e liquidação de uma venda específica.
-2. **Comprovante de Pagamento** — comprovação de uma movimentação/pagamento específico.
-3. **Fechamento de Caixa** — sessão específica, responsáveis e movimentos.
-4. **Demonstrativo de Valores em Aberto** — conta financeira familiar e pendências agrupadas por aluno.
-5. **Comunicado de Regularização** — documento familiar produzido no fechamento semanal.
-6. **Primeiro Acesso ao Meu Piaget** — CPF do responsável + matrícula no primeiro acesso; depois CPF + senha criada.
+**Backend/frontend e Firestore Rules devem ser atualizados para a RC2.7.13.** O pacote contém:
 
-O nome financeiro legado **Conta da Cantina** deixa de ser usado nos documentos financeiros.
+- `firestore.rules`;
+- `FIRESTORE-RULES-PARA-COLAR.txt`.
 
-## Refinamentos de interface
+O pacote não publica as Rules automaticamente.
 
-### Status financeiro no Meu Piaget
+## 2. Marco Zero por data — preservado da RC2.7.12
 
-O status principal da conta passa a ser somente:
+A data operacional de corte permanece:
 
-- **Regular** — saldo não negativo;
-- **Pendente** — saldo negativo.
+- **até 09/08/2026:** dados de desenvolvimento/testes antigos;
+- **a partir de 10/08/2026 00:00 (America/Fortaleza):** dados da implantação piloto, preservados.
 
-Bloqueio é uma condição separada e pode aparecer junto de **Pendente**. A conta não deve ser apresentada como “Confirmado”, “Aguardando pagamento” ou “Cancelado”.
+No Firestore, o início é registrado como `2026-08-10T03:00:00.000Z`.
 
-### Aviso do Caixa na página Vendas
+O Marco Zero continua fazendo backup, arquivando apenas registros anteriores ao corte classificados com segurança e reconstruindo as contas familiares pelas movimentações pós-corte. Registros sem data confiável são preservados.
 
-O estado do Caixa da Secretaria é um aviso permanente da página Vendas. Abrir uma nova venda e fechar/cancelar pelo X não deve remover o aviso. Ele só muda quando o estado real do caixa mudar.
+**Não execute o Marco Zero antes de validar novamente o login do responsável após publicar a RC2.7.13 + Rules.**
 
-Com caixa fechado, continuam disponíveis Pix, cartão e saldo; apenas Dinheiro depende de caixa aberto sob responsabilidade do operador.
+## 3. PDFs
 
-## Domínios
+Os cabeçalhos documentais continuam usando somente:
 
-- Responsáveis: `https://meupiaget.com.br`
-- Equipe: domínio técnico da Vercel já utilizado pelo projeto
+`/assets/logo-piaget-icon-v152.png`
 
-O roteamento corrigido na RC2.7.9 permanece preservado.
+A versão horizontal com “Escola Piaget” não é usada nos cabeçalhos dos PDFs ajustados.
 
-## Compatibilidade preservada
+## 4. Regras preservadas
 
-- cobrança direta validada na RC2.7.10;
-- venda online da Secretaria;
-- checkout/retorno InfinitePay;
-- conta financeira familiar;
-- carrinho multi-aluno;
-- Caixa único da Secretaria e períodos de responsabilidade;
-- 10 funções físicas em `/api` para o plano Vercel Hobby;
-- Marco Zero continua manual.
-
-A comparação normalizada de `/api` e `/server` com a RC2.7.10 não mostrou alteração funcional nesta candidata.
-
-## Segurança
-
-As Firestore Rules restritivas continuam incluídas, mas **não devem ser ativadas somente por publicar este ZIP**. Primeiro faça a regressão funcional da RC2.7.11, incluindo PDFs e pagamentos; depois siga `GUIA-ATIVACAO-SEGURANCA-RC2.7.11.md`.
+- `meupiaget.com.br` continua sendo o portal dos responsáveis.
+- O domínio técnico da Vercel continua sendo o portal da equipe.
+- Checkout e retorno InfinitePay não foram redesenhados.
+- Dinheiro continua exigindo caixa aberto e responsabilidade atual; Pix, cartão e saldo não dependem de caixa aberto.
+- Conta financeira continua familiar, com operações atribuídas ao aluno específico.
+- Status financeiro continua **Regular/Pendente**, com bloqueio como condição separada.
+- O Marco Zero continua sendo ação manual e única.
