@@ -1,72 +1,61 @@
-# Changelog — 1.6.0-rc2.7.10
+# Changelog — 1.6.0-rc2.7.11
 
-## Hotfix de cobrança direta
-- Corrigido o fluxo **Gerar cobrança / Regularizar saldo** usado pela Gestão e pelo Meu Piaget.
-- Removida dependência de `actorV141()`, função interna do módulo legado que não era pública e podia interromper o fluxo logo após fechar o diálogo de comprador.
-- Toda a sequência, do valor informado até a resposta de `/api/criar-checkout`, passa a ter tratamento de erro visível.
-- Se o modal-base não estiver mais disponível após a geração, o link é apresentado em diálogo de fallback em vez de desaparecer silenciosamente.
-- Nenhuma alteração funcional em venda online da Secretaria, domínio, Caixa, regras do Firestore ou integração server-side da InfinitePay.
+## Relatórios e PDFs
 
-# Changelog — 1.6.0-rc2.7.10
+- Adicionado módulo documental `23-document-reports.js`.
+- Adicionado botão **Emitir PDF** nas páginas autorizadas de Vendas, Cobranças, Caixa, Pedidos e Alunos e Contas.
+- Relatório de Vendas respeita o filtro ativo de canal/situação.
+- Relatório de Cobranças respeita o card/filtro ativo.
+- Relatório de Caixa respeita a visão autorizada de dia, mês ou ano.
+- Relatório de Pedidos usa somente os pedidos atualmente visíveis após categoria, situação, indicador e busca.
+- Relatório de Movimentações pode ser emitido na conta familiar da Equipe e no Meu Piaget, respeitando o filtro por aluno.
+- Relatório de Contas consolida famílias e usa a busca ativa de Alunos e Contas.
+- Criado padrão simples A4: logo oficial, paleta Piaget, metadados, totalizadores, tabela paginada e rodapé com emissão/usuário/página.
+- Fechamento de uma sessão de caixa recebe opção **Baixar fechamento em PDF**.
 
-## Domínio oficial e experiência do responsável
+## Documentos individuais
 
-- O endereço público do Meu Piaget foi centralizado em `https://meupiaget.com.br`.
-- `meupiaget.com.br` passa a ser a origem usada em links de venda online, regularização, primeiro acesso, redefinição de senha e retorno de pagamento.
-- O domínio técnico da Equipe pode continuar na Vercel; o webhook da InfinitePay pode usar `PUBLIC_API_BASE_URL` separadamente.
-- No domínio `meupiaget.com.br`, `/` e `/index.html` são roteados para `meu-piaget.html`; a área da Equipe não é apresentada ao responsável.
-- O `www.meupiaget.com.br` fica como redirecionamento 308 para o domínio raiz na configuração de domínio da Vercel.
+- `Conta da Cantina` deixa de ser o nome de documento financeiro e passa a **Demonstrativo de Valores em Aberto**.
+- Demonstrativo passa a trabalhar com a conta familiar e a agrupar pendências por aluno quando houver irmãos vinculados.
+- Fechamento semanal passa a gerar **Comunicado de Regularização**.
+- Primeiro Acesso ao Meu Piaget explicita responsável financeiro, CPF para login, matrícula e instruções de ativação.
+- Comprovante de Venda teve proporção da logo corrigida no cabeçalho e nas páginas de continuação.
+- Comprovante de Pagamento preserva a identidade documental Meu Piaget/Escola Piaget já existente.
 
-## Retorno da InfinitePay
+## Meu Piaget
 
-- O botão da página de retorno agora é **Voltar ao Meu Piaget**.
-- O retorno leva a `https://meupiaget.com.br/?retornoCheckout=1`, em vez da raiz da Equipe.
-- Ao retornar, o Meu Piaget atualiza a experiência e mostra confirmação do processamento do pagamento.
-- A autorização de checkout corrigida na RC2.7.7 foi preservada.
+- Situação financeira principal padronizada para **Regular** ou **Pendente**.
+- `Conta bloqueada` é apresentada separadamente como condição da conta.
+- Removido o uso visual de estados de pedido/pagamento como status global da conta.
 
-## Documentos e PDFs
+## Vendas / Caixa
 
-- Criado cabeçalho documental comum para documentos voltados à família, com logo oficial, hierarquia visual e identificação Meu Piaget.
-- PDF de primeiro acesso passa a trazer link clicável e QR Code para `meupiaget.com.br`.
-- Instruções distinguem primeiro acesso (CPF + matrícula) de acesso já ativado (CPF + senha criada), com orientação de procurar a Secretaria em caso de dificuldade.
-- PDF do fechamento semanal/regularização foi reorganizado por conta familiar e por aluno, com total, instruções, link e QR Code.
-- Comprovante PDF do responsável foi alinhado à mesma identidade documental.
+- O aviso do estado do Caixa da Secretaria volta a ser inserido sempre que Vendas é re-renderizada.
+- Fechar/cancelar uma nova venda pelo X não remove mais definitivamente o aviso de caixa fechado/aberto.
+- Regra financeira preservada: caixa fechado bloqueia somente Dinheiro; Pix, cartão e saldo continuam disponíveis.
 
-## Secretaria — venda presencial
+## Compatibilidade técnica
 
-- Caixa fechado ou sob responsabilidade de outro operador não bloqueia Pix, cartão ou saldo.
-- Somente **Dinheiro** fica indisponível sem caixa aberto sob responsabilidade do operador.
-- A validação de caixa para dinheiro permanece também no momento da confirmação.
-- Venda presencial não concluída passa a ser salva como rascunho local por até 12 horas.
-- Ao retornar à tela de Vendas, aparece **Continuar último carrinho** ou **Descartar**.
-- O rascunho preserva aluno/família, operação, itens, programações, quantidades e filtros; formas de pagamento não são restauradas.
-- Venda concluída ou descarte explícito remove o rascunho, evitando duplicidade.
+- Base: RC2.7.10, validada pelo usuário para cobrança direta.
+- `/api` e `/server`: sem diferenças funcionais versus RC2.7.10 após normalizar apenas o número da versão.
+- 10 funções serverless físicas em `/api`.
+- Nenhuma ativação automática das Firestore Rules.
+- Marco Zero continua manual.
 
-## Meu Piaget — refinamentos
+---
 
-- Removido o menu hambúrguer redundante do cabeçalho do Meu Piaget.
-- Login exibe estado **Entrando…** com indicador de carregamento enquanto a sessão é preparada.
-- Pedidos da família passam a mostrar explicitamente a data/período programado do lanche.
-- A ação **Detalhar** fica visualmente explícita nos cards de pedido.
-- Bloqueio semanal gera notificação acionável **Conta bloqueada por pendência → Regularizar agora**.
-- Regularização/desbloqueio gera notificação **Conta regularizada**.
+## Histórico resumido
 
-## Segurança
+### RC2.7.10 — hotfix de cobrança direta
+- Corrigido **Gerar cobrança / Regularizar saldo** na Gestão e no Meu Piaget.
+- Removida dependência não pública que podia encerrar silenciosamente o fluxo após o modal do comprador.
+- Tratamento de erro visível preservado.
 
-- Mantida a arquitetura da RC2.7.7: sessão familiar segura + identidade técnica Firebase, sem cadastro manual dos responsáveis no Firebase Authentication.
-- As novas Firestore Rules continuam incluídas no pacote, mas **não devem ser publicadas antes da validação da RC2.7.8 no domínio novo**.
-- Após o DNS ficar ativo, `meupiaget.com.br` deve ser adicionado em Firebase Authentication → Authorized domains antes do teste do Meu Piaget no domínio personalizado.
+### RC2.7.9 — hotfix de domínio
+- Corrigido `meupiaget.com.br/` para abrir o Meu Piaget sem expor a tela da Equipe.
+- Domínio técnico da Equipe preservado.
 
-## Compatibilidade
-
-- `/api` permanece com 10 funções físicas para o plano Vercel Hobby.
-- Marco Zero continua exclusivamente manual.
-- Núcleo contábil do caixa, sessões, responsabilidades e divergências foi preservado; a única mudança no módulo de caixa é a UX de seleção da forma de pagamento quando dinheiro está indisponível.
-
-## RC2.7.9 — hotfix de roteamento do domínio
-
-- Corrige a raiz `meupiaget.com.br/` servindo `index.html` da Equipe por precedência do filesystem da Vercel.
-- O domínio familiar agora usa redirect condicional por host antes dos rewrites: `/` e `/index.html` levam a `/meu-piaget.html`.
-- `meu-piaget.html` limpa visualmente o caminho com `history.replaceState`, mantendo `https://meupiaget.com.br` na barra.
-- `index.html` e `equipe.html` receberam fallback client-side por hostname para impedir exposição acidental da tela da Equipe no domínio familiar.
-- Nenhuma regra de negócio, checkout, caixa, Firestore ou InfinitePay foi alterada nesta hotfix.
+### RC2.7.8 — domínio e experiência pré-operação
+- Centralização dos links públicos em `meupiaget.com.br`.
+- Retorno da InfinitePay ao Meu Piaget.
+- PDFs familiares, notificações, rascunho de venda presencial e refinamentos da experiência do responsável.

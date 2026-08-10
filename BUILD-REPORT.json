@@ -1,42 +1,63 @@
 {
-  "version": "1.6.0-rc2.7.10",
-  "release": "RC2.7.9 — Hotfix roteamento domínio",
-  "generatedAt": "2026-08-08T20:55:00-03:00",
+  "version": "1.6.0-rc2.7.11",
+  "release": "RC2.7.11 — Relatórios, PDFs e refinamentos",
+  "generatedAt": "2026-08-10T08:51:34-03:00",
   "apiFunctions": 10,
-  "javascriptFilesTotal": 43,
-  "releaseJavaScriptFiles": 23,
+  "javascriptFilesTotalIncludingServiceWorker": 44,
+  "releaseJavaScriptFiles": 24,
   "releaseCssFiles": 1,
-  "releaseFrontendRawBytes": 1079651,
-  "releaseFrontendGzipBytesApprox": 272574,
-  "htmlLocalReferencesChecked": 83,
+  "releaseFrontendRawBytes": 1119814,
+  "releaseFrontendGzipBytesApprox": 284188,
+  "htmlLocalReferencesChecked": 86,
+  "htmlLocalReferencesMissing": 0,
   "serviceWorkerPrecacheItems": 9,
   "firestoreRulesLines": 156,
-  "domain": {
-    "family": "https://meupiaget.com.br",
-    "wwwRedirect": "https://meupiaget.com.br",
-    "team": "Vercel technical domain (unchanged)",
-    "dnsActivationExternal": true
-  },
-  "security": {
-    "familySessionCookieHttpOnly": true,
-    "familyCustomTokenBridge": true,
-    "manualParentFirebaseAuthImportRequired": false,
-    "restrictiveFirestoreRulesPackaged": true,
-    "restrictiveFirestoreRulesMustNotBeActivatedBeforeRegression": true,
-    "accessRateLimit": true
+  "documents": {
+    "reports": [
+      "Vendas",
+      "Cobranças",
+      "Caixa",
+      "Pedidos",
+      "Movimentações",
+      "Contas"
+    ],
+    "individual": [
+      "Comprovante de Venda",
+      "Comprovante de Pagamento",
+      "Fechamento de Caixa",
+      "Demonstrativo de Valores em Aberto",
+      "Comunicado de Regularização",
+      "Primeiro Acesso ao Meu Piaget"
+    ]
   },
   "validation": {
-    "nodeCheckFiles": 43,
+    "releaseNodeCheckFiles": 24,
+    "apiNodeCheckFiles": 10,
+    "serverNodeCheckFiles": 9,
+    "serviceWorkerNodeCheck": true,
     "jsonFilesParsed": 4,
-    "htmlLocalReferencesMissing": 0,
     "apiFunctionLimitOk": true,
-    "cashDiffOnlyVersionAndPaymentAvailabilityWrapper": true,
-    "realCpfLiteralsInStaticFrontend": 0,
-    "privateKeysEmbedded": false,
-    "rulesStaticBalanceOk": true,
-    "rulesOfficialEmulatorTested": false,
-    "runtimePdfVisualTested": false,
-    "httpSmokePages": 8,
-    "domainRootRoutingHotfix": true
+    "apiFunctionalDiffVsRc2710": false,
+    "serverFunctionalDiffVsRc2710": false,
+    "reportGeneratorMockTested": [
+      "Vendas",
+      "Cobranças",
+      "Pedidos",
+      "Contas",
+      "Caixa",
+      "Movimentações Equipe",
+      "Movimentações Meu Piaget",
+      "Fechamento de Caixa"
+    ],
+    "samplePdfRenderedAndInspected": true,
+    "realRuntimePdfVisualTested": false
+  },
+  "security": {
+    "restrictiveFirestoreRulesPackaged": true,
+    "restrictiveFirestoreRulesActivatedByThisPackage": false
+  },
+  "domain": {
+    "family": "https://meupiaget.com.br",
+    "team": "Vercel technical domain (unchanged)"
   }
 }

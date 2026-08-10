@@ -35,4 +35,4 @@ Antes de testar a identidade técnica no domínio oficial:
 
 O pacote contém `firestore.rules` e `FIRESTORE-RULES-PARA-COLAR.txt`, mas **não publique essas Rules antes de validar a RC2.7.8 com as regras atuais**.
 
-A sequência completa está em `GUIA-ATIVACAO-SEGURANCA-RC2.7.8.md`.
+A sequência completa está em `GUIA-ATIVACAO-SEGURANCA-RC2.7.11.md`.

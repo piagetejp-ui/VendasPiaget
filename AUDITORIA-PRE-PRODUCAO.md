@@ -1,39 +1,37 @@
-# Auditoria pré-produção — RC2.7.8
+# Auditoria pré-produção — RC2.7.11
 
 ## Estado da candidata
 
-A RC2.7.8 parte do checkout validado na RC2.7.7 e concentra mudanças de experiência pública, domínio, documentos e pequenos ajustes operacionais. Não há migração automática nem Marco Zero no deploy.
+A RC2.7.11 parte diretamente da RC2.7.10, cujo fluxo de cobrança direta foi validado pelo usuário. A candidata adiciona o sistema de relatórios/PDFs e dois refinamentos de interface: situação financeira Regular/Pendente e persistência do aviso do Caixa em Vendas.
+
+Não há migração automática, alteração funcional de `/api`/`server` nem Marco Zero no deploy.
 
 ## Desempenho
 
-- Meu Piaget continua orientado a celular e sem dependências novas no carregamento inicial.
-- Bibliotecas de PDF podem ser preparadas apenas quando necessárias no portal do responsável.
-- Arquivos de release permanecem versionados e com cache imutável; HTML, service worker e `version.json` não usam cache persistente.
-- A venda presencial em rascunho usa armazenamento local curto e não cria venda no Firestore antes da confirmação.
+- novo módulo documental é JavaScript estático e gera PDF apenas sob ação do usuário;
+- não adiciona nova função serverless;
+- bibliotecas de PDF continuam carregadas sob demanda quando necessário;
+- 10 funções físicas em `/api` permanecem.
 
 ## Segurança
 
 Mantidos:
 
-- senha do responsável validada por hash, nunca texto puro;
-- sessão familiar revogável e cookie seguro;
-- identidade técnica Firebase sem cadastro manual dos 187 responsáveis;
-- APIs sensíveis da equipe verificando Firebase ID Token;
-- checkout/confirmacão de pagamento no servidor;
-- validação de URL retornada pela InfinitePay;
-- separação entre domínio público da família e domínio técnico do webhook.
+- senha do responsável validada por hash;
+- sessão familiar revogável e identidade técnica Firebase;
+- validação server-side do checkout/InfinitePay;
+- domínio público `meupiaget.com.br` separado da experiência da Equipe;
+- Rules restritivas empacotadas, porém não ativadas automaticamente.
 
-### Firestore
-
-O pacote inclui Rules restritivas, porém elas **não são ativadas pela Vercel**. Enquanto o Firebase real continuar com regra de desenvolvimento, o banco continua exposto tecnicamente. A ativação deve ocorrer apenas depois de validar a RC2.7.8 no domínio `meupiaget.com.br` e adicionar o domínio em Firebase Authentication → Authorized domains.
+Enquanto o Firebase real permanecer com a regra de desenvolvimento aberta, o banco continua sendo um bloqueador de produção. A publicação das Rules deve acontecer somente depois da regressão funcional da RC2.7.11 e deve ser seguida de nova regressão.
 
 ## Riscos residuais
 
-1. Funcionários internos autenticados ainda possuem permissão técnica ampla nas Rules preparadas para preservar os módulos existentes; restringir por cargo depois da auditoria completa da Cantina.
-2. CSP estrita ainda exigiria retirar handlers/JavaScript inline legados; os demais headers de segurança permanecem ativos.
-3. PDFs são gerados no navegador com dados reais; a validação visual final deve ser feita no ambiente publicado, pois o ambiente local não possui os dados reais do Firestore.
-4. O domínio personalizado depende de DNS/HTTPS/Firebase Authorized Domains externos ao ZIP.
+1. Os PDFs reais usam dados de runtime/Firestore; o teste local não substitui inspeção visual no ambiente publicado.
+2. O aviso persistente do Caixa depende da re-renderização real da tela e deve ser testado com o X da venda presencial.
+3. Funcionários internos ainda possuem permissão técnica ampla nas Rules preparadas para preservar módulos legados; a segmentação mais fina por cargo pode ser revisada depois da auditoria completa da Cantina.
+4. CSP estrita ainda exigiria remover handlers JavaScript inline legados.
 
-## Recomendação de entrada em operação
+## Sequência recomendada
 
-DNS → domínio verde na Vercel → Authorized Domains no Firebase → deploy RC2.7.8 → regressão funcional → PDFs/checkout → Rules → regressão pós-Rules → piloto controlado → Marco Zero somente quando autorizado.
+Deploy RC2.7.11 → testar aviso do Caixa → testar Regular/Pendente → emitir todos os relatórios/documentos → regressão de pagamento → publicar Firestore Rules → regressão pós-Rules → piloto controlado → Marco Zero somente quando autorizado.

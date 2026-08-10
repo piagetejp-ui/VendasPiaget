@@ -1,95 +1,100 @@
-# Testes — RC2.7.8
+# Testes — RC2.7.11
 
-## 1. Regressão mínima após deploy
+## 1. Teste prioritário do aviso de Caixa em Vendas
 
-- Gestão/Secretaria: login e carregamento das telas principais.
-- Meu Piaget: CPF + senha e primeiro acesso CPF + matrícula.
-- Família com um aluno e família com irmãos.
-- Venda online da Secretaria e checkout InfinitePay.
-- Regularização de saldo pelo Meu Piaget.
-- Confirmar que o hotfix de autorização da RC2.7.7 continua funcionando.
+Com o Caixa da Secretaria fechado:
 
-## 2. Domínio `meupiaget.com.br`
+1. abrir **Vendas** e confirmar o aviso **Caixa da Secretaria fechado**;
+2. clicar em **Venda presencial**;
+3. não registrar nada;
+4. fechar/cancelar a venda pelo X;
+5. confirmar que, ao retornar para Vendas, o aviso continua visível;
+6. repetir a abertura/fechamento mais de uma vez;
+7. confirmar que Pix, cartão e saldo continuam disponíveis e Dinheiro permanece indisponível.
 
-Somente depois de DNS verde na Vercel e domínio adicionado ao Firebase Auth:
+Depois abrir o Caixa e confirmar que o aviso muda para o estado real. Fechar o Caixa novamente e confirmar nova atualização.
 
-- `https://meupiaget.com.br` abre diretamente o Meu Piaget;
-- a barra do navegador permanece em `meupiaget.com.br`;
-- `www.meupiaget.com.br` redireciona para o domínio raiz;
-- `https://meupiaget.com.br/equipe.html` não expõe a tela da Equipe;
-- login e reload mantêm a sessão;
-- logout encerra a sessão.
+## 2. Status da conta no Meu Piaget
 
-## 3. Pagamentos e retorno
+Testar três situações:
 
-- gerar checkout individual;
-- gerar checkout familiar/multi-aluno;
-- pagar/usar retorno de teste permitido pelo ambiente;
-- `obrigado.html` exibe **Voltar ao Meu Piaget**;
-- o botão leva para `meupiaget.com.br/?retornoCheckout=1`;
-- ao voltar, o Meu Piaget mostra confirmação e atualiza saldo/pedidos;
-- webhook continua apontando para o endereço técnico configurado em `PUBLIC_API_BASE_URL`;
-- Pagamentos pendentes não duplica cobrança.
+- saldo igual ou maior que zero → **Regular**;
+- saldo negativo → **Pendente**;
+- saldo negativo + bloqueio semanal/manual/limite → **Pendente** + indicação separada **Conta bloqueada**.
 
-## 4. PDFs e documentos
+O cabeçalho da conta não deve usar `Confirmado`, `Aguardando pagamento` ou `Cancelado` como situação financeira global.
 
-Gerar no ambiente publicado e conferir visualmente:
+## 3. Relatórios das páginas
 
-- PDF de primeiro acesso;
-- PDF de fechamento semanal/regularização;
-- comprovante PDF do responsável;
-- comprovante de venda e relatório de caixa já existentes.
+### Vendas
+- emitir em **Todas**, **Presenciais**, **Online**, **Pendentes** e **Concluídas**;
+- conferir se o título do filtro e as linhas correspondem ao recorte atual;
+- conferir total e quantidade.
 
-Verificar logo sem distorção, textos sem corte, valores, nome/turma, links clicáveis e QR Code. No primeiro acesso, conferir a orientação: CPF + matrícula; depois CPF + senha criada.
+### Cobranças
+- emitir em **Saldo em aberto**, **Contas bloqueadas**, **Links pendentes**, **Pagos recentes** e **Mostrar todas**;
+- conferir valor e situação.
 
-## 5. Caixa fechado
+### Caixa
+- Gestão: testar visão por ano, mês e dia;
+- Secretaria: testar visão do dia permitida ao perfil;
+- conferir sessões, entradas, saídas e movimentos;
+- abrir o detalhe de uma sessão e testar **Baixar fechamento em PDF**.
 
-Com caixa fechado:
+### Pedidos
+- aplicar categoria, situação, indicador rápido e busca;
+- emitir PDF e confirmar que somente os cards/linhas visíveis aparecem.
 
-- montar venda presencial normalmente;
-- Pix disponível;
-- cartão disponível;
-- saldo disponível;
-- Dinheiro desabilitado/recusado com aviso claro;
-- nenhuma tela força abertura do caixa só para Pix/cartão/saldo.
+### Alunos e Contas
+- emitir sem busca;
+- pesquisar um aluno/nome/matrícula e emitir novamente;
+- família com irmãos deve aparecer como uma única conta financeira;
+- situação deve ser **Regular/Pendente**, com bloqueio em coluna separada.
 
-Com caixa aberto sob responsabilidade do operador:
+### Movimentações
+- Equipe: abrir uma conta familiar → Movimentações → emitir com **Todos os alunos** e depois com um aluno específico;
+- Meu Piaget: repetir o teste no extrato familiar;
+- confirmar ausência de duplicidade visual de uma mesma operação econômica.
 
-- Dinheiro volta a ficar disponível;
-- confirmação em dinheiro continua revalidando a sessão/responsabilidade.
+## 4. Documentos individuais
 
-## 6. Rascunho de venda presencial
+Gerar e conferir visualmente:
 
-- montar carrinho presencial e fechar antes de pagar;
-- voltar à tela de Vendas e ver **Venda presencial em andamento**;
-- continuar e conferir aluno/família, itens, quantidades e programação;
-- confirmar que formas de pagamento não são restauradas;
-- concluir a venda e confirmar que o rascunho desaparece;
-- repetir e usar **Descartar**;
-- rascunho com mais de 12 horas deve ser ignorado/removido.
+1. **Comprovante de Venda**;
+2. **Comprovante de Pagamento**;
+3. **Fechamento de Caixa**;
+4. **Demonstrativo de Valores em Aberto**;
+5. **Comunicado de Regularização**;
+6. **Primeiro Acesso ao Meu Piaget**.
 
-## 7. Meu Piaget — interface
+Em todos, conferir:
 
-- cabeçalho sem menu hambúrguer redundante;
-- sino de notificações preservado;
-- login exibe **Entrando…** durante autenticação;
-- Pedidos da família mostra data/período do lanche;
-- **Detalhar** é visualmente explícito e expande corretamente.
+- logo oficial nítida e sem distorção;
+- paleta azul/laranja da Escola Piaget;
+- texto sem corte/sobreposição;
+- valores e identificadores corretos;
+- paginação quando houver mais de uma página;
+- link/QR do Meu Piaget quando aplicável.
 
-## 8. Notificações de cobrança
+No Primeiro Acesso, conferir: CPF completo do responsável financeiro + matrícula de qualquer aluno vinculado; depois CPF + senha criada.
 
-- fechamento semanal com conta negativa cria notificação **Conta bloqueada por pendência**;
-- **Regularizar agora** abre o fluxo correto;
-- após regularização, conta é desbloqueada e aparece **Conta regularizada**.
+## 5. Regressão curta de pagamentos — obrigatória
 
-## 9. Firestore Rules
+Como a RC2.7.10 é a base validada, confirmar após o deploy:
 
-**Não fazer esta etapa até todos os testes acima passarem.** Depois seguir `GUIA-ATIVACAO-SEGURANCA-RC2.7.8.md`.
+1. Gestão → Alunos e Contas → Gerar cobrança → link criado;
+2. Meu Piaget → Regularizar → InfinitePay abre;
+3. Secretaria → venda online → link interno → dados do comprador → InfinitePay;
+4. Pagamentos pendentes recebe a cobrança sem duplicidade;
+5. retorno pós-pagamento volta ao Meu Piaget.
 
+## 6. Domínio
 
-## Teste prioritário — RC2.7.10
-1. Gestão → Alunos e Contas → Gerar cobrança → confirmar comprador → link deve ser criado.
-2. Meu Piaget → Regularize agora → confirmar comprador → deve abrir InfinitePay.
-3. Em ambos os casos, se houver falha antes da API, uma mensagem explícita deve aparecer; o fluxo não pode fechar silenciosamente.
-4. Confirmar que Pagamentos pendentes recebe o registro ao iniciar a cobrança.
-5. Regressão curta: venda online da Secretaria continua gerando link normalmente.
+- `https://meupiaget.com.br` → Meu Piaget;
+- `https://www.meupiaget.com.br` → redireciona para o domínio raiz;
+- domínio técnico da Vercel → Equipe Piaget;
+- `/equipe.html` no domínio familiar não deve expor a área interna.
+
+## 7. Firestore Rules
+
+**Não ativar ainda.** Somente depois de todos os testes acima passarem. Em seguida, usar `GUIA-ATIVACAO-SEGURANCA-RC2.7.11.md` e fazer nova regressão após publicar as Rules.

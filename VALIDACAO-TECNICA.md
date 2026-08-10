@@ -1,78 +1,74 @@
-# Validação técnica — 1.6.0-rc2.7.10
+# Validação técnica — 1.6.0-rc2.7.11
 
 ## Resultado local
 
-- **43** arquivos JavaScript passaram em `node --check` (release, APIs, servidor e service worker).
-- **4** arquivos JSON finais foram parseados com sucesso.
-- **10** funções JavaScript físicas em `/api`, abaixo do limite observado de 12 da Vercel Hobby.
-- Única release física: `releases/1.6.0-rc2.7.10/`.
-- **83** referências locais dos cinco HTMLs principais foram conferidas, sem arquivo ausente.
-- Service worker contém **9** itens de precache, todos resolvendo para arquivos existentes (a raiz `/` é rota virtual).
-- Smoke HTTP estático retornou 200 para `/`, `index.html`, `equipe.html`, `meu-piaget.html`, `pagamento.html`, `obrigado.html`, `version.json` e `sw.js`.
-- Nenhuma referência de runtime às releases RC2.7.0–RC2.7.7.
-- Nenhuma referência de runtime ao domínio provisório `meu-piaget.vercel.app`.
-- Nenhum CPF real completo foi encontrado na base estática; apenas máscaras/placeholder podem existir na interface.
-- Nenhuma chave privada PEM/service-account foi encontrada no pacote.
+- **24** JavaScripts da release passaram em `node --check`.
+- **10** JavaScripts de `/api` passaram em `node --check`.
+- **9** JavaScripts de `/server` passaram em `node --check`.
+- `sw.js` também passou em `node --check`.
+- Total verificado: **44** arquivos JavaScript incluindo o service worker.
+- **4** arquivos JSON foram parseados com sucesso.
+- `/api` mantém **10** funções físicas, abaixo do limite de 12 observado no plano Vercel Hobby.
+- Única release física ativa: `releases/1.6.0-rc2.7.11/`.
+- **86** referências locais dos cinco HTMLs principais foram verificadas; **0** arquivo ausente.
+- Service worker possui **9** entradas no precache.
+- `firestore.rules` possui **156** linhas.
 
-## Caixa
+## Preservação da RC2.7.10
 
-`16-cash-responsibility.js` foi comparado com a RC2.7.7 validada. O diff possui somente dois pontos:
+Foi feita comparação normalizada, substituindo somente o literal de versão:
 
-1. identificador da versão;
-2. wrapper de abertura das formas de pagamento.
+- `/api`: **nenhuma diferença funcional** versus RC2.7.10;
+- `/server`: **nenhuma diferença funcional** versus RC2.7.10.
 
-Sessões, responsabilidade, divergências, cálculo de saldo e confirmação em dinheiro não foram reescritos. Quando o caixa não está apto, o wrapper bloqueia apenas Dinheiro e deixa Pix/cartão/saldo disponíveis.
+Assim, a lógica server-side de checkout, cobrança direta, confirmação e InfinitePay da base validada não foi reescrita nesta candidata.
 
-## Checkout
+## Relatórios
 
-A correção de autorização da RC2.7.7 foi preservada. A RC2.7.8 altera apenas a separação de URL pública da família e URL técnica do webhook:
+O novo `23-document-reports.js` passou por teste isolado com dependências simuladas para:
 
-- redirect da InfinitePay → `PUBLIC_FAMILY_BASE_URL` / `meupiaget.com.br`;
-- webhook → `PUBLIC_API_BASE_URL` / host técnico.
+- Relatório de Vendas;
+- Relatório de Cobranças;
+- Relatório de Pedidos;
+- Relatório de Contas;
+- Relatório de Caixa;
+- Relatório de Movimentações da Equipe;
+- Relatório de Movimentações do Meu Piaget;
+- Fechamento de Caixa individual.
 
-O destino financeiro/handle e a validação server-side do pagamento não foram alterados nesta rodada.
+Nos mocks, as rotinas chegaram à etapa de salvar os arquivos com os nomes esperados.
 
-## Firestore Rules
+## PDF / identidade visual
 
-- `firestore.rules` tem **156** linhas.
-- Validação estática confirmou chaves/parênteses balanceados.
-- Não existe `allow read, write: if true` no arquivo preparado.
-- O emulador oficial do Firebase não foi executado neste ambiente; a avaliação semântica final deve ser feita no Firebase real.
-- **As Rules preparadas não devem ser publicadas antes da regressão da RC2.7.8 no domínio personalizado.**
+Foi produzida uma amostra programática A4 do padrão do Relatório de Vendas usando a logo oficial e a paleta Piaget. A amostra foi renderizada para PNG a 160 DPI e inspecionada visualmente. O padrão apresentou:
 
-## PDFs
+- logo sem deformação;
+- cabeçalho legível;
+- linha institucional laranja;
+- metadados/filtros;
+- totalizadores;
+- tabela legível;
+- rodapé e paginação sem corte.
 
-Os PDFs desta candidata são gerados em runtime com dados do Firestore. Foram validados estruturalmente no código, incluindo logo, textos, links e QR Code, mas não foi possível renderizar uma amostra fiel com dados reais neste ambiente.
+Essa amostra valida o padrão visual, não substitui o teste dos PDFs reais em runtime com dados do Firestore. Os seis documentos individuais e os relatórios devem ser gerados e inspecionados no ambiente publicado antes do piloto.
 
-Antes do piloto real, gerar e inspecionar visualmente no ambiente publicado:
+## Status financeiro
 
-- primeiro acesso;
-- fechamento semanal/regularização;
-- comprovante do responsável;
-- comprovante de venda/fechamento de caixa quando aplicável.
+As renderizações principal e fallback do Meu Piaget foram verificadas no código para usar:
 
-A inspeção deve confirmar ausência de cortes, sobreposição, logo deformada e links incorretos.
+- **Regular** quando o saldo é não negativo;
+- **Pendente** quando o saldo é negativo;
+- **Conta bloqueada** como indicação independente.
 
-## Dependências externas ainda necessárias
+## Aviso do Caixa em Vendas
 
-1. terminar a transição DNS no Registro.br e criar os registros pedidos pela Vercel;
-2. aguardar domínio/HTTPS ficarem válidos na Vercel;
-3. adicionar `meupiaget.com.br` aos Authorized Domains do Firebase Authentication;
-4. configurar as variáveis Vercel recomendadas;
-5. fazer deploy e regressão;
-6. só depois ativar as Firestore Rules restritivas.
+O novo módulo observa re-renderizações da página Vendas e recria o aviso do estado real do Caixa quando o componente desaparece. O objetivo específico é preservar o aviso após abrir e fechar/cancelar uma venda pelo X.
 
-- RC2.7.9: removidos rewrites condicionais de `/` e `/index.html`; adicionados redirects condicionais por host e fallbacks client-side para o domínio familiar.
+Esse comportamento depende de DOM/Firestore reais e deve ser confirmado no deploy conforme `TESTES.md`.
 
+## Segurança
 
-## RC2.7.10
-- Hotfix restrita ao fluxo direto de cobrança em `12-portal-finalization.js`, além de versionamento/documentação.
-- Dependência não pública `actorV141()` eliminada do fluxo corrigido.
-- Fluxo inteiro agora protegido por `try/catch` com erro visível.
-- `node --check` executado com sucesso em 43 arquivos JavaScript.
-- 10 funções serverless em `/api` preservadas; nenhum endpoint foi adicionado/removido.
-- 83 referências locais dos cinco HTMLs principais verificadas sem arquivo ausente.
-- Smoke HTTP local: `/`, `index.html`, `equipe.html`, `meu-piaget.html`, `pagamento.html`, `obrigado.html`, `version.json` e o módulo corrigido responderam 200.
-- Teste isolado do fluxo corrigido com dependências simuladas confirmou chamada a `requestCheckoutV157` tanto em contexto Gestão quanto Responsável; no contexto Responsável confirmou redirecionamento e no contexto Gestão confirmou renderização do link.
-- `16-cash-responsibility.js` comparado à RC2.7.9 com normalização apenas da versão: funcionalmente idêntico.
-- Diretório `/api` comparado à RC2.7.9 com normalização apenas da versão: sem alterações funcionais.
+- As Rules restritivas continuam empacotadas.
+- Este ZIP **não ativa** as Rules no Firebase.
+- Não executar Marco Zero pelo deploy.
+- A ativação das Rules continua condicionada à regressão funcional completa desta candidata.

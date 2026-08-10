@@ -1,68 +1,76 @@
-# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.10
+# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.11
 
-**Candidata:** RC2.7.9 — Domínio e experiência pré-operação
+**Candidata:** RC2.7.11 — Relatórios, PDFs e refinamentos
 
-Baseada na RC2.7.7, cujo checkout foi validado pelo usuário após o hotfix de autorização. Esta candidata organiza a experiência pública do **Meu Piaget**, os documentos enviados às famílias e pequenos fluxos operacionais da Secretaria, sem redesenhar o pagamento ou a conta familiar.
+Base direta da RC2.7.10, cujo fluxo de cobrança direta foi validado pelo usuário em ambiente publicado. Esta candidata não redesenha checkout, InfinitePay, Caixa, API nem modelo financeiro: concentra a padronização documental e dois refinamentos de interface.
+
+## O que entra nesta candidata
+
+### Relatórios em PDF
+
+O usuário que já possui acesso à página pode emitir o relatório correspondente. O PDF não concede nenhuma permissão adicional e materializa o recorte já visível/autorizado no sistema.
+
+Relatórios disponíveis:
+
+1. **Relatório de Vendas** — respeita o filtro ativo de Vendas.
+2. **Relatório de Cobranças** — respeita o filtro ativo de Cobranças.
+3. **Relatório de Caixa** — usa o recorte atual do Caixa (dia/mês/ano conforme a visão autorizada).
+4. **Relatório de Pedidos** — respeita categoria, situação, indicadores e busca aplicados na página.
+5. **Relatório de Movimentações** — disponível na conta familiar e no Meu Piaget, respeitando o filtro por aluno.
+6. **Relatório de Contas** — usa a busca ativa de Alunos e Contas e consolida a unidade financeira familiar.
+
+Os relatórios usam A4, logo oficial da Escola Piaget, paleta azul/laranja do sistema, cabeçalho simples, filtros utilizados, totalizadores pertinentes, tabela paginada, data/hora e identificação de quem emitiu.
+
+### Documentos e comprovantes
+
+O conjunto documental fica padronizado nos seguintes nomes/funções:
+
+1. **Comprovante de Venda** — composição e liquidação de uma venda específica.
+2. **Comprovante de Pagamento** — comprovação de uma movimentação/pagamento específico.
+3. **Fechamento de Caixa** — sessão específica, responsáveis e movimentos.
+4. **Demonstrativo de Valores em Aberto** — conta financeira familiar e pendências agrupadas por aluno.
+5. **Comunicado de Regularização** — documento familiar produzido no fechamento semanal.
+6. **Primeiro Acesso ao Meu Piaget** — CPF do responsável + matrícula no primeiro acesso; depois CPF + senha criada.
+
+O nome financeiro legado **Conta da Cantina** deixa de ser usado nos documentos financeiros.
+
+## Refinamentos de interface
+
+### Status financeiro no Meu Piaget
+
+O status principal da conta passa a ser somente:
+
+- **Regular** — saldo não negativo;
+- **Pendente** — saldo negativo.
+
+Bloqueio é uma condição separada e pode aparecer junto de **Pendente**. A conta não deve ser apresentada como “Confirmado”, “Aguardando pagamento” ou “Cancelado”.
+
+### Aviso do Caixa na página Vendas
+
+O estado do Caixa da Secretaria é um aviso permanente da página Vendas. Abrir uma nova venda e fechar/cancelar pelo X não deve remover o aviso. Ele só muda quando o estado real do caixa mudar.
+
+Com caixa fechado, continuam disponíveis Pix, cartão e saldo; apenas Dinheiro depende de caixa aberto sob responsabilidade do operador.
 
 ## Domínios
 
-### Responsáveis
+- Responsáveis: `https://meupiaget.com.br`
+- Equipe: domínio técnico da Vercel já utilizado pelo projeto
 
-`https://meupiaget.com.br`
+O roteamento corrigido na RC2.7.9 permanece preservado.
 
-O domínio raiz é o endereço canônico. No mesmo projeto Vercel, acessos ao `/` por esse hostname são servidos como Meu Piaget. `www.meupiaget.com.br` deve redirecionar para o domínio raiz na configuração da Vercel.
+## Compatibilidade preservada
 
-### Equipe
-
-A Equipe Piaget pode continuar no domínio técnico já usado na Vercel. O domínio da Equipe não precisa aparecer em PDFs, QR Codes ou mensagens destinadas aos responsáveis.
-
-### Variáveis recomendadas na Vercel
-
-```text
-PUBLIC_FAMILY_BASE_URL=https://meupiaget.com.br
-PUBLIC_API_BASE_URL=https://vendas-piaget.vercel.app
-```
-
-A segunda variável mantém o webhook da InfinitePay em um endereço técnico estável. Se não for definida, o backend usa o host técnico da requisição quando adequado.
-
-## Fluxos preservados
-
-- primeiro acesso: CPF + matrícula;
-- acessos seguintes: CPF + senha criada;
-- recuperação de senha por link gerado pela Secretaria;
-- conta financeira familiar compartilhada;
-- carrinho multi-aluno;
-- programação de lanches por aluno, com cópia entre irmãos;
-- checkout e confirmação InfinitePay server-side;
+- cobrança direta validada na RC2.7.10;
 - venda online da Secretaria;
-- caixa físico com sessões e períodos de responsabilidade;
-- Marco Zero manual.
+- checkout/retorno InfinitePay;
+- conta financeira familiar;
+- carrinho multi-aluno;
+- Caixa único da Secretaria e períodos de responsabilidade;
+- 10 funções físicas em `/api` para o plano Vercel Hobby;
+- Marco Zero continua manual.
 
-## Mudanças desta candidata
-
-- retorno pós-InfinitePay volta ao Meu Piaget;
-- PDFs familiares padronizados e direcionados ao domínio oficial;
-- login do Meu Piaget com feedback visual de carregamento;
-- notificações de bloqueio e regularização da conta;
-- dinheiro indisponível não bloqueia Pix/cartão/saldo quando o caixa está fechado;
-- carrinho presencial não concluído pode ser recuperado;
-- menu redundante removido do Meu Piaget;
-- pedidos familiares mostram período do lanche e ação Detalhar.
+A comparação normalizada de `/api` e `/server` com a RC2.7.10 não mostrou alteração funcional nesta candidata.
 
 ## Segurança
 
-A arquitetura de segurança preparada na RC2.7.6/RC2.7.7 foi mantida. Os responsáveis não precisam ser cadastrados manualmente no Firebase Authentication; a identidade técnica é criada após o login próprio do Meu Piaget.
-
-**As Firestore Rules restritivas ainda não devem ser ativadas só por subir este ZIP.** Primeiro valide o domínio novo, login, checkout, PDFs e fluxos da Equipe. Depois siga `GUIA-ATIVACAO-SEGURANCA-RC2.7.9.md`.
-
-## Marco Zero
-
-O Marco Zero continua manual e não é executado no deploy.
-
-
-## Hotfix de domínio RC2.7.9
-A raiz do domínio familiar usa redirect por hostname e fallback no HTML para contornar a precedência do `index.html` físico na Vercel. O endereço exibido ao responsável permanece `https://meupiaget.com.br`.
-
-
-## RC2.7.10 — hotfix de cobrança direta
-Correção isolada do fluxo de regularização/entrada na conta após a RC2.7.9. A experiência e os demais módulos permanecem preservados.
+As Firestore Rules restritivas continuam incluídas, mas **não devem ser ativadas somente por publicar este ZIP**. Primeiro faça a regressão funcional da RC2.7.11, incluindo PDFs e pagamentos; depois siga `GUIA-ATIVACAO-SEGURANCA-RC2.7.11.md`.
