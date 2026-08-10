@@ -1,12 +1,12 @@
 const {initFirebase,json,parseBody,nowIso,audit}=require('./_utils');
-const {normalizeCpf,normalizeMatricula,tokenHash,randomToken,makePassword,verifyPassword,findResponsibleByCpf,familyPayload,createFamilySession,validateFamilySession,revokeFamilySessions,familySessionTokenFromReq,familyCookieHeader,familyFirebaseToken,enforceAccessRateLimit}=require('./_family-utils');
+const {normalizeCpf,normalizeMatricula,tokenHash,randomToken,makePassword,verifyPassword,findResponsibleByCpf,familyPayload,createFamilySession,validateFamilySession,revokeFamilySessions,familySessionTokenFromReq,familyCookieHeader,familyFirebaseToken,deactivateFamilyAuthMirror,enforceAccessRateLimit}=require('./_family-utils');
 
 function familyBaseUrl(req){const raw=String(process.env.PUBLIC_FAMILY_BASE_URL||'https://meupiaget.com.br');try{return new URL(raw).origin}catch(_){return 'https://meupiaget.com.br'}}
 function resetUrl(req,resetId,token){const base=familyBaseUrl(req);const sep=base.includes('?')?'&':'?';return `${base}${sep}resetFamilia=${encodeURIComponent(resetId)}&resetToken=${encodeURIComponent(token)}`}
 function secureCookie(req){return !/^localhost(?::\d+)?$/i.test(String(req.headers.host||''))&&!/^127\.0\.0\.1(?::\d+)?$/.test(String(req.headers.host||''))}
 function setFamilyCookie(req,res,token){res.setHeader('Set-Cookie',familyCookieHeader(token,{secure:secureCookie(req)}))}
 function clearFamilyCookie(req,res){res.setHeader('Set-Cookie',familyCookieHeader('',{clear:true,secure:secureCookie(req)}))}
-async function signedFamilyResponse(db,resp,session){return{ok:true,session:{sessionId:session.sessionId||session.id,expiraEm:session.expiraEm},firebaseToken:await familyFirebaseToken(db,{id:session.sessionId||session.id,responsavelId:resp.id}),...await familyPayload(db,resp)}}
+async function signedFamilyResponse(db,resp,session){const normalized={id:session.sessionId||session.id,responsavelId:resp.id,expiraEm:session.expiraEm};return{ok:true,session:{sessionId:normalized.id,expiraEm:normalized.expiraEm},firebaseToken:await familyFirebaseToken(db,normalized),...await familyPayload(db,resp)}}
 
 module.exports=async(req,res)=>{
   if(req.method!=='POST')return json(res,405,{error:'Método não permitido.'});
@@ -35,7 +35,7 @@ module.exports=async(req,res)=>{
       const supplied=familySessionTokenFromReq(req)||String(b.sessionToken||'');const s=await validateFamilySession(db,supplied);if(!s){clearFamilyCookie(req,res);return json(res,401,{error:'Sessão encerrada.'})}if(!familySessionTokenFromReq(req)&&supplied)setFamilyCookie(req,res,supplied);const snap=await db.collection('responsaveis_financeiros').doc(s.responsavelId).get();if(!snap.exists){clearFamilyCookie(req,res);return json(res,401,{error:'Acesso não encontrado.'})}const resp={id:snap.id,...snap.data()};return json(res,200,await signedFamilyResponse(db,resp,s));
     }
     if(acao==='sair'){
-      const s=await validateFamilySession(db,familySessionTokenFromReq(req)||String(b.sessionToken||''));if(s)await db.collection('sessoes_meu_piaget').doc(s.id).set({status:'encerrada',encerradoEm:nowIso()},{merge:true});clearFamilyCookie(req,res);return json(res,200,{ok:true});
+      const s=await validateFamilySession(db,familySessionTokenFromReq(req)||String(b.sessionToken||''));if(s){await db.collection('sessoes_meu_piaget').doc(s.id).set({status:'encerrada',encerradoEm:nowIso()},{merge:true});await deactivateFamilyAuthMirror(db,s.id,'logout')}clearFamilyCookie(req,res);return json(res,200,{ok:true});
     }
     if(acao==='solicitar_reset'){
       await enforceAccessRateLimit(db,req,'solicitar_reset',{limit:10,windowMinutes:15});
