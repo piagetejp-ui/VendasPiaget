@@ -40,7 +40,7 @@ module.exports=async function(req,res){
       if(String(decoded.role||'')!=='responsavel')return json(res,403,{error:'O token Firebase não possui o perfil de responsável.'});
       if(String(decoded.responsavelId||'')!==String(s.responsavelId||''))return json(res,403,{error:'A família da sessão e a família do token Firebase não correspondem.'});
       if(String(decoded.sessionId||'')!==String(s.id||''))return json(res,403,{error:'A sessão do token Firebase não corresponde à sessão ativa do Meu Piaget.'});
-      const mirror=await db.collection('familias_auth').doc(String(decoded.sessionId||'')).get();if(!mirror.exists)return json(res,409,{error:'O espelho seguro da família ainda não foi criado. Publique o backend da RC2.7.13 e tente novamente.'});
+      const mirror=await db.collection('familias_auth').doc(String(decoded.sessionId||'')).get();if(!mirror.exists)return json(res,409,{error:'O espelho seguro da família ainda não foi criado. Publique o backend da RC2.7.14 e tente novamente.'});
       const m=mirror.data()||{},expiresMs=Number(m.expiraEmMs||0);if(m.ativo!==true||String(m.firebaseUid||'')!==String(decoded.uid||'')||String(m.responsavelId||'')!==String(decoded.responsavelId||'')||String(m.sessionId||'')!==String(decoded.sessionId||'')||!Number.isFinite(expiresMs)||expiresMs<=Date.now())return json(res,403,{error:'O espelho seguro da família está inativo, expirado ou não corresponde à sessão atual.'});
       return json(res,200,{ok:true,uid:decoded.uid,responsavelId:decoded.responsavelId,sessionId:decoded.sessionId,alunosIds:Array.isArray(decoded.alunosIds)?decoded.alunosIds:[],authSchema:decoded.authSchema||null,mirrorAtivo:true,expiraEm:m.expiraEm||s.expiraEm||null});
     }
@@ -65,7 +65,7 @@ module.exports=async function(req,res){
       const s=await validateFamilySession(db,familySessionTokenFromReq(req));if(!s)return json(res,401,{error:'Sessão encerrada.'});
       const action=String(b.action||'acao_responsavel').slice(0,80),raw=b.data&&typeof b.data==='object'?b.data:{};
       const safe={};for(const k of ['alunoId','pedidoId','pagamentoId','vendaId','ocorrenciaId','autorizado','limiteCentavos','versao','origem'])if(raw[k]!==undefined)safe[k]=raw[k];
-      await db.collection('historico_auditoria').add({acao:action,dados:safe,usuarioId:`responsavel:${s.responsavelId}`,usuarioNome:'Responsável',usuarioPerfil:'responsavel',responsavelId:s.responsavelId,criadoEm:nowIso(),versao:'1.6.0-rc2.7.13'});
+      await db.collection('historico_auditoria').add({acao:action,dados:safe,usuarioId:`responsavel:${s.responsavelId}`,usuarioNome:'Responsável',usuarioPerfil:'responsavel',responsavelId:s.responsavelId,criadoEm:nowIso(),versao:'1.6.0-rc2.7.14'});
       return json(res,200,{ok:true});
     }
     return json(res,400,{error:'Ação inválida.'});

@@ -5,31 +5,30 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // RC2.7.14 — autenticações da equipe e da família são trilhos paralelos.
+    // Claims familiares usam get(..., padrão), para tokens internos sem essas
+    // claims nunca quebrarem a avaliação das regras.
     function isFamily() {
       return signedIn()
-        && request.auth.token.role == 'responsavel'
-        && request.auth.token.responsavelId is string
-        && request.auth.token.sessionId is string
-        && request.auth.token.alunosIds is list;
+        && request.auth.token.get('role', '') == 'responsavel'
+        && request.auth.token.get('responsavelId', '') is string
+        && request.auth.token.get('sessionId', '') is string
+        && request.auth.token.get('alunosIds', []) is list;
     }
 
     function familyId() {
-      return request.auth.token.responsavelId;
+      return request.auth.token.get('responsavelId', '');
     }
 
-    // RC2.7.13 — a família usa o mesmo padrão de espelho seguro já validado
-    // para a equipe. O backend cria familias_auth/{sessionId} antes de
-    // entregar o Custom Token. As Rules validam identidade, sessão e expiração
-    // usando campos simples do espelho, sem depender de leituras encadeadas em
-    // sessoes_meu_piaget / responsaveis_acesso durante cada consulta do portal.
+    // Família: espelho seguro criado pelo backend antes do Custom Token.
     function familyMirrorValid() {
       return isFamily()
-        && exists(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId))
-        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId)).data.ativo == true
-        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId)).data.firebaseUid == request.auth.uid
-        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId)).data.responsavelId == familyId()
-        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId)).data.sessionId == request.auth.token.sessionId
-        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.sessionId)).data.expiraEmMs > request.time.toMillis();
+        && exists(/databases/$(database)/documents/familias_auth/$(request.auth.token.get('sessionId', '')))
+        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.get('sessionId', ''))).data.get('ativo', false) == true
+        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.get('sessionId', ''))).data.get('firebaseUid', '') == request.auth.uid
+        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.get('sessionId', ''))).data.get('responsavelId', '') == familyId()
+        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.get('sessionId', ''))).data.get('sessionId', '') == request.auth.token.get('sessionId', '')
+        && get(/databases/$(database)/documents/familias_auth/$(request.auth.token.get('sessionId', ''))).data.get('expiraEmMs', 0) > request.time.toMillis();
     }
 
     function familyActive() {
@@ -39,30 +38,51 @@ service cloud.firestore {
     function ownsStudent(studentId) {
       return familyActive()
         && studentId is string
-        && request.auth.token.alunosIds.hasAny([studentId]);
+        && request.auth.token.get('alunosIds', []).hasAny([studentId]);
     }
 
     function ownsFamilyDoc(data) {
       return familyActive() && (
-        ('alunoId' in data && data.alunoId is string && request.auth.token.alunosIds.hasAny([data.alunoId]))
-        || ('alunosIds' in data && data.alunosIds is list && request.auth.token.alunosIds.hasAny(data.alunosIds))
-        || ('destinatariosAlunos' in data && data.destinatariosAlunos is list && request.auth.token.alunosIds.hasAny(data.destinatariosAlunos))
+        ('alunoId' in data && data.alunoId is string && request.auth.token.get('alunosIds', []).hasAny([data.alunoId]))
+        || ('alunosIds' in data && data.alunosIds is list && request.auth.token.get('alunosIds', []).hasAny(data.alunosIds))
+        || ('destinatariosAlunos' in data && data.destinatariosAlunos is list && request.auth.token.get('alunosIds', []).hasAny(data.destinatariosAlunos))
         || ('responsavelFinanceiroId' in data && data.responsavelFinanceiroId is string && data.responsavelFinanceiroId == familyId())
         || ('responsavelId' in data && data.responsavelId is string && data.responsavelId == familyId())
       );
     }
 
+    // Equipe: caminho principal pelo espelho usuarios_auth. Não depende de
+    // isFamily(), portanto um token interno sem claims familiares não bloqueia
+    // a Gestão/Secretaria.
     function staffMirrorExists() {
       return signedIn()
-        && !isFamily()
         && exists(/databases/$(database)/documents/usuarios_auth/$(request.auth.uid));
     }
 
+    // Fallback do piloto já validado anteriormente: confere diretamente os
+    // perfis internos conhecidos pelo mesmo UID ou pelo e-mail autenticado.
+    function staffKnownProfile(profileId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/usuarios_acesso/$(profileId))
+        && get(/databases/$(database)/documents/usuarios_acesso/$(profileId)).data.get('ativo', false) == true
+        && (
+          get(/databases/$(database)/documents/usuarios_acesso/$(profileId)).data.get('authUid', '') == request.auth.uid
+          || (
+            get(/databases/$(database)/documents/usuarios_acesso/$(profileId)).data.get('email', '') != ''
+            && get(/databases/$(database)/documents/usuarios_acesso/$(profileId)).data.get('email', '') == request.auth.token.get('email', '')
+          )
+        );
+    }
+
     function staffActive() {
-      // O espelho usuarios_auth só é criado/atualizado pelo backend após
-      // validar o Firebase ID Token contra usuarios_acesso.
-      return staffMirrorExists()
-        && get(/databases/$(database)/documents/usuarios_auth/$(request.auth.uid)).data.ativo == true;
+      return (
+        staffMirrorExists()
+        && get(/databases/$(database)/documents/usuarios_auth/$(request.auth.uid)).data.get('ativo', false) == true
+      )
+      || staffKnownProfile('lucas')
+      || staffKnownProfile('daniele')
+      || staffKnownProfile('evanda')
+      || staffKnownProfile('ruan');
     }
 
     // Equipe interna validada pelo backend no login.

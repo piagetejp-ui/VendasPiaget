@@ -1,29 +1,48 @@
-# Changelog — 1.6.0-rc2.7.13
+# Changelog — 1.6.0-rc2.7.14
 
-## Hotfix — login do responsável com Firestore fechado
+## Hotfix — autenticação consolidada da equipe + Meu Piaget
 
-- O login por CPF + senha continua sendo validado no backend antes de qualquer autenticação Firebase.
-- O backend passa a criar um espelho seguro por sessão em `familias_auth/{sessionId}` antes de emitir o Firebase Custom Token.
-- O UID Firebase permanece estável por família; cada login ganha um `sessionId` próprio e um espelho separado, permitindo sessões simultâneas sem criar um novo usuário Firebase a cada login.
-- As Firestore Rules deixam de depender de leituras encadeadas em `sessoes_meu_piaget` e `responsaveis_acesso` em toda consulta do portal e passam a validar o espelho `familias_auth`.
-- O espelho exige: sessão ativa, `responsavelId` correspondente, `sessionId` correspondente e prazo `expiraEmMs` posterior ao horário da requisição.
-- Logout e revogação de sessões também inativam o respectivo espelho em `familias_auth`.
-- O frontend valida os claims do Firebase após `signInWithCustomToken` e executa um `family_auth_probe` no backend antes de abrir o Firestore.
-- Se o backend estiver correto mas as Rules antigas ainda estiverem publicadas, o portal passa a informar explicitamente que as Firestore Rules da RC2.7.13 também precisam ser publicadas, em vez de exibir somente `Missing or insufficient permissions`.
-- Autenticação da equipe (`usuarios_auth`) não foi redesenhada.
+Esta release corrige a regressão em que o hotfix familiar da RC2.7.13 fazia Gestão/Secretaria voltarem a receber `Missing or insufficient permissions`.
+
+### Equipe
+
+- Restaura a lógica do hotfix de equipe que já havia funcionado no piloto.
+- `staffMirrorExists()` volta a depender apenas de sessão Firebase válida + `usuarios_auth/{uid}`; não depende de `!isFamily()`.
+- Claims opcionais são lidos com `request.auth.token.get(..., valorPadrao)`, evitando que tokens internos sem claims familiares quebrem a avaliação das Rules.
+- Mantém `usuarios_auth/{uid}` como caminho principal.
+- Mantém, durante o piloto, o fallback dos perfis internos conhecidos `lucas`, `daniele`, `evanda` e `ruan`, validados por UID ou e-mail contra `usuarios_acesso`.
+
+### Família
+
+- Preserva integralmente o hotfix da RC2.7.13.
+- `familias_auth/{sessionId}` continua sendo criado pelo backend antes do Custom Token.
+- O responsável continua restrito aos próprios alunos/conta/registros.
+- Logout/revogação continuam inativando o espelho familiar.
+- O `family_auth_probe` continua validando claims e espelho antes das leituras do portal.
+
+### Separação de trilhos
+
+- A autorização da equipe e a autorização da família são independentes.
+- Nenhuma das duas autenticações é definida como “não ser a outra”.
+- O `match /{document=**}` continua concedendo acesso global somente quando `staffActive()` é verdadeiro.
+- As permissões específicas do Meu Piaget continuam limitadas por `familyActive()`, vínculos de alunos e família.
 
 ## Compatibilidade preservada
 
-- Marco Zero por data da RC2.7.12 preservado integralmente: corte em 10/08/2026 00:00 — America/Fortaleza.
+- Marco Zero por data da RC2.7.12 preservado: corte em 10/08/2026 00:00 — America/Fortaleza.
 - Dados de 10/08/2026 em diante continuam protegidos como implantação piloto.
 - Logo simples nos PDFs preservada.
 - Checkout/InfinitePay, Caixa, carrinho multi-aluno, domínio e roteamento não foram redesenhados.
 - O pacote não publica Firestore Rules nem executa deploy automaticamente.
 - O Marco Zero continua manual.
+- Pacote de implantação enxuto: somente a release ativa permanece dentro de `releases/`.
 
 ---
 
 ## Histórico resumido
+
+### RC2.7.13 — hotfix do Meu Piaget
+- Criou `familias_auth/{sessionId}` e o handshake familiar seguro com Custom Token.
 
 ### RC2.7.12 — Marco Zero por data + logo simples nos PDFs
 - Marco Zero passou de reset global para corte por data.
@@ -39,6 +58,3 @@
 
 ### RC2.7.10 — hotfix de cobrança direta
 - Corrigido Gerar cobrança / Regularizar saldo na Gestão e no Meu Piaget.
-
-### RC2.7.9 — hotfix de domínio
-- Corrigido `meupiaget.com.br/` para abrir o Meu Piaget.

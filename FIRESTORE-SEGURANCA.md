@@ -1,4 +1,4 @@
-# Firestore — segurança RC2.7.13
+# Firestore — segurança RC2.7.14
 
 ## Situação de produção/piloto
 
@@ -10,7 +10,7 @@ match /{document=**} {
 }
 ```
 
-A RC2.7.13 mantém o Firestore fechado e separa a autorização da equipe da autorização das famílias.
+A RC2.7.14 mantém o Firestore fechado e separa a autorização da equipe da autorização das famílias.
 
 ## Equipe Piaget
 
@@ -20,7 +20,7 @@ Firebase Authentication por e-mail/senha → backend valida ID Token + `usuarios
 
 ## Meu Piaget
 
-Fluxo da RC2.7.13:
+Fluxo da RC2.7.14:
 
 CPF/senha → API Piaget valida a credencial → cria `sessoes_meu_piaget/{sessionId}` → cria `familias_auth/{sessionId}` → emite Firebase Custom Token → navegador valida os claims → backend executa `family_auth_probe` → Firestore Rules reconhecem a sessão familiar.
 
@@ -44,6 +44,6 @@ O pacote contém duas cópias equivalentes:
 - `firestore.rules`;
 - `FIRESTORE-RULES-PARA-COLAR.txt`.
 
-Para o hotfix do Meu Piaget funcionar, **a aplicação RC2.7.13 e as Rules RC2.7.13 precisam estar publicadas**. O pacote não publica Rules automaticamente.
+Para o hotfix do Meu Piaget funcionar, **a aplicação RC2.7.14 e as Rules RC2.7.14 precisam estar publicadas**. O pacote não publica Rules automaticamente.
 
-Consulte `GUIA-HOTFIX-MEU-PIAGET-RC2.7.13.md` para o teste mínimo.
+Consulte `GUIA-HOTFIX-MEU-PIAGET-RC2.7.14.md` para o teste mínimo.
