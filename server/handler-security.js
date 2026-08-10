@@ -65,7 +65,7 @@ module.exports=async function(req,res){
       const s=await validateFamilySession(db,familySessionTokenFromReq(req));if(!s)return json(res,401,{error:'Sessão encerrada.'});
       const action=String(b.action||'acao_responsavel').slice(0,80),raw=b.data&&typeof b.data==='object'?b.data:{};
       const safe={};for(const k of ['alunoId','pedidoId','pagamentoId','vendaId','ocorrenciaId','autorizado','limiteCentavos','versao','origem'])if(raw[k]!==undefined)safe[k]=raw[k];
-      await db.collection('historico_auditoria').add({acao:action,dados:safe,usuarioId:`responsavel:${s.responsavelId}`,usuarioNome:'Responsável',usuarioPerfil:'responsavel',responsavelId:s.responsavelId,criadoEm:nowIso(),versao:'1.6.0-rc2.7.19'});
+      await db.collection('historico_auditoria').add({acao:action,dados:safe,usuarioId:`responsavel:${s.responsavelId}`,usuarioNome:'Responsável',usuarioPerfil:'responsavel',responsavelId:s.responsavelId,criadoEm:nowIso(),versao:'1.6.0-rc2.7.20'});
       return json(res,200,{ok:true});
     }
     return json(res,400,{error:'Ação inválida.'});
