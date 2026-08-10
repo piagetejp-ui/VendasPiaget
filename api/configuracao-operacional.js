@@ -49,7 +49,7 @@ async function saveSystemConfig(db,body,actor){
   const activeCounts=new Map(accountsSnap.docs.map(d=>[String(d.data()?.responsavelId||d.id),Math.max(1,Number(d.data()?.quantidadeAlunosAtivos||1))]));
   const now=nowIso(),ops=[];let reduced=0,blockedChanged=0;
   accountsSnap.docs.forEach(d=>{const acc=d.data()||{},family=String(acc.responsavelId||d.id),count=Math.max(1,activeCounts.get(family)||Number(acc.quantidadeAlunosAtivos||0)||1),max=baseLimit*count,current=Math.max(0,Math.round(Number(acc.limiteFiadoCentavos||0))),next=Math.min(current,max),net=accountNet(acc),blocked=Boolean(net<0&&next>0&&Math.abs(net)>=next);if(next<current)reduced++;if(blocked!==Boolean(acc.bloqueadoPorLimite))blockedChanged++;ops.push({ref:d.ref,data:{quantidadeAlunosAtivos:count,limiteBasePorAlunoCentavos:baseLimit,limiteMaximoFamiliaCentavos:max,limiteFiadoCentavos:next,bloqueadoPorLimite:blocked,atualizadoEm:now}})});
-  const cfgPatch={limiteMaximoFiadoCentavos:baseLimit,valorMinimoCheckoutPositivoCentavos:minCredit,quantidadePadraoSalgados:defaultSnacks,bloqueioSemanalSaldoAtivo:weekly,diaBloqueioSemanalSaldo:'sexta',versao:'1.6.0-rc2.7.18',atualizadoEm:now};
+  const cfgPatch={limiteMaximoFiadoCentavos:baseLimit,valorMinimoCheckoutPositivoCentavos:minCredit,quantidadePadraoSalgados:defaultSnacks,bloqueioSemanalSaldoAtivo:weekly,diaBloqueioSemanalSaldo:'sexta',versao:'1.6.0-rc2.7.19',atualizadoEm:now};
   // O volume atual cabe em um batch. Mantemos fallback em blocos para crescimento futuro.
   const all=[{ref:cfgRef,data:cfgPatch},...ops];
   for(let i=0;i<all.length;i+=400){const batch=db.batch();all.slice(i,i+400).forEach(x=>batch.set(x.ref,x.data,{merge:true}));await batch.commit()}
