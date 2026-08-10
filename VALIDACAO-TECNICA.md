@@ -1,8 +1,8 @@
-# Validação técnica — 1.6.0-rc2.7.14
+# Validação técnica — 1.6.0-rc2.7.15
 
 ## Escopo
 
-RC2.7.14 foi derivada diretamente da RC2.7.13. A mudança funcional desta candidata está concentrada nas Firestore Rules para consolidar, na mesma publicação, os dois trilhos de autenticação:
+RC2.7.15 foi derivada diretamente da RC2.7.13. A mudança funcional desta candidata está concentrada nas Firestore Rules para consolidar, na mesma publicação, os dois trilhos de autenticação:
 
 1. equipe por Firebase Authentication + `usuarios_auth`;
 2. fallback de piloto por `usuarios_acesso` para os perfis internos já conhecidos;
@@ -20,10 +20,10 @@ O backend e o frontend de autenticação familiar da RC2.7.13 foram preservados 
 - `node --check` no `sw.js`;
 - parse dos 4 JSONs ativos;
 - verificação de 86 referências locais dos HTMLs, sem referência ausente;
-- HTMLs, Vercel e service worker apontando para `releases/1.6.0-rc2.7.14/`;
+- HTMLs, Vercel e service worker apontando para `releases/1.6.0-rc2.7.15/`;
 - somente uma pasta dentro de `releases/`;
 - pacote com 89 arquivos, abaixo do limite de 100 arquivos que vinha bloqueando a subida pela interface do GitHub;
-- igualdade entre `firestore.rules`, `FIRESTORE-RULES-PARA-COLAR.txt` e `FIRESTORE-RULES-RC2.7.14-AUTENTICACAO-CONSOLIDADA.txt`;
+- igualdade entre `firestore.rules`, `FIRESTORE-RULES-PARA-COLAR.txt` e `FIRESTORE-RULES-RC2.7.15-AUTENTICACAO-CONSOLIDADA.txt`;
 - ausência de `allow read, write: if true`;
 - presença simultânea de `familias_auth` e `usuarios_auth`;
 - presença do fallback `staffKnownProfile()` para `lucas`, `daniele`, `evanda` e `ruan`;
@@ -32,7 +32,7 @@ O backend e o frontend de autenticação familiar da RC2.7.13 foram preservados 
 
 ## Teste obrigatório publicado
 
-Depois de publicar **aplicação + Firestore Rules da RC2.7.14** na mesma implantação:
+Depois de publicar **aplicação + Firestore Rules da RC2.7.15** na mesma implantação:
 
 1. Gestão: entrar e carregar o Resumo;
 2. Secretaria: entrar e abrir Vendas;

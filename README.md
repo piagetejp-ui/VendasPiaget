@@ -1,6 +1,6 @@
-# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.14
+# Sistema de Vendas Escola Piaget — 1.6.0-rc2.7.15
 
-**Candidata:** RC2.7.14 — autenticação consolidada da equipe + Meu Piaget
+**Candidata:** RC2.7.15 — autenticação consolidada da equipe + Meu Piaget
 
 Base direta: RC2.7.13. Esta candidata combina o hotfix familiar da RC2.7.13 com a lógica de equipe do hotfix piloto que já havia sido validado, sem redesenhar checkout, InfinitePay, Caixa, carrinho multi-aluno ou a arquitetura financeira familiar.
 
@@ -36,11 +36,11 @@ As permissões familiares continuam restritas à própria família e aos alunos 
 
 ### Publicação obrigatória
 
-**Aplicação e Firestore Rules precisam ser atualizadas juntas para a RC2.7.14.** O pacote contém:
+**Aplicação e Firestore Rules precisam ser atualizadas juntas para a RC2.7.15.** O pacote contém:
 
 - `firestore.rules`;
 - `FIRESTORE-RULES-PARA-COLAR.txt`;
-- `FIRESTORE-RULES-RC2.7.14-AUTENTICACAO-CONSOLIDADA.txt`.
+- `FIRESTORE-RULES-RC2.7.15-AUTENTICACAO-CONSOLIDADA.txt`.
 
 O pacote não publica as Rules automaticamente.
 
@@ -75,6 +75,6 @@ Os cabeçalhos documentais continuam usando somente:
 
 Dentro de `releases/` existe somente a release ativa:
 
-`releases/1.6.0-rc2.7.14/`
+`releases/1.6.0-rc2.7.15/`
 
 As releases anteriores não são incluídas no pacote de implantação, evitando o limite de quantidade de arquivos da interface do GitHub.

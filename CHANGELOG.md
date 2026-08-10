@@ -1,4 +1,4 @@
-# Changelog — 1.6.0-rc2.7.14
+# Changelog — 1.6.0-rc2.7.15
 
 ## Hotfix — autenticação consolidada da equipe + Meu Piaget
 

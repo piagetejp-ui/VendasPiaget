@@ -1,44 +1,46 @@
 {
-  "version": "1.6.0-rc2.7.14",
-  "release": "RC2.7.14 — autenticação consolidada da equipe + Meu Piaget",
-  "generatedAt": "2026-08-10T10:51:00-03:00",
-  "base": "1.6.0-rc2.7.13",
+  "version": "1.6.0-rc2.7.15",
+  "release": "RC2.7.15 — hotfix Meu Piaget sem alterar autenticação da equipe",
+  "generatedAt": "2026-08-10T11:07:00-03:00",
+  "base": "1.6.0-rc2.7.14",
   "apiFunctions": 10,
   "serverModules": 10,
   "releaseJavaScriptFiles": 24,
   "releaseCssFiles": 1,
   "releaseFrontendRawBytes": 1125034,
-  "releaseFrontendGzipBytesApprox": 285626,
+  "releaseFrontendGzipBytesApprox": 285628,
   "htmlLocalReferencesChecked": 86,
   "htmlLocalReferencesMissing": 0,
   "serviceWorkerPrecacheItems": 9,
-  "firestoreRulesLines": 181,
+  "firestoreRulesLines": 189,
   "deployFileCount": 89,
   "changes": {
-    "staffAuthConsolidation": {
-      "primaryMirrorCollection": "usuarios_auth",
-      "staffMirrorIndependentFromFamilyCheck": true,
-      "safeOptionalClaims": true,
-      "pilotKnownProfilesFallback": ["lucas", "daniele", "evanda", "ruan"],
-      "fallbackMatchesUidOrEmail": true
+    "familyRulesIsolation": {
+      "staffGuardByRoleClaim": true,
+      "familyRequestsSkipStaffDocumentLookups": true,
+      "familyMirrorCollection": "familias_auth"
     },
-    "familyAuthPreservedFromRc2713": {
-      "mirrorCollection": "familias_auth",
-      "serverMirrorBeforeCustomToken": true,
-      "rulesUseMirror": true,
-      "securityProbe": "family_auth_probe",
-      "frontendClaimValidation": true,
-      "firebaseUidStablePerFamily": true,
-      "mirrorDocumentPerSession": true
+    "staffAuthPreserved": {
+      "primaryMirrorCollection": "usuarios_auth",
+      "pilotKnownProfilesFallback": [
+        "lucas",
+        "daniele",
+        "evanda",
+        "ruan"
+      ],
+      "fallbackMatchesUidOrEmail": true,
+      "staffLoginCodeChanged": false,
+      "staffBootstrapChanged": false
     },
     "preserved": {
       "marcoZeroCutoff": "2026-08-10T03:00:00.000Z",
       "pdfSimpleLogo": "/assets/logo-piaget-icon-v152.png",
-      "checkoutInfinitePayUnchanged": true
+      "checkoutInfinitePayUnchanged": true,
+      "familyCustomTokenFlowUnchanged": true
     },
     "deploymentPackage": {
       "onlyActiveReleaseIncluded": true,
-      "activeRelease": "1.6.0-rc2.7.14",
+      "activeRelease": "1.6.0-rc2.7.15",
       "fileCountBelow100": true
     }
   },
@@ -56,10 +58,12 @@
     "familyHotfixPreserved": true,
     "firestoreRulesCompilerTested": false,
     "firestoreRuntimeTested": false,
-    "marcoZeroLogicPreserved": true
+    "marcoZeroLogicPreserved": true,
+    "staffRuntimeCodeUnchangedFromBase": true,
+    "familyRequestsGuardedFromStaffLookups": true
   },
   "deployment": {
     "performed": false,
-    "note": "Pacote gerado e validado localmente; publicar aplicação e Firestore Rules da RC2.7.14 antes de testar os três perfis."
+    "note": "Pacote gerado localmente. Publicar as Firestore Rules da RC2.7.15 e testar primeiro Secretaria, depois Gestão, depois Meu Piaget. Nenhum deploy foi realizado por este processo."
   }
 }

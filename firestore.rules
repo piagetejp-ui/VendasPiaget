@@ -5,7 +5,7 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // RC2.7.14 — autenticações da equipe e da família são trilhos paralelos.
+    // RC2.7.15 — autenticações da equipe e da família são trilhos paralelos.
     // Claims familiares usam get(..., padrão), para tokens internos sem essas
     // claims nunca quebrarem a avaliação das regras.
     function isFamily() {
@@ -75,14 +75,22 @@ service cloud.firestore {
     }
 
     function staffActive() {
-      return (
-        staffMirrorExists()
-        && get(/databases/$(database)/documents/usuarios_auth/$(request.auth.uid)).data.get('ativo', false) == true
-      )
-      || staffKnownProfile('lucas')
-      || staffKnownProfile('daniele')
-      || staffKnownProfile('evanda')
-      || staffKnownProfile('ruan');
+      // RC2.7.15 — guard clause exclusivamente por claim.
+      // Para tokens de responsável, encerra aqui sem consultar usuarios_auth
+      // ou perfis internos. Para Gestão/Secretaria, o caminho abaixo permanece
+      // idêntico ao hotfix já validado no piloto.
+      return signedIn()
+        && request.auth.token.get('role', '') != 'responsavel'
+        && (
+          (
+            staffMirrorExists()
+            && get(/databases/$(database)/documents/usuarios_auth/$(request.auth.uid)).data.get('ativo', false) == true
+          )
+          || staffKnownProfile('lucas')
+          || staffKnownProfile('daniele')
+          || staffKnownProfile('evanda')
+          || staffKnownProfile('ruan')
+        );
     }
 
     // Equipe interna validada pelo backend no login.
