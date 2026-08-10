@@ -110,7 +110,7 @@ async function audit(db, action, data={}){
     pagamentoId: data.pagamentoId || data.orderNsu || null,
     pedidoId: data.pedidoId || null,
     criadoEm: now,
-    versao: '1.6.0-rc2.7.16'
+    versao: '1.6.0-rc2.7.18'
   });
 }
 function notificationPolicyV165(type){
@@ -174,7 +174,7 @@ async function notify(db, payload={}){
     resolvidoEm:null,
     resolvidoPorId:null,
     resolvidoPorNome:null,
-    versao:'1.6.0-rc2.7.16'
+    versao:'1.6.0-rc2.7.18'
   });
 }
 async function getStudent(db, alunoId){
@@ -204,7 +204,9 @@ async function findOpenCashSession(db, caixaId='', point='secretaria', shift='',
     if(snap.exists)rows=[{id:snap.id,...(snap.data()||{})}];
   }
   if(!rows.length){
-    const snap=await db.collection('sessoes_caixa').get();
+    // RC2.7.18: nunca varrer todo o histórico de caixas para localizar o caixa aberto.
+    // O filtro por status é indexável e mantém a leitura proporcional apenas às sessões abertas.
+    const snap=await db.collection('sessoes_caixa').where('status','==','aberto').limit(20).get();
     rows=(snap.docs||[]).map(d=>({id:d.id,...d.data()}));
   }
   rows=rows.filter(x=>x.status==='aberto'&&(!point||x.ponto===point)&&(!(point==='cantina'&&shift)||!x.turno||x.turno===shift));
@@ -294,7 +296,7 @@ async function reserveUniformOrder(db, body, actor, student, customer){
   const adult=(model.tamanhosAdultos||['P','M','G','GG','XGG']).map(x=>String(x).toUpperCase()).includes(size),normalizedGender=adult?gender:'';if(adult&&!['masculino','feminino'].includes(normalizedGender))throw Object.assign(new Error('Selecione Masculino ou Feminino (Baby Look) para tamanhos adultos.'),{status:400});
   const stock=stockSnap.exists?stockSnap.data():{},available=stock.configurado?Math.max(0,cents(stock.quantidadeFisica)-cents(stock.quantidadeReservada)):0,unit=uniformVariantPrice(stock,model,size);if(unit<=0)throw Object.assign(new Error('Preço desta variação ainda não foi configurado.'),{status:409});
   const total=unit*qty,saldoAtual=accountNet(acc),useBalance=body.usarSaldo===true,creditUsed=useBalance?Math.min(Math.max(0,saldoAtual),total):0,debtRequired=Math.max(0,-saldoAtual),required=total-creditUsed+debtRequired,orderRef=db.collection('pedidos_farda').doc(),now=nowIso(),reservePreview=Math.min(available,qty),productionPreview=Math.max(0,qty-reservePreview);
-  await orderRef.set({id:orderRef.id,tipoPedido:'farda',alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,turno:student.turno||null,matricula:student.matricula||null,responsavelFinanceiro:student.responsavelFinanceiro||null,produto:model.nome||'Camisa de farda',modeloFardaId:model.id,tamanho:size,modelo:normalizedGender,quantidade:qty,precoUnitarioCentavos:unit,totalCentavos:total,usarSaldo:useBalance,valorSaldoPrevistoCentavos:creditUsed,valorRegularizacaoPrevistoCentavos:debtRequired,statusPagamento:required>0?'aguardando_pagamento':'pago_com_saldo',statusAtendimento:'aguardando_pagamento',statusAplicacao:'pendente',quantidadePrevistaReserva:reservePreview,quantidadePrevistaProducao:productionPreview,saldoNoMomentoCentavos:saldoAtual,valorCheckoutPrevistoCentavos:required,customer:customer||null,origem:actor.perfil==='responsavel'?'portal_responsavel':'operacao_interna',solicitadoVia:actor.perfil==='responsavel'?'portal_responsavel':'secretaria',criadoPor:actor.id,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'});
+  await orderRef.set({id:orderRef.id,tipoPedido:'farda',alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,turno:student.turno||null,matricula:student.matricula||null,responsavelFinanceiro:student.responsavelFinanceiro||null,produto:model.nome||'Camisa de farda',modeloFardaId:model.id,tamanho:size,modelo:normalizedGender,quantidade:qty,precoUnitarioCentavos:unit,totalCentavos:total,usarSaldo:useBalance,valorSaldoPrevistoCentavos:creditUsed,valorRegularizacaoPrevistoCentavos:debtRequired,statusPagamento:required>0?'aguardando_pagamento':'pago_com_saldo',statusAtendimento:'aguardando_pagamento',statusAplicacao:'pendente',quantidadePrevistaReserva:reservePreview,quantidadePrevistaProducao:productionPreview,saldoNoMomentoCentavos:saldoAtual,valorCheckoutPrevistoCentavos:required,customer:customer||null,origem:actor.perfil==='responsavel'?'portal_responsavel':'operacao_interna',solicitadoVia:actor.perfil==='responsavel'?'portal_responsavel':'secretaria',criadoPor:actor.id,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'});
   await audit(db,'pedido_farda_criado',{pedidoId:orderRef.id,alunoId:student.id,alunoNome:student.nome,valorCentavos:total,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,descricaoHumana:`${actor.nome} criou um pedido de fardamento para ${student.nome}.`});
   return {pedidoId:orderRef.id,totalCentavos:total,checkoutTotal:required,saldoAtual,useBalance,creditUsed,debtRequired,model,size,gender:normalizedGender,qty,unit,estoqueDisponivel:available,quantidadePrevistaProducao:productionPreview};
 }
@@ -311,6 +313,21 @@ function activeReservationTotal(reservas={}, ignorePedidoId=''){
 }
 function dailyUsed(data={}, ignorePedidoId=''){
   return cents(data.vendidoDinheiro)+cents(data.vendidoAvulso)+cents(data.consumoConta)+cents(data.pedidosConfirmados)+activeReservationTotal(data.reservas, ignorePedidoId);
+}
+function lunchDayDefaultActive(day){
+  if(!isValidDateKey(day)) return false;
+  const d=new Date(`${day}T12:00:00`);
+  return ![0,6].includes(d.getDay());
+}
+function lunchDayInfo(day,data={},cfg={}){
+  const planned=Math.max(0,cents(data.quantidadePlanejada ?? cfg.quantidadePadraoSalgados ?? 30));
+  const receivedDefined=data.quantidadeRecebida!==undefined && data.quantidadeRecebida!==null && data.quantidadeRecebida!=='';
+  const received=receivedDefined?Math.max(0,cents(data.quantidadeRecebida)):null;
+  const capacity=receivedDefined?received:planned;
+  const defaultActive=lunchDayDefaultActive(day)&&!(Array.isArray(cfg.diasSemAula)?cfg.diasSemAula:[]).includes(day);
+  const active=typeof data.vendaAtiva==='boolean'?data.vendaAtiva:defaultActive;
+  const used=dailyUsed(data);
+  return {active,planned,received,capacity,used,available:Math.max(0,capacity-used),deficit:Math.max(0,used-capacity)};
 }
 function productPrice(product, map, seen=new Set()){
   if(!product) return 0;
@@ -341,18 +358,23 @@ function expandProduct(product, qty, map, target=new Map(), seen=new Set()){
   }
   return target;
 }
+let _catalogCacheV218={at:0,products:null,items:null,categories:null};
+const CATALOG_CACHE_TTL_V218=60*1000;
 async function loadProductMap(db){
-  const snap=await db.collection('produtos').get();
-  return new Map(snap.docs.map(d=>[d.id,{id:d.id,...d.data()}]));
+  if(_catalogCacheV218.products&&Date.now()-_catalogCacheV218.at<CATALOG_CACHE_TTL_V218)return _catalogCacheV218.products;
+  const snap=await db.collection('produtos').limit(200).get();
+  const map=new Map(snap.docs.map(d=>[d.id,{id:d.id,...d.data()}]));_catalogCacheV218={..._catalogCacheV218,at:Date.now(),products:map};return map;
 }
 
 async function loadCatalogItemMap(db){
-  const snap=await db.collection('catalogo_itens').get().catch(()=>({docs:[]}));
-  return new Map((snap.docs||[]).map(d=>[d.id,{id:d.id,...d.data()}]));
+  if(_catalogCacheV218.items&&Date.now()-_catalogCacheV218.at<CATALOG_CACHE_TTL_V218)return _catalogCacheV218.items;
+  const snap=await db.collection('catalogo_itens').limit(300).get().catch(()=>({docs:[]}));
+  const map=new Map((snap.docs||[]).map(d=>[d.id,{id:d.id,...d.data()}]));_catalogCacheV218={..._catalogCacheV218,at:Date.now(),items:map};return map;
 }
 async function loadCatalogCategoryMap(db){
-  const snap=await db.collection('catalogo_categorias').get().catch(()=>({docs:[]}));
-  return new Map((snap.docs||[]).map(d=>[d.id,{id:d.id,...d.data()}]));
+  if(_catalogCacheV218.categories&&Date.now()-_catalogCacheV218.at<CATALOG_CACHE_TTL_V218)return _catalogCacheV218.categories;
+  const snap=await db.collection('catalogo_categorias').limit(100).get().catch(()=>({docs:[]}));
+  const map=new Map((snap.docs||[]).map(d=>[d.id,{id:d.id,...d.data()}]));_catalogCacheV218={..._catalogCacheV218,at:Date.now(),categories:map};return map;
 }
 function catalogChannelAllowed(item,channel){
   const c=item?.canais||{};
@@ -478,9 +500,6 @@ function normalizeOrderInput(body, productMap, student, cfg, channel='portal'){
     if(qty>10) throw Object.assign(new Error('A quantidade máxima por item e por dia é 10.'),{status:400});
     if(!isValidDateKey(day)) throw Object.assign(new Error('Uma das datas do pedido é inválida.'),{status:400});
     if(day<dateKey()) throw Object.assign(new Error('Não é possível reservar lanche para uma data passada.'),{status:400});
-    const d=new Date(`${day}T12:00:00`);
-    if([0,6].includes(d.getDay())) throw Object.assign(new Error(`A data ${day} não é um dia útil.`),{status:400});
-    if((cfg.diasSemAula||[]).includes(day)) throw Object.assign(new Error(`A data ${day} está marcada como dia sem aula.`),{status:400});
     const product=productMap.get(productId);
     if(!product || product.ativo===false || (channel==='secretaria'?product.vendaSecretaria===false:(product.portal===false||product.vendaResponsavel===false))) throw Object.assign(new Error(channel==='secretaria'?'Um dos produtos selecionados não está disponível para a Secretaria.':'Um dos produtos selecionados não está disponível no portal.'),{status:400});
     const list=grouped.get(day)||[];
@@ -521,8 +540,8 @@ function normalizeOrderInput(body, productMap, student, cfg, channel='portal'){
   };
 }
 async function reserveCantinaOrder(db, body, actor, student, customer, cfg){
-  const [productMap,acc]=await Promise.all([loadProductMap(db),getAccount(db,student.id)]),normalized=normalizeOrderInput(body,productMap,student,cfg),saldoAtual=accountNet(acc),useBalance=body.usarSaldo===true,creditUsed=useBalance?Math.min(Math.max(0,saldoAtual),normalized.totalCentavos):0,debtRequired=Math.max(0,-saldoAtual),minCheckout=Math.max(100,cents(cfg.valorMinimoCheckoutPositivoCentavos||100)),required=Math.max(0,normalized.totalCentavos-creditUsed+debtRequired),checkoutTotal=required>0?Math.max(required,minCheckout):0,projectedNet=saldoAtual+checkoutTotal-normalized.totalCentavos,orderRef=db.collection('pedidos').doc(),pedidoId=orderRef.id,minutes=Math.min(10,Math.max(1,cents(cfg.reservaPedidoMinutos||ORDER_RESERVATION_MINUTES_DEFAULT))),expiresAt=new Date(Date.now()+minutes*60*1000).toISOString(),now=nowIso(),capacityRefs=normalized.days.filter(x=>x.quantidadeSalgados>0).map(day=>({day,ref:db.collection('disponibilidade_salgados').doc(day.dataChave)}));
-  await db.runTransaction(async tx=>{const snaps=await Promise.all(capacityRefs.map(x=>tx.get(x.ref)));for(let i=0;i<capacityRefs.length;i++){const {day,ref}=capacityRefs[i],current=snaps[i].exists?snaps[i].data():{},planned=cents(current.quantidadePlanejada||cfg.quantidadePadraoSalgados||30),used=dailyUsed(current);if(used+day.quantidadeSalgados>planned){const err=new Error(`Não há salgados suficientes em ${day.dataChave}. Disponíveis: ${Math.max(0,planned-used)}.`);err.status=409;throw err}const reservas={...(current.reservas||{})};reservas[pedidoId]={pedidoId,alunoId:student.id,alunoNome:student.nome,quantidade:day.quantidadeSalgados,expiraEm:expiresAt,criadoEm:now};tx.set(ref,{dataChave:day.dataChave,quantidadePlanejada:planned,reservas,atualizadoEm:now},{merge:true})}tx.set(orderRef,{id:pedidoId,tipoPedido:'cantina',modalidade:normalized.modalidade,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,turno:student.turno||null,matricula:student.matricula||null,responsavelFinanceiro:student.responsavelFinanceiro||null,dias:normalized.days,observacao:normalized.observacao,totalCentavos:normalized.totalCentavos,usarSaldo:useBalance,valorSaldoPrevistoCentavos:creditUsed,valorRegularizacaoPrevistoCentavos:debtRequired,saldoNoMomentoCentavos:saldoAtual,valorCheckoutPrevistoCentavos:checkoutTotal,saldoProjetadoDepoisCentavos:projectedNet,statusPagamento:checkoutTotal>0?'aguardando_pagamento':'pago_com_saldo',statusPedido:checkoutTotal>0?'aguardando_pagamento':'reservado',statusAplicacao:'pendente',reservaMinutos:minutes,reservaExpiraEm:expiresAt,customer:customer||null,origem:actor.perfil==='responsavel'?'portal_responsavel':'operacao_interna',criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'})});
+  const [productMap,acc]=await Promise.all([loadProductMap(db),getAccount(db,student.id)]),normalized=normalizeOrderInput(body,productMap,student,cfg),saldoAtual=accountNet(acc),useBalance=body.usarSaldo===true,creditUsed=useBalance?Math.min(Math.max(0,saldoAtual),normalized.totalCentavos):0,debtRequired=Math.max(0,-saldoAtual),minCheckout=Math.max(100,cents(cfg.valorMinimoCheckoutPositivoCentavos||100)),required=Math.max(0,normalized.totalCentavos-creditUsed+debtRequired),checkoutTotal=required>0?Math.max(required,minCheckout):0,projectedNet=saldoAtual+checkoutTotal-normalized.totalCentavos,orderRef=db.collection('pedidos').doc(),pedidoId=orderRef.id,minutes=Math.min(10,Math.max(1,cents(cfg.reservaPedidoMinutos||ORDER_RESERVATION_MINUTES_DEFAULT))),expiresAt=new Date(Date.now()+minutes*60*1000).toISOString(),now=nowIso(),capacityRefs=normalized.days.map(day=>({day,ref:db.collection('disponibilidade_salgados').doc(day.dataChave)}));
+  await db.runTransaction(async tx=>{const snaps=await Promise.all(capacityRefs.map(x=>tx.get(x.ref)));for(let i=0;i<capacityRefs.length;i++){const {day,ref}=capacityRefs[i],current=snaps[i].exists?snaps[i].data():{},info=lunchDayInfo(day.dataChave,current,cfg);if(!info.active){const err=new Error(`Não haverá venda de lanche em ${day.dataChave.split('-').reverse().join('/')}.`);err.status=409;throw err}if(cents(day.quantidadeSalgados)>0&&info.used+day.quantidadeSalgados>info.capacity){const err=new Error(`Não há salgados suficientes em ${day.dataChave}. Disponíveis: ${info.available}.`);err.status=409;throw err}if(cents(day.quantidadeSalgados)>0){const reservas={...(current.reservas||{})};reservas[pedidoId]={pedidoId,alunoId:student.id,alunoNome:student.nome,quantidade:day.quantidadeSalgados,expiraEm:expiresAt,criadoEm:now};tx.set(ref,{dataChave:day.dataChave,quantidadePlanejada:info.planned,reservas,atualizadoEm:now},{merge:true})}}tx.set(orderRef,{id:pedidoId,tipoPedido:'cantina',modalidade:normalized.modalidade,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,turno:student.turno||null,matricula:student.matricula||null,responsavelFinanceiro:student.responsavelFinanceiro||null,dias:normalized.days,observacao:normalized.observacao,totalCentavos:normalized.totalCentavos,usarSaldo:useBalance,valorSaldoPrevistoCentavos:creditUsed,valorRegularizacaoPrevistoCentavos:debtRequired,saldoNoMomentoCentavos:saldoAtual,valorCheckoutPrevistoCentavos:checkoutTotal,saldoProjetadoDepoisCentavos:projectedNet,statusPagamento:checkoutTotal>0?'aguardando_pagamento':'pago_com_saldo',statusPedido:checkoutTotal>0?'aguardando_pagamento':'reservado',statusAplicacao:'pendente',reservaMinutos:minutes,reservaExpiraEm:expiresAt,customer:customer||null,origem:actor.perfil==='responsavel'?'portal_responsavel':'operacao_interna',criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'})});
   await audit(db,'pedido_cantina_reservado',{pedidoId,alunoId:student.id,alunoNome:student.nome,valorCentavos:normalized.totalCentavos,criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,descricaoHumana:`${actor.nome} reservou ${normalized.days.length} entrega(s) de cantina para ${student.nome}. A reserva expira em ${minutes} minutos.`});
   return{pedidoId,normalized,saldoAtual,useBalance,creditUsed,debtRequired,checkoutTotal,projectedNet,expiresAt,minutes};
 }
@@ -534,7 +553,7 @@ async function releasePendingOrder(db,pedidoId,status='cancelado_reserva'){
     if(!orderSnap.exists) return;
     const order=orderSnap.data();
     if(order.statusAplicacao==='aplicado') return;
-    const capacityRefs=(order.dias||[]).filter(x=>cents(x.quantidadeSalgados)>0).map(day=>({day,ref:db.collection('disponibilidade_salgados').doc(day.dataChave)}));
+    const capacityRefs=(order.dias||[]).map(day=>({day,ref:db.collection('disponibilidade_salgados').doc(day.dataChave)}));
     const snaps=await Promise.all(capacityRefs.map(x=>tx.get(x.ref)));
     for(let i=0;i<capacityRefs.length;i++){
       const current=snaps[i].exists?snaps[i].data():{};
@@ -564,11 +583,13 @@ function validCheckoutUrl(value){
 }
 async function replaceActiveCheckoutsForOperation(db,body,operationKey){
   const alunoId=String(body.alunoId||'').trim();if(!alunoId||!operationKey)return [];
-  const snap=await db.collection('pagamentos_checkout').where('alunoId','==',alunoId).get(),active=['preparando_link','aguardando_pagamento','erro_timeout','erro_gerar_link','erro_sem_url'];
+  const snap=await db.collection('pagamentos_checkout').where('alunoId','==',alunoId).limit(30).get(),active=['preparando_link','aguardando_pagamento','erro_timeout','erro_gerar_link','erro_sem_url'];
   const rows=snap.docs.map(doc=>({id:doc.id,ref:doc.ref,...doc.data()})).filter(row=>row.operationKey===operationKey&&active.includes(row.status)&&row.statusAplicacao!=='aplicado');
+  const reconciliationRisk=rows.filter(row=>row.conciliacaoStatus==='aguardando_retorno_infinitepay'&&row.identificadoresPendentes!==false);
+  if(reconciliationRisk.length){const error=new Error('Existe uma cobrança desta operação em verificação. Confirme na InfinitePay se o pagamento original foi realizado antes de gerar outro link.');error.status=409;error.code='PAYMENT_RECONCILIATION_PENDING';throw error;}
   const now=nowIso();
   for(const row of rows){
-    await row.ref.set({statusAnterior:row.status,status:'substituido_nova_cobranca',statusAplicacao:'substituido_sem_pagamento',checkoutUrlAtivo:false,ocultoParaResponsavel:true,substituidoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'},{merge:true});
+    await row.ref.set({statusAnterior:row.status,status:'substituido_nova_cobranca',statusAplicacao:'substituido_sem_pagamento',checkoutUrlAtivo:false,ocultoParaResponsavel:true,substituidoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'},{merge:true});
     await invalidateCheckoutAttempt(db,row,'nova_tentativa_mesma_operacao').catch(()=>{});
     if(row.pedidoId&&row.tipo==='pedido_cantina')await releasePendingOrder(db,row.pedidoId,'substituido_nova_cobranca').catch(()=>{});
     if(row.pedidoId&&row.tipo==='pedido_farda')await safeSet(db.collection('pedidos_farda').doc(row.pedidoId),{statusPagamento:'nao_concluido',statusAtendimento:'cancelado',statusAplicacao:'substituido',motivoCancelamento:'Cobrança substituída por uma nova tentativa.',atualizadoEm:now});
@@ -721,7 +742,7 @@ async function createCheckoutLink(db, req, op, timings={}){
   const customerIssues=checkoutCustomerIssues(op.customer||{});if(customerIssues.length)throw Object.assign(new Error(`Complete os dados do comprador: ${customerIssues.join(', ')}.`),{status:400});
   const handle=normalizeHandle(),baseUrl=getBaseUrl(req),familyBaseUrl=(()=>{try{return new URL(String(process.env.PUBLIC_FAMILY_BASE_URL||'https://meupiaget.com.br')).origin}catch(_){return 'https://meupiaget.com.br'}})(),apiBaseUrl=(()=>{try{return new URL(String(process.env.PUBLIC_API_BASE_URL||baseUrl)).origin}catch(_){return baseUrl}})(),nsuType=op.tipo==='entrada_conta_aluno'?'CONTA':op.tipo==='pedido_cantina'?'PEDIDO':op.tipo==='pedido_farda'?'FARDA':op.tipo==='venda_online_secretaria'?'VENDAONLINE':'OPERACAO',orderNsu=makeOrderNsu(nsuType),redirectUrl=`${familyBaseUrl}/obrigado.html`,webhookUrl=`${apiBaseUrl}/api/webhook-infinitepay`,payload={handle,order_nsu:orderNsu,redirect_url:redirectUrl,webhook_url:webhookUrl,items:op.itensCheckout};if(op.customer)payload.customer=op.customer;
   const checkoutRef=db.collection('pagamentos_checkout').doc(orderNsu),persistStart=Date.now();
-  await checkoutRef.set({id:orderNsu,orderNsu,idTentativa:op.idTentativa||null,operationKey:op.operationKey||null,handle,tipo:op.tipo,pedidoId:op.pedidoId||null,vendaOnlineId:op.vendaOnlineId||null,pedidoTotalCentavos:op.pedidoTotalCentavos||0,reservaExpiraEm:op.reservaExpiraEm||null,reservaMinutos:op.reservaMinutos||null,alunoId:op.alunoId||null,alunoNome:op.alunoNome||null,turma:op.turma||null,turno:op.turno||null,matricula:op.matricula||null,responsavelFinanceiro:op.responsavelFinanceiro||null,responsavelFinanceiroId:op.responsavelFinanceiroId||null,alunosIds:Array.isArray(op.alunosIds)?op.alunosIds:(Array.isArray(op.payload?.alunosIds)?op.payload.alunosIds:[]),descricao:op.descricao,totalCentavos:op.totalCentavos,minimoCentavos:op.minimoCentavos||0,saldoNoMomentoCentavos:op.saldoNoMomentoCentavos||0,saldoEmAbertoNoMomentoCentavos:op.saldoEmAbertoNoMomentoCentavos||0,status:'preparando_link',statusAplicacao:'pendente',payloadOperacional:op.payload||{},itensCheckout:op.itensCheckout,customer:op.customer||null,redirectUrl,webhookUrl,origem:'checkout_infinitepay',criadoPorId:op.actor.id,criadoPorNome:op.actor.nome,criadoPorPerfil:op.actor.perfil,criadoEm:nowIso(),atualizadoEm:nowIso(),versao:'1.6.0-rc2.7.16'},{merge:false});
+  await checkoutRef.set({id:orderNsu,orderNsu,idTentativa:op.idTentativa||null,operationKey:op.operationKey||null,handle,tipo:op.tipo,pedidoId:op.pedidoId||null,vendaOnlineId:op.vendaOnlineId||null,pedidoTotalCentavos:op.pedidoTotalCentavos||0,reservaExpiraEm:op.reservaExpiraEm||null,reservaMinutos:op.reservaMinutos||null,alunoId:op.alunoId||null,alunoNome:op.alunoNome||null,turma:op.turma||null,turno:op.turno||null,matricula:op.matricula||null,responsavelFinanceiro:op.responsavelFinanceiro||null,responsavelFinanceiroId:op.responsavelFinanceiroId||null,alunosIds:Array.isArray(op.alunosIds)?op.alunosIds:(Array.isArray(op.payload?.alunosIds)?op.payload.alunosIds:[]),descricao:op.descricao,totalCentavos:op.totalCentavos,minimoCentavos:op.minimoCentavos||0,saldoNoMomentoCentavos:op.saldoNoMomentoCentavos||0,saldoEmAbertoNoMomentoCentavos:op.saldoEmAbertoNoMomentoCentavos||0,status:'preparando_link',statusAplicacao:'pendente',payloadOperacional:op.payload||{},itensCheckout:op.itensCheckout,customer:op.customer||null,redirectUrl,webhookUrl,origem:'checkout_infinitepay',criadoPorId:op.actor.id,criadoPorNome:op.actor.nome,criadoPorPerfil:op.actor.perfil,criadoEm:nowIso(),atualizadoEm:nowIso(),versao:'1.6.0-rc2.7.18'},{merge:false});
   if(op.pedidoId){const collection=op.tipo==='pedido_farda'?'pedidos_farda':'pedidos';await safeSet(db.collection(collection).doc(op.pedidoId),{orderNsu,checkoutId:orderNsu,atualizadoEm:nowIso()})}
   timings.persistenciaCheckoutMs=Date.now()-persistStart;
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000),ipStart=Date.now();let response,text,data={};
@@ -801,8 +822,56 @@ function validatePaidCheckout(checkout,paymentData,evidence){
 }
 async function recordInfinitePayEvent(db,orderNsu,paymentData={},source='confirmacao'){
   const now=nowIso(),evidence=paymentEvidence(paymentData),ref=db.collection('eventos_checkout_infinitepay').doc();
-  await safeSet(ref,{id:ref.id,orderNsu,source,payload:paymentData,evidence,criadoEm:now,versao:'1.6.0-rc2.7.16'},{merge:false});
+  // A evidência bruta é crítica para conciliação: se a InfinitePay chamou o endpoint,
+  // primeiro persistimos o evento e espelhamos os identificadores no checkout antes
+  // de qualquer consulta externa ou aplicação operacional mais pesada.
+  await ref.set({id:ref.id,orderNsu,source,payload:paymentData,evidence,criadoEm:now,versao:'1.6.0-rc2.7.18'},{merge:false});
+  if(orderNsu){
+    const patch={
+      atualizadoEm:now,
+      ultimoRetornoRecebidoEm:(evidence.transactionNsu||evidence.invoiceSlug)?now:null,
+      identificadoresPendentes:!(evidence.transactionNsu&&evidence.invoiceSlug)
+    };
+    if(evidence.transactionNsu)patch.transactionNsu=evidence.transactionNsu;
+    if(evidence.invoiceSlug)patch.invoiceSlug=evidence.invoiceSlug;
+    if(evidence.captureMethod)patch.captureMethod=evidence.captureMethod;
+    if(evidence.receiptUrl)patch.receiptUrl=evidence.receiptUrl;
+    if(evidence.paidAmountCentavos)patch.paidAmountCentavos=evidence.paidAmountCentavos;
+    if(evidence.amountCentavos)patch.amountCentavos=evidence.amountCentavos;
+    if(String(source).includes('webhook')){
+      patch.webhookRecebidoEm=now;
+      patch.ultimoWebhookPayload=paymentData;
+      patch.conciliacaoStatus='retorno_recebido';
+    }
+    await db.collection('pagamentos_checkout').doc(orderNsu).set(patch,{merge:true}).catch(error=>console.warn('Não foi possível espelhar evidência InfinitePay no checkout:',error.message));
+  }
   return evidence;
+}
+function isManualSyntheticEvidence(value){return /^MANUAL-/i.test(String(value||''));}
+function checkoutPaymentDiagnostic(checkout={}){
+  return {
+    checkoutCriado:true,
+    webhookRecebido:Boolean(checkout.webhookRecebidoEm||checkout.ultimoWebhookPayload),
+    transactionNsuPresente:Boolean(checkout.transactionNsu),
+    invoiceSlugPresente:Boolean(checkout.invoiceSlug),
+    identificadoresPendentes:Boolean(checkout.identificadoresPendentes),
+    status:String(checkout.status||'aguardando_pagamento'),
+    statusAplicacao:String(checkout.statusAplicacao||'pendente'),
+    conciliacaoStatus:String(checkout.conciliacaoStatus||''),
+    ultimaTentativaSincronizacaoEm:checkout.ultimaTentativaSincronizacaoEm||null,
+    erroAplicacao:checkout.erroAplicacao||null
+  };
+}
+async function supplementAppliedPaymentEvidence(db,checkout,evidence={},source='retorno_tardio'){
+  if(!checkout?.orderNsu||!evidence.transactionNsu||!evidence.invoiceSlug||isManualSyntheticEvidence(evidence.transactionNsu))return;
+  const orderNsu=checkout.orderNsu,now=nowIso(),transactionRef=db.collection('transacoes_infinitepay').doc(safeFinancialId(evidence.transactionNsu)),paymentRef=db.collection('pagamentos').doc(orderNsu),checkoutRef=db.collection('pagamentos_checkout').doc(orderNsu);
+  await db.runTransaction(async tx=>{
+    const [transactionSnap,paymentSnap]=await Promise.all([tx.get(transactionRef),tx.get(paymentRef)]);
+    if(transactionSnap.exists){const row=transactionSnap.data()||{};if(row.orderNsu&&row.orderNsu!==orderNsu){const error=new Error('Esta transação da InfinitePay já está vinculada a outro pedido.');error.code='TRANSACTION_ALREADY_USED';throw error;}}
+    tx.set(transactionRef,{id:transactionRef.id,transactionNsu:evidence.transactionNsu,orderNsu,pedidoId:checkout.pedidoId||null,alunoId:checkout.alunoId||null,alunosIds:Array.isArray(checkout.alunosIds)?checkout.alunosIds:[],amountCentavos:evidence.amountCentavos||checkout.totalCentavos||0,status:'aplicado',evidenciaComplementar:true,origemEvidencia:source,confirmadoEm:now,atualizadoEm:now},{merge:true});
+    if(paymentSnap.exists)tx.set(paymentRef,{...evidence,confirmacaoOficialRecebidaEm:now,evidenciaInfinitePayComplementadaEm:now},{merge:true});
+    tx.set(checkoutRef,{...evidence,confirmacaoOficialRecebidaEm:now,evidenciaInfinitePayComplementadaEm:now,identificadoresPendentes:false,conciliacaoStatus:'confirmado',atualizadoEm:now},{merge:true});
+  });
 }
 async function buildReceiptInfo(db, orderNsu){
   const snap=await db.collection('pagamentos_checkout').doc(orderNsu).get().catch(()=>null);
@@ -837,7 +906,12 @@ async function buildReceiptInfo(db, orderNsu){
     confirmadoEm:c.confirmadoEm || null,
     customer:c.customer || null,
     resultadoOperacional:c.resultadoOperacional || null,
-    erroAplicacao:c.erroAplicacao || null
+    erroAplicacao:c.erroAplicacao || null,
+    origemConfirmacao:c.origemConfirmacao || null,
+    reconciliacaoManual:Boolean(c.reconciliacaoManual),
+    referenciaComprovanteInfinitePay:c.referenciaComprovanteInfinitePay || null,
+    confirmacaoOficialRecebidaEm:c.confirmacaoOficialRecebidaEm || null,
+    conciliacaoStatus:c.conciliacaoStatus || null
   };
 }
 async function confirmWithInfinitePay(db, params={}){
@@ -866,12 +940,16 @@ async function confirmWithInfinitePay(db, params={}){
   });
 
   if(checkout.statusAplicacao==='aplicado'){
-    return {paid:true,applicationPending:false,alreadyApplied:true,needsIdentifiers:false,infinitepay:checkout.ultimoPaymentCheckPayload||{},receipt:await buildReceiptInfo(db,orderNsu)};
+    await supplementAppliedPaymentEvidence(db,checkout,evidence,params.source||'retorno_tardio').catch(error=>console.warn('Falha ao complementar evidência tardia:',error.message));
+    const refreshed=await checkoutRef.get().catch(()=>null),row=refreshed?.exists?{id:refreshed.id,...refreshed.data()}:checkout;
+    return {paid:true,applicationPending:false,alreadyApplied:true,needsIdentifiers:false,diagnostic:checkoutPaymentDiagnostic(row),infinitepay:row.ultimoPaymentCheckPayload||{},receipt:await buildReceiptInfo(db,orderNsu)};
   }
 
   if(!evidence.transactionNsu || !evidence.invoiceSlug){
-    await safeSet(checkoutRef,{status:checkout.status||'aguardando_pagamento',identificadoresPendentes:true,atualizadoEm:nowIso()});
-    return {paid:false,applicationPending:false,needsIdentifiers:true,missing:{transactionNsu:!evidence.transactionNsu,invoiceSlug:!evidence.invoiceSlug},message:'Aguardando os identificadores completos da InfinitePay.',infinitepay:null,receipt:await buildReceiptInfo(db,orderNsu)};
+    const checkedAt=nowIso(),context=String(params.contexto||params.context||params.source||'consulta').trim()||'consulta';
+    await safeSet(checkoutRef,{status:checkout.status||'aguardando_pagamento',identificadoresPendentes:true,conciliacaoStatus:'aguardando_retorno_infinitepay',conciliacaoOrigem:context,ultimaTentativaSincronizacaoEm:checkedAt,atualizadoEm:checkedAt});
+    const row={...checkout,...evidence,identificadoresPendentes:true,conciliacaoStatus:'aguardando_retorno_infinitepay',ultimaTentativaSincronizacaoEm:checkedAt};
+    return {paid:false,applicationPending:false,needsIdentifiers:true,missing:{transactionNsu:!evidence.transactionNsu,invoiceSlug:!evidence.invoiceSlug},message:'O checkout existe, mas a confirmação automática da InfinitePay ainda não retornou ao sistema.',diagnostic:checkoutPaymentDiagnostic(row),infinitepay:null,receipt:await buildReceiptInfo(db,orderNsu)};
   }
 
   const payload={handle,order_nsu:orderNsu,transaction_nsu:evidence.transactionNsu,slug:evidence.invoiceSlug};
@@ -900,7 +978,8 @@ async function confirmWithInfinitePay(db, params={}){
   }else{
     await safeSet(checkoutRef,{ultimoPaymentCheckPago:false,atualizadoEm:nowIso()});
   }
-  return {paid,applicationPending,applicationError,needsIdentifiers:false,infinitepay:data,receipt:await buildReceiptInfo(db,orderNsu)};
+  const refreshed=await checkoutRef.get().catch(()=>null),row=refreshed?.exists?{id:refreshed.id,...refreshed.data()}:{...checkout,...evidence};
+  return {paid,applicationPending,applicationError,needsIdentifiers:false,diagnostic:checkoutPaymentDiagnostic(row),infinitepay:data,receipt:await buildReceiptInfo(db,orderNsu)};
 }
 async function applyAccountPaymentTx(tx, db, checkout, paymentData={}){
   const accRef=await accountRefForStudent(db,checkout.alunoId);
@@ -947,7 +1026,7 @@ async function applyCantinaOrderTx(tx,db,checkout,paymentData={}){
   const accRef=await accountRefForStudent(db,order.alunoId);
   const accSnap=await tx.get(accRef);
   const acc=accSnap.exists?accSnap.data():{};
-  const capacityRefs=(order.dias||[]).filter(x=>cents(x.quantidadeSalgados)>0).map(day=>({day,ref:db.collection('disponibilidade_salgados').doc(day.dataChave)}));
+  const capacityRefs=(order.dias||[]).map(day=>({day,ref:db.collection('disponibilidade_salgados').doc(day.dataChave)}));
   const capacitySnaps=await Promise.all(capacityRefs.map(x=>tx.get(x.ref)));
   const externalPayment=cents(checkout.totalCentavos);
   const orderTotal=cents(order.totalCentavos);
@@ -955,12 +1034,12 @@ async function applyCantinaOrderTx(tx,db,checkout,paymentData={}){
   const afterPayment=oldNet+externalPayment;
   const finalNet=afterPayment-orderTotal;
   let reviewReason='';
+  const cfg=await getConfig(db);
   if(finalNet<0) reviewReason='saldo_insuficiente_no_momento_da_confirmacao';
   for(let i=0;i<capacityRefs.length&&!reviewReason;i++){
-    const current=capacitySnaps[i].exists?capacitySnaps[i].data():{};
-    const planned=cents(current.quantidadePlanejada||30);
-    const used=dailyUsed(current,order.id);
-    if(used+capacityRefs[i].day.quantidadeSalgados>planned) reviewReason=`estoque_indisponivel_${capacityRefs[i].day.dataChave}`;
+    const current=capacitySnaps[i].exists?capacitySnaps[i].data():{},day=capacityRefs[i].day,info=lunchDayInfo(day.dataChave,current,cfg),used=dailyUsed(current,order.id);
+    if(!info.active) reviewReason=`venda_lanche_desativada_${day.dataChave}`;
+    else if(cents(day.quantidadeSalgados)>0&&used+cents(day.quantidadeSalgados)>info.capacity) reviewReason=`estoque_indisponivel_${day.dataChave}`;
   }
   const now=nowIso();
   const paymentMove=financialMovementRef(db,checkout,'entrada');
@@ -1010,7 +1089,7 @@ async function applyCantinaOrderTx(tx,db,checkout,paymentData={}){
       origem:'pedido_antecipado',
       criadoEm:now,
       atualizadoEm:now,
-      versao:'1.6.0-rc2.7.16'
+      versao:'1.6.0-rc2.7.18'
     },{merge:false});
   }
   tx.set(orderRef,{statusPagamento:'pago',statusPedido:'confirmado',statusAplicacao:'aplicado',valorPagoExternoCentavos:externalPayment,valorDebitadoContaCentavos:orderTotal,valorSaldoAnteriorUtilizadoCentavos:order.usarSaldo===true?Math.min(Math.max(oldNet,0),orderTotal):0,saldoAntesCentavos:oldNet,saldoDepoisCentavos:finalNet,pagamentoConfirmadoEm:now,confirmadoEm:now,atualizadoEm:now},{merge:true});
@@ -1060,29 +1139,29 @@ async function applyOnlineSecretarySaleTx(tx,db,checkout,paymentData={}){
   if(saleSnap.exists&&saleSnap.data()?.status==='confirmada')return{status:'confirmado',alreadyApplied:true,saldoDepoisCentavos:saleSnap.data().saldoDepoisCentavos};
   const acc=accSnap.exists?accSnap.data():{},before=accountNet(acc),afterPayment=before+external,after=afterPayment-total,now=nowIso(),cfg=await getConfig(db);let reviewReason='';
   if(after<0)reviewReason='saldo_insuficiente_no_momento_da_confirmacao';
-  if(stockRef&&!reviewReason){const stock=stockSnap&&stockSnap.exists?stockSnap.data():{},planned=cents(stock.quantidadePlanejada||cfg.quantidadePadraoSalgados||30),used=dailyUsed(stock);if(used+salgadoQty>planned)reviewReason='estoque_indisponivel_no_momento_do_pagamento';}
+  if(stockRef&&!reviewReason){const stock=stockSnap&&stockSnap.exists?stockSnap.data():{},info=lunchDayInfo(dateKey(),stock,cfg);if(!info.active)reviewReason='venda_lanche_desativada_no_momento_do_pagamento';else if(info.used+salgadoQty>info.capacity)reviewReason='estoque_indisponivel_no_momento_do_pagamento';}
   if(!reviewReason)catalogRefs.forEach((entry,i)=>{const doc=catalogSnaps[i].exists?catalogSnaps[i].data():{},available=catalogAvailableUnits(doc,entry.line);if(available<entry.line.quantidade)reviewReason=`estoque_catalogo_indisponivel:${entry.line.itemId}`;});
-  if(!reviewReason)scheduleStockRefs.forEach((entry,i)=>{const stock=scheduleSnaps[i].exists?scheduleSnaps[i].data():{},planned=cents(stock.quantidadePlanejada||cfg.quantidadePadraoSalgados||30),used=dailyUsed(stock);if(used+entry.quantidadeSalgados>planned)reviewReason=`estoque_programacao_indisponivel:${entry.day}`;});
+  if(!reviewReason)scheduleStockRefs.forEach((entry,i)=>{if(reviewReason)return;const stock=scheduleSnaps[i].exists?scheduleSnaps[i].data():{},info=lunchDayInfo(entry.day,stock,cfg);if(!info.active)reviewReason=`venda_lanche_desativada:${entry.day}`;else if(info.used+entry.quantidadeSalgados>info.capacity)reviewReason=`estoque_programacao_indisponivel:${entry.day}`;});
   const uniformUpdates=!reviewReason?uniformStockRefs.map((entry,i)=>allocateUniformRequirement(uniformStockSnaps[i].exists?uniformStockSnaps[i].data():{},entry.line,lines,now)):[];
   const entryRef=financialMovementRef(db,checkout,'entrada'),purchaseRef=financialMovementRef(db,checkout,'compra');
   if(reviewReason){
     tx.set(accRef,{...splitNet(afterPayment),bloqueioSaldoSemanal:afterPayment<0?Boolean(acc.bloqueioSaldoSemanal):false,bloqueadoPorLimite:afterPayment<0&&cents(acc.limiteFiadoCentavos)>0&&Math.abs(afterPayment)>=cents(acc.limiteFiadoCentavos),atualizadoEm:now},{merge:true});
     if(external>0)tx.set(entryRef,{id:entryRef.id,alunoId:checkout.alunoId,alunosIds,tipo:'entrada_conta_aluno',subtipo:'pagamento_venda_online_em_revisao',valorCentavos:external,saldoAntesCentavos:before,saldoDepoisCentavos:afterPayment,formaPagamento:'checkout_infinitepay',orderNsu:checkout.orderNsu||checkout.id,status:'confirmado',dataChave:dateKey(),criadoEm:now,detalhesPagamento:paymentData});
-    tx.set(saleRef,{id:saleRef.id,alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,matricula:checkout.matricula||null,alunosIds,origem:'secretaria_online',orderNsu:checkout.orderNsu||checkout.id,valorBrutoCentavos:total,valorPagoExternoCentavos:external,itens:lines,status:'revisao',motivoRevisao:reviewReason,saldoAntesCentavos:before,saldoDepoisCentavos:afterPayment,dataChave:dateKey(),criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'},{merge:true});
+    tx.set(saleRef,{id:saleRef.id,alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,matricula:checkout.matricula||null,alunosIds,origem:'secretaria_online',orderNsu:checkout.orderNsu||checkout.id,valorBrutoCentavos:total,valorPagoExternoCentavos:external,itens:lines,status:'revisao',motivoRevisao:reviewReason,saldoAntesCentavos:before,saldoDepoisCentavos:afterPayment,dataChave:dateKey(),criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'},{merge:true});
     if(linkRef)tx.set(linkRef,{status:'pago_revisao',motivoRevisao:reviewReason,orderNsu:checkout.orderNsu||checkout.id,pagoEm:now,atualizadoEm:now},{merge:true});
     return{status:'revisao',motivo:reviewReason,saldoDepoisCentavos:afterPayment};
   }
   tx.set(accRef,{...splitNet(after),bloqueioSaldoSemanal:after<0?Boolean(acc.bloqueioSaldoSemanal):false,bloqueadoPorLimite:after<0&&cents(acc.limiteFiadoCentavos)>0&&Math.abs(after)>=cents(acc.limiteFiadoCentavos),ultimaRegularizacaoEm:after>=0?now:(acc.ultimaRegularizacaoEm||null),atualizadoEm:now},{merge:true});
   if(external>0)tx.set(entryRef,{id:entryRef.id,alunoId:checkout.alunoId,alunosIds,tipo:'entrada_conta_aluno',subtipo:'pagamento_venda_online_secretaria',valorCentavos:external,saldoAntesCentavos:before,saldoDepoisCentavos:afterPayment,formaPagamento:'checkout_infinitepay',orderNsu:checkout.orderNsu||checkout.id,vendaId:saleRef.id,status:'confirmado',dataChave:dateKey(),criadoEm:now,detalhesPagamento:paymentData});
   tx.set(purchaseRef,{id:purchaseRef.id,alunoId:checkout.alunoId,alunosIds,tipo:'compra',subtipo:'venda_secretaria_online',valorCentavos:-total,valorCompraCentavos:total,saldoAntesCentavos:afterPayment,saldoDepoisCentavos:after,vendaId:saleRef.id,itens:lines,origem:'secretaria_online',formaPagamento:external>0?(payload.usarSaldo===true&&before>0?'saldo_e_checkout':'checkout_infinitepay'):'saldo_conta',orderNsu:checkout.orderNsu||checkout.id,status:'confirmado',dataChave:dateKey(),criadoEm:now});
-  tx.set(saleRef,{id:saleRef.id,alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,matricula:checkout.matricula||null,alunosIds,origem:'secretaria_online',orderNsu:checkout.orderNsu||checkout.id,operadorId:checkout.criadoPorId||null,operadorNome:checkout.criadoPorNome||'Secretaria',formaPagamento:external>0?'checkout_infinitepay':'saldo_conta',valorBrutoCentavos:total,valorRecebidoCentavos:external,valorSaldoUtilizadoCentavos:Math.max(0,total-external-Math.max(0,-before)),itens:lines,pedidosCantinaIds:orderRefs.map(r=>r.id),pedidosFardaIds:uniformOrderRefs.map(r=>r.id),pedidosOperacionaisIds:operationalRefs.map(r=>r.id),dataChave:dateKey(),criadoEm:now,atualizadoEm:now,status:'confirmada',saldoAntesCentavos:before,saldoDepoisCentavos:after,schemaVersion:6,versao:'1.6.0-rc2.7.16'},{merge:true});
-  if(stockRef){const stock=stockSnap&&stockSnap.exists?stockSnap.data():{},planned=cents(stock.quantidadePlanejada||cfg.quantidadePadraoSalgados||30);tx.set(stockRef,{dataChave:dateKey(),quantidadePlanejada:planned,vendidoAvulso:cents(stock.vendidoAvulso)+salgadoQty,atualizadoEm:now},{merge:true});}
+  tx.set(saleRef,{id:saleRef.id,alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,matricula:checkout.matricula||null,alunosIds,origem:'secretaria_online',orderNsu:checkout.orderNsu||checkout.id,operadorId:checkout.criadoPorId||null,operadorNome:checkout.criadoPorNome||'Secretaria',formaPagamento:external>0?'checkout_infinitepay':'saldo_conta',valorBrutoCentavos:total,valorRecebidoCentavos:external,valorSaldoUtilizadoCentavos:Math.max(0,total-external-Math.max(0,-before)),itens:lines,pedidosCantinaIds:orderRefs.map(r=>r.id),pedidosFardaIds:uniformOrderRefs.map(r=>r.id),pedidosOperacionaisIds:operationalRefs.map(r=>r.id),dataChave:dateKey(),criadoEm:now,atualizadoEm:now,status:'confirmada',saldoAntesCentavos:before,saldoDepoisCentavos:after,schemaVersion:6,versao:'1.6.0-rc2.7.18'},{merge:true});
+  if(stockRef){const stock=stockSnap&&stockSnap.exists?stockSnap.data():{},info=lunchDayInfo(dateKey(),stock,cfg);tx.set(stockRef,{dataChave:dateKey(),quantidadePlanejada:info.planned,vendidoAvulso:cents(stock.vendidoAvulso)+salgadoQty,atualizadoEm:now},{merge:true});}
   catalogRefs.forEach((entry,i)=>{const doc=catalogSnaps[i].exists?catalogSnaps[i].data():{};tx.set(entry.ref,catalogStockUpdate(doc,entry.line,now),{merge:true});});
   uniformStockRefs.forEach((entry,i)=>tx.set(entry.ref,uniformUpdates[i],{merge:true}));
-  scheduleStockRefs.forEach((entry,i)=>{const stock=scheduleSnaps[i].exists?scheduleSnaps[i].data():{},planned=cents(stock.quantidadePlanejada||cfg.quantidadePadraoSalgados||30);tx.set(entry.ref,{dataChave:entry.day,quantidadePlanejada:planned,pedidosConfirmados:cents(stock.pedidosConfirmados)+entry.quantidadeSalgados,atualizadoEm:now},{merge:true});});
-  operationalLines.forEach((line,i)=>{const or=operationalRefs[i],cat=operationalOrderCategory(line),status=operationalOrderInitialStatus(line);tx.set(or,{id:or.id,vendaId:saleRef.id,orderNsu:checkout.orderNsu||checkout.id,alunoId:line.alunoId||checkout.alunoId,alunoNome:line.alunoNome||checkout.alunoNome,turma:line.turma||checkout.turma||null,matricula:line.matricula||checkout.matricula||null,responsavelFinanceiroId:line.responsavelFinanceiroId||checkout.responsavelFinanceiroId||null,categoriaPedido:cat,tipoOperacional:line.tipoOperacional||'servico',nome:line.nome,descricao:line.descricao||'',quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:status,origem:'secretaria_online',criadoPorId:checkout.criadoPorId||null,criadoPorNome:checkout.criadoPorNome||'Secretaria',criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'},{merge:true});});
-  programacoes.forEach((program,i)=>{const orderRef=orderRefs[i];tx.set(orderRef,{id:orderRef.id,vendaId:saleRef.id,orderNsu:checkout.orderNsu||checkout.id,alunoId:program.alunoId||checkout.alunoId,alunoNome:program.alunoNome||checkout.alunoNome,turma:program.turma||checkout.turma||null,turno:program.turno||checkout.turno||null,matricula:program.matricula||checkout.matricula||null,responsavelFinanceiroId:program.responsavelFinanceiroId||checkout.responsavelFinanceiroId||null,tipoPedido:'cantina',modalidade:program.modalidade,dias:program.days,totalCentavos:program.totalCentavos,usarSaldo:payload.usarSaldo===true,statusPagamento:'pago',statusPedido:'confirmado',statusAplicacao:'aplicado',origem:'secretaria_online_venda_mista',criadoPorId:checkout.criadoPorId||null,criadoPorNome:checkout.criadoPorNome||'Secretaria',criadoEm:now,confirmadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'},{merge:true});(program.days||[]).forEach((day,j)=>{const occurrenceRef=occurrenceRefs[i][j];tx.set(occurrenceRef,{id:occurrenceRef.id,pedidoId:orderRef.id,vendaId:saleRef.id,orderNsu:checkout.orderNsu||checkout.id,alunoId:program.alunoId||checkout.alunoId,alunoNome:program.alunoNome||checkout.alunoNome,turma:program.turma||checkout.turma||null,turno:program.turno||day.turno||checkout.turno||null,matricula:program.matricula||checkout.matricula||null,responsavelFinanceiroId:program.responsavelFinanceiroId||checkout.responsavelFinanceiroId||null,dataChave:day.dataChave,itens:day.itens||[],componentes:day.componentes||[],quantidadeSalgados:cents(day.quantidadeSalgados),valorCentavos:cents(day.totalCentavos),status:'pendente_entrega',statusPagamento:'pago',origem:'secretaria_online_venda_mista',criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'},{merge:true});});});
-  let idx=0;for(const line of lines.filter(x=>x.tipo==='farda')){const fr=uniformOrderRefs[idx++];tx.set(fr,{id:fr.id,vendaId:saleRef.id,orderNsu:checkout.orderNsu||checkout.id,alunoId:line.alunoId||checkout.alunoId,alunoNome:line.alunoNome||checkout.alunoNome,turma:line.turma||checkout.turma||null,matricula:line.matricula||checkout.matricula||null,responsavelFinanceiroId:line.responsavelFinanceiroId||checkout.responsavelFinanceiroId||null,produto:line.nome,tamanho:line.tamanho||'',modelo:line.modelo||'',modeloFardaId:line.modeloFardaId||'catalogo',catalogoItemId:line.catalogoItemId||null,quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:line.statusAtendimento||'aguardando_producao',quantidadeReservadaEstoque:cents(line.quantidadeReservadaEstoque),quantidadeAguardandoProducao:cents(line.quantidadeAguardandoProducao),estoqueReservado:cents(line.quantidadeReservadaEstoque)>0,solicitadoVia:'secretaria_online',criadoPor:checkout.criadoPorId||'secretaria_online',criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'},{merge:true});}
+  scheduleStockRefs.forEach((entry,i)=>{const stock=scheduleSnaps[i].exists?scheduleSnaps[i].data():{},info=lunchDayInfo(entry.day,stock,cfg);tx.set(entry.ref,{dataChave:entry.day,quantidadePlanejada:info.planned,pedidosConfirmados:cents(stock.pedidosConfirmados)+entry.quantidadeSalgados,atualizadoEm:now},{merge:true});});
+  operationalLines.forEach((line,i)=>{const or=operationalRefs[i],cat=operationalOrderCategory(line),status=operationalOrderInitialStatus(line);tx.set(or,{id:or.id,vendaId:saleRef.id,orderNsu:checkout.orderNsu||checkout.id,alunoId:line.alunoId||checkout.alunoId,alunoNome:line.alunoNome||checkout.alunoNome,turma:line.turma||checkout.turma||null,matricula:line.matricula||checkout.matricula||null,responsavelFinanceiroId:line.responsavelFinanceiroId||checkout.responsavelFinanceiroId||null,categoriaPedido:cat,tipoOperacional:line.tipoOperacional||'servico',nome:line.nome,descricao:line.descricao||'',quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:status,origem:'secretaria_online',criadoPorId:checkout.criadoPorId||null,criadoPorNome:checkout.criadoPorNome||'Secretaria',criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'},{merge:true});});
+  programacoes.forEach((program,i)=>{const orderRef=orderRefs[i];tx.set(orderRef,{id:orderRef.id,vendaId:saleRef.id,orderNsu:checkout.orderNsu||checkout.id,alunoId:program.alunoId||checkout.alunoId,alunoNome:program.alunoNome||checkout.alunoNome,turma:program.turma||checkout.turma||null,turno:program.turno||checkout.turno||null,matricula:program.matricula||checkout.matricula||null,responsavelFinanceiroId:program.responsavelFinanceiroId||checkout.responsavelFinanceiroId||null,tipoPedido:'cantina',modalidade:program.modalidade,dias:program.days,totalCentavos:program.totalCentavos,usarSaldo:payload.usarSaldo===true,statusPagamento:'pago',statusPedido:'confirmado',statusAplicacao:'aplicado',origem:'secretaria_online_venda_mista',criadoPorId:checkout.criadoPorId||null,criadoPorNome:checkout.criadoPorNome||'Secretaria',criadoEm:now,confirmadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'},{merge:true});(program.days||[]).forEach((day,j)=>{const occurrenceRef=occurrenceRefs[i][j];tx.set(occurrenceRef,{id:occurrenceRef.id,pedidoId:orderRef.id,vendaId:saleRef.id,orderNsu:checkout.orderNsu||checkout.id,alunoId:program.alunoId||checkout.alunoId,alunoNome:program.alunoNome||checkout.alunoNome,turma:program.turma||checkout.turma||null,turno:program.turno||day.turno||checkout.turno||null,matricula:program.matricula||checkout.matricula||null,responsavelFinanceiroId:program.responsavelFinanceiroId||checkout.responsavelFinanceiroId||null,dataChave:day.dataChave,itens:day.itens||[],componentes:day.componentes||[],quantidadeSalgados:cents(day.quantidadeSalgados),valorCentavos:cents(day.totalCentavos),status:'pendente_entrega',statusPagamento:'pago',origem:'secretaria_online_venda_mista',criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'},{merge:true});});});
+  let idx=0;for(const line of lines.filter(x=>x.tipo==='farda')){const fr=uniformOrderRefs[idx++];tx.set(fr,{id:fr.id,vendaId:saleRef.id,orderNsu:checkout.orderNsu||checkout.id,alunoId:line.alunoId||checkout.alunoId,alunoNome:line.alunoNome||checkout.alunoNome,turma:line.turma||checkout.turma||null,matricula:line.matricula||checkout.matricula||null,responsavelFinanceiroId:line.responsavelFinanceiroId||checkout.responsavelFinanceiroId||null,produto:line.nome,tamanho:line.tamanho||'',modelo:line.modelo||'',modeloFardaId:line.modeloFardaId||'catalogo',catalogoItemId:line.catalogoItemId||null,quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:line.statusAtendimento||'aguardando_producao',quantidadeReservadaEstoque:cents(line.quantidadeReservadaEstoque),quantidadeAguardandoProducao:cents(line.quantidadeAguardandoProducao),estoqueReservado:cents(line.quantidadeReservadaEstoque)>0,solicitadoVia:'secretaria_online',criadoPor:checkout.criadoPorId||'secretaria_online',criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'},{merge:true});}
   if(linkRef)tx.set(linkRef,{status:'pago',orderNsu:checkout.orderNsu||checkout.id,vendaId:saleRef.id,pagoEm:now,atualizadoEm:now},{merge:true});
   return{status:'confirmado',vendaId:saleRef.id,pedidosCantinaIds:orderRefs.map(r=>r.id),pedidosFardaIds:uniformOrderRefs.map(r=>r.id),pedidosOperacionaisIds:operationalRefs.map(r=>r.id),quantidadeEntregas:programacoes.reduce((n,p)=>n+(p.days||[]).length,0),saldoDepoisCentavos:after};
 }
@@ -1094,6 +1173,15 @@ async function applyCheckoutConfirmation(db, orderNsu, paymentData={}, options={
   const checkout={id:snap.id,...snap.data(),orderNsu:snap.id};
   const evidence=mergePaymentEvidence(paymentData,checkout,checkout.ultimoWebhookPayload||{},checkout.ultimoPaymentCheckPayload||{});
   validatePaidCheckout(checkout,paymentData,evidence);
+  const manualReconciliation=options.source==='reconciliacao_manual_infinitepay';
+  const confirmationMeta={
+    origemConfirmacao:manualReconciliation?'reconciliacao_manual_infinitepay':'infinitepay',
+    reconciliacaoManual:manualReconciliation,
+    referenciaComprovanteInfinitePay:manualReconciliation?String(options.referenciaComprovanteInfinitePay||paymentData.referencia_comprovante||'').trim():(checkout.referenciaComprovanteInfinitePay||null),
+    confirmadoPorId:manualReconciliation?(options.actor?.id||null):(checkout.confirmadoPorId||null),
+    confirmadoPorNome:manualReconciliation?(options.actor?.nome||null):(checkout.confirmadoPorNome||null),
+    confirmadoPorPerfil:manualReconciliation?(options.actor?.perfil||null):(checkout.confirmadoPorPerfil||null)
+  };
   if(!options.eventAlreadyRecorded)await recordInfinitePayEvent(db,orderNsu,paymentData,options.source||'confirmacao_pagamento');
 
   if(checkout.statusAplicacao!=='aplicado'&&checkout.ignorarConfirmacaoPosterior===true){
@@ -1109,6 +1197,8 @@ async function applyCheckoutConfirmation(db, orderNsu, paymentData={}, options={
     ultimoWebhookPayload:options.source==='webhook'?paymentData:(checkout.ultimoWebhookPayload||null),
     ultimoPayloadConfirmado:paymentData,
     pagamentoLocalizadoEm:nowIso(),
+    ...confirmationMeta,
+    conciliacaoStatus:'processando',
     atualizadoEm:nowIso()
   });
   if(checkout.statusAplicacao==='aplicado')return {ok:true,alreadyApplied:true};
@@ -1144,9 +1234,9 @@ async function applyCheckoutConfirmation(db, orderNsu, paymentData={}, options={
       }
 
       const now=nowIso();
-      tx.set(transactionRef,{id:transactionRef.id,transactionNsu:evidence.transactionNsu,orderNsu,pedidoId:c.pedidoId||null,alunoId:c.alunoId||null,alunosIds:Array.isArray(c.alunosIds)?c.alunosIds:[],amountCentavos:evidence.amountCentavos,status:'aplicado',confirmadoEm:now,atualizadoEm:now},{merge:true});
-      tx.set(payRef,{id:orderNsu,orderNsu,pedidoId:c.pedidoId||null,alunoId:c.alunoId||null,alunoNome:c.alunoNome||null,alunosIds:Array.isArray(c.alunosIds)?c.alunosIds:[],valorBrutoCentavos:c.totalCentavos,pedidoTotalCentavos:c.pedidoTotalCentavos||0,formaPagamento:'checkout_infinitepay',status:'confirmado',origem:'checkout_infinitepay',tipo:c.tipo,...evidence,paidAmountCentavos:evidence.paidAmountCentavos||cents(c.totalCentavos),amountCentavos:evidence.amountCentavos||cents(c.totalCentavos),dataChave:dateKey(),criadoEm:c.pagamentoConfirmadoEm||now,confirmadoEm:now,payloadInfinitePay:paymentData},{merge:true});
-      tx.set(checkoutRef,{status:operationResult.cobrancaDescartada?'pago_descartado_creditado':'pago',statusAplicacao:'aplicado',resultadoOperacional:operationResult.status||'confirmado',pagamentoConfirmadoEm:now,...evidence,paidAmountCentavos:evidence.paidAmountCentavos||cents(c.totalCentavos),amountCentavos:evidence.amountCentavos||cents(c.totalCentavos),ultimoPayloadConfirmado:paymentData,erroAplicacao:null,identificadoresPendentes:false,atualizadoEm:now},{merge:true});
+      tx.set(transactionRef,{id:transactionRef.id,transactionNsu:evidence.transactionNsu,orderNsu,pedidoId:c.pedidoId||null,alunoId:c.alunoId||null,alunosIds:Array.isArray(c.alunosIds)?c.alunosIds:[],amountCentavos:evidence.amountCentavos,status:'aplicado',origemConfirmacao:confirmationMeta.origemConfirmacao,reconciliacaoManual:manualReconciliation,referenciaComprovanteInfinitePay:confirmationMeta.referenciaComprovanteInfinitePay||null,confirmadoEm:now,atualizadoEm:now},{merge:true});
+      tx.set(payRef,{id:orderNsu,orderNsu,pedidoId:c.pedidoId||null,alunoId:c.alunoId||null,alunoNome:c.alunoNome||null,alunosIds:Array.isArray(c.alunosIds)?c.alunosIds:[],valorBrutoCentavos:c.totalCentavos,pedidoTotalCentavos:c.pedidoTotalCentavos||0,formaPagamento:'checkout_infinitepay',status:'confirmado',origem:'checkout_infinitepay',tipo:c.tipo,...evidence,...confirmationMeta,paidAmountCentavos:evidence.paidAmountCentavos||cents(c.totalCentavos),amountCentavos:evidence.amountCentavos||cents(c.totalCentavos),dataChave:dateKey(),criadoEm:c.pagamentoConfirmadoEm||now,confirmadoEm:now,payloadInfinitePay:paymentData},{merge:true});
+      tx.set(checkoutRef,{status:operationResult.cobrancaDescartada?'pago_descartado_creditado':'pago',statusAplicacao:'aplicado',resultadoOperacional:operationResult.status||'confirmado',pagamentoConfirmadoEm:now,...evidence,...confirmationMeta,paidAmountCentavos:evidence.paidAmountCentavos||cents(c.totalCentavos),amountCentavos:evidence.amountCentavos||cents(c.totalCentavos),ultimoPayloadConfirmado:paymentData,erroAplicacao:null,identificadoresPendentes:false,conciliacaoStatus:'confirmado',atualizadoEm:now},{merge:true});
     });
   }catch(error){
     await safeSet(checkoutRef,{...evidence,status:'pagamento_localizado_aguardando_processamento',statusAplicacao:'erro_processamento',erroAplicacao:compactError(error),ultimoPayloadConfirmado:paymentData,atualizadoEm:nowIso()});
@@ -1155,7 +1245,7 @@ async function applyCheckoutConfirmation(db, orderNsu, paymentData={}, options={
   if(alreadyAppliedInside)return {ok:true,alreadyApplied:true};
   if(checkout.vendaOnlineId)await safeSet(db.collection('vendas_online_links').doc(checkout.vendaOnlineId),{status:operationResult.status==='revisao'?'pago_revisao':'pago',orderNsu,pedidoId:checkout.pedidoId||null,vendaId:operationResult.vendaId||null,pagoEm:nowIso(),atualizadoEm:nowIso()});
 
-  await audit(db,'checkout_pagamento_confirmado',{orderNsu,pagamentoId:orderNsu,pedidoId:checkout.pedidoId||null,tipo:checkout.tipo,alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,valorCentavos:checkout.totalCentavos,descricaoHumana:`Pagamento InfinitePay de ${brl(checkout.totalCentavos)} confirmado para ${checkout.alunoNome||'operação avulsa'}.`});
+  await audit(db,manualReconciliation?'checkout_pagamento_reconciliado_manual':'checkout_pagamento_confirmado',{orderNsu,pagamentoId:orderNsu,pedidoId:checkout.pedidoId||null,tipo:checkout.tipo,alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,valorCentavos:checkout.totalCentavos,usuarioId:options.actor?.id||undefined,usuarioNome:options.actor?.nome||undefined,usuarioPerfil:options.actor?.perfil||undefined,referenciaComprovanteInfinitePay:confirmationMeta.referenciaComprovanteInfinitePay||null,severidade:manualReconciliation?'warning':'info',descricaoHumana:manualReconciliation?`${options.actor?.nome||'Equipe'} confirmou manualmente o recebimento InfinitePay de ${brl(checkout.totalCentavos)} para ${checkout.alunoNome||'operação'}, após conferência externa.`:`Pagamento InfinitePay de ${brl(checkout.totalCentavos)} confirmado para ${checkout.alunoNome||'operação avulsa'}.`});
   if(operationResult.cobrancaDescartada){
     await audit(db,'checkout_descartado_pago_creditado',{orderNsu,pagamentoId:orderNsu,pedidoId:checkout.pedidoId||null,alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,valorCentavos:checkout.totalCentavos,severidade:'warning',descricaoHumana:`Uma cobrança descartada foi paga posteriormente. O valor de ${brl(checkout.totalCentavos)} foi creditado na conta do aluno sem repetir o pedido.`});
     await notify(db,{tipo:'checkout_descartado_pago_creditado',titulo:'Cobrança descartada foi paga',mensagem:`O valor de ${brl(checkout.totalCentavos)} foi creditado na conta de ${checkout.alunoNome||'aluno'} sem repetir o pedido.`,prioridade:'alta',alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,matricula:checkout.matricula,pagamentoId:orderNsu,pedidoId:checkout.pedidoId||null,origem:'infinitepay',canal:'online',destinatariosPerfis:['admin','gestao','secretaria'],acaoPrincipal:'abrir_aluno',acaoLabel:'Ver conta do aluno'});
@@ -1196,6 +1286,43 @@ async function applyCheckoutConfirmation(db, orderNsu, paymentData={}, options={
 }
 
 
+function normalizeManualPaymentReference(value){
+  const cleaned=String(value||'').trim().replace(/[^A-Za-z0-9._-]/g,'');
+  if(cleaned.length<5||cleaned.length>80)throw Object.assign(new Error('Informe a identificação do comprovante/transação exibida na InfinitePay.'),{status:400});
+  return cleaned;
+}
+async function manualReconcileInfinitePay(db,body={},actor={}){
+  const orderNsu=String(body.orderNsu||body.order_nsu||'').trim();
+  if(!orderNsu)throw Object.assign(new Error('Cobrança não informada.'),{status:400});
+  const reference=normalizeManualPaymentReference(body.referenciaComprovanteInfinitePay||body.comprovanteInfinitePayId||body.referencia||'');
+  const checkoutRef=db.collection('pagamentos_checkout').doc(orderNsu),snap=await checkoutRef.get();
+  if(!snap.exists)throw Object.assign(new Error('Cobrança não encontrada.'),{status:404});
+  const checkout={id:snap.id,...snap.data(),orderNsu:snap.id};
+  if(checkout.statusAplicacao==='aplicado'){
+    if(checkout.reconciliacaoManual&&checkout.referenciaComprovanteInfinitePay&&checkout.referenciaComprovanteInfinitePay!==reference)throw Object.assign(new Error('Esta cobrança já foi conciliada usando outra referência de pagamento.'),{status:409});
+    return {ok:true,alreadyApplied:true,receipt:await buildReceiptInfo(db,orderNsu),diagnostic:checkoutPaymentDiagnostic(checkout)};
+  }
+  if(['confirmacao_ignorada_valor_devolvido'].includes(checkout.status))throw Object.assign(new Error('Esta cobrança foi encerrada como valor devolvido e não pode receber baixa manual.'),{status:409});
+  const expected=cents(checkout.totalCentavos);
+  if(expected<=0)throw Object.assign(new Error('Esta cobrança não possui valor externo pendente para conciliar.'),{status:409});
+  const syntheticTransaction=`MANUAL-${reference}`;
+  const lockRef=db.collection('transacoes_infinitepay').doc(safeFinancialId(syntheticTransaction)),lockSnap=await lockRef.get();
+  if(lockSnap.exists&&lockSnap.data()?.orderNsu&&lockSnap.data().orderNsu!==orderNsu)throw Object.assign(new Error('Esta referência de pagamento já foi usada para conciliar outra cobrança.'),{status:409});
+  const now=nowIso(),note=String(body.observacao||'').trim().slice(0,500);
+  await db.collection('reconciliacoes_infinitepay').doc(orderNsu).set({id:orderNsu,orderNsu,alunoId:checkout.alunoId||null,alunoNome:checkout.alunoNome||null,valorCentavos:expected,referenciaComprovanteInfinitePay:reference,status:'processando',observacao:note||null,confirmadoPorId:actor.id||null,confirmadoPorNome:actor.nome||null,confirmadoPorPerfil:actor.perfil||null,criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'},{merge:true});
+  const paymentData={paid:true,success:true,status:'approved',amount:expected,paid_amount:expected,transaction_nsu:syntheticTransaction,invoice_slug:`manual-${reference}`,slug:`manual-${reference}`,capture_method:'manual_infinitepay',source:'reconciliacao_manual_infinitepay',referencia_comprovante:reference};
+  try{
+    const result=await applyCheckoutConfirmation(db,orderNsu,paymentData,{source:'reconciliacao_manual_infinitepay',eventAlreadyRecorded:true,actor,referenciaComprovanteInfinitePay:reference});
+    await db.collection('reconciliacoes_infinitepay').doc(orderNsu).set({status:'aplicado',resultadoOperacional:result.operationResult||null,aplicadoEm:nowIso(),atualizadoEm:nowIso()},{merge:true});
+    await notify(db,{tipo:'checkout_pagamento_confirmado',titulo:'Pagamento conciliado',mensagem:`Pagamento de ${brl(expected)} de ${checkout.alunoNome||'aluno'} foi conferido na InfinitePay e aplicado manualmente.`,prioridade:'normal',alunoId:checkout.alunoId,alunoNome:checkout.alunoNome,matricula:checkout.matricula,pagamentoId:orderNsu,origem:'reconciliacao_manual_infinitepay',canal:'interno',destinatariosPerfis:['admin','gestao','secretaria'],destinatariosAlunos:[]});
+    return {ok:true,applied:true,operationResult:result.operationResult||null,receipt:await buildReceiptInfo(db,orderNsu)};
+  }catch(error){
+    await db.collection('reconciliacoes_infinitepay').doc(orderNsu).set({status:'erro',erro:compactError(error),atualizadoEm:nowIso()},{merge:true}).catch(()=>{});
+    throw error;
+  }
+}
+
+
 async function invalidateCheckoutAttempt(db,checkout,reason='descartada'){
   if(!checkout?.idTentativa)return;
   await db.collection('tentativas_checkout').doc(checkout.idTentativa).set({
@@ -1218,6 +1345,7 @@ async function discardCheckout(db,body={}){
   if(String(c.alunoId||'')!==alunoId)throw Object.assign(new Error('Esta cobrança não pertence ao aluno informado.'),{status:403});
   if(c.statusAplicacao==='aplicado'||['pago','confirmado','pago_descartado_creditado'].includes(c.status))throw Object.assign(new Error('Esta cobrança já foi paga e não pode ser descartada.'),{status:409});
   if(['pagamento_localizado_processando','pagamento_localizado_aguardando_processamento'].includes(c.status))throw Object.assign(new Error('O pagamento já foi localizado e está sendo processado. Atualize o status em vez de descartar.'),{status:409});
+  if(c.conciliacaoStatus==='aguardando_retorno_infinitepay'&&c.identificadoresPendentes!==false)throw Object.assign(new Error('Este pagamento está em verificação. Não descarte nem gere outra cobrança até confirmar na InfinitePay se o pagamento original foi realizado.'),{status:409,code:'PAYMENT_RECONCILIATION_PENDING'});
   if(['descartado_responsavel','substituido_nova_cobranca'].includes(c.status))return {ok:true,alreadyDiscarded:true,orderNsu};
   const discardable=['preparando_link','aguardando_pagamento','erro_timeout','erro_gerar_link','erro_sem_url','nao_concluido'];
   if(!discardable.includes(c.status||'aguardando_pagamento'))throw Object.assign(new Error('Esta cobrança não está em uma situação que permita descarte.'),{status:409});
@@ -1234,7 +1362,7 @@ async function discardCheckout(db,body={}){
     descartadoPorNome:by,
     motivoDescarte:'Cobrança descartada pelo responsável no portal.',
     atualizadoEm:now,
-    versao:'1.6.0-rc2.7.16'
+    versao:'1.6.0-rc2.7.18'
   },{merge:true});
   await invalidateCheckoutAttempt(db,c,'cobranca_descartada_responsavel');
   if(c.pedidoId){
@@ -1293,18 +1421,18 @@ async function registerInPersonOperation(db,body={}){
   const scheduleByDate=new Map();programacoes.forEach(p=>(p.days||[]).forEach(day=>{const e=scheduleByDate.get(day.dataChave)||{day:day.dataChave,quantidadeSalgados:0};e.quantidadeSalgados+=cents(day.quantidadeSalgados);scheduleByDate.set(day.dataChave,e)}));const scheduleStockRefs=[...scheduleByDate.values()].map(x=>({...x,ref:db.collection('disponibilidade_salgados').doc(x.day)})),orderRefs=programacoes.map(()=>db.collection('pedidos').doc()),occurrenceRefs=programacoes.map((p,i)=>(p.days||[]).map(day=>db.collection('ocorrencias_entrega').doc(`${orderRefs[i].id}__${day.dataChave}`))),uniformRefs=lines.filter(x=>x.tipo==='farda').map(()=>db.collection('pedidos_farda').doc()),operationalLines=lines.filter(x=>x.tipo==='catalogo_item'),operationalRefs=operationalLines.map(()=>db.collection('pedidos_operacionais').doc());
   await db.runTransaction(async tx=>{
     const readRefs=[accRef,...(cashSessionRef?[cashSessionRef]:[]),...(cashPeriodRef?[cashPeriodRef]:[]),...(dailyRef?[dailyRef]:[]),...catalogRefs.map(x=>x.ref),...uniformStockRefs.map(x=>x.ref),...scheduleStockRefs.map(x=>x.ref)],snaps=await Promise.all(readRefs.map(r=>tx.get(r)));let pos=0;const fresh=snaps[pos++],freshAcc=fresh.exists?fresh.data():{},freshBefore=accountNet(freshAcc);if(cashSessionRef){const cs=snaps[pos++];if(!cs.exists)throw new Error('Sessão de caixa não encontrada.');const cd=cs.data()||{},responsavel=String(cd.responsavelAtualId||cd.operadorId||cd.abertoPorId||'');if(cd.status!=='aberto')throw new Error('O caixa foi fechado durante a operação.');if(responsavel&&responsavel!==String(actor.id))throw new Error('O caixa está sob responsabilidade de outro operador. Confira e assuma antes de receber dinheiro.');if(cash.periodoAtualId&&cd.periodoAtualId&&String(cd.periodoAtualId)!==String(cash.periodoAtualId))throw new Error('A responsabilidade do caixa mudou durante a operação. Revise o pagamento.');}if(cashPeriodRef){const ps=snaps[pos++];if(!ps.exists||(ps.data()||{}).status!=='ativo')throw new Error('O período de responsabilidade do caixa não está ativo.');}if(freshBefore!==before)throw new Error('O saldo do aluno mudou. Revise a venda antes de confirmar.');const dailySnap=dailyRef?snaps[pos++]:null,catalogSnaps=catalogRefs.map(()=>snaps[pos++]),uniformStockSnaps=uniformStockRefs.map(()=>snaps[pos++]),scheduleSnaps=scheduleStockRefs.map(()=>snaps[pos++]);
-    if(dailyRef){const stock=dailySnap.exists?dailySnap.data():{},planned=cents(stock.quantidadePlanejada||cfg.quantidadePadraoSalgados||30),used=dailyUsed(stock);if(used+salgadoQty>planned)throw new Error(`Não há salgados suficientes. Disponíveis: ${Math.max(0,planned-used)}.`);tx.set(dailyRef,{dataChave:dateKey(),quantidadePlanejada:planned,vendidoAvulso:cents(stock.vendidoAvulso)+salgadoQty,atualizadoEm:now},{merge:true});}
+    if(dailyRef){const stock=dailySnap.exists?dailySnap.data():{},info=lunchDayInfo(dateKey(),stock,cfg);if(!info.active)throw new Error('A venda de lanches está desativada hoje.');if(info.used+salgadoQty>info.capacity)throw new Error(`Não há salgados suficientes. Disponíveis: ${info.available}.`);tx.set(dailyRef,{dataChave:dateKey(),quantidadePlanejada:info.planned,vendidoAvulso:cents(stock.vendidoAvulso)+salgadoQty,atualizadoEm:now},{merge:true});}
     catalogRefs.forEach((entry,i)=>{const doc=catalogSnaps[i].exists?catalogSnaps[i].data():{},available=catalogAvailableUnits(doc,entry.line);if(available<entry.line.quantidade)throw new Error(`${entry.line.modo==='capacidade_evento'?'Vagas':'Estoque'} insuficiente para ${entry.line.nome}. Disponível: ${available}.`);tx.set(entry.ref,catalogStockUpdate(doc,entry.line,now),{merge:true});});
     const uniformUpdates=uniformStockRefs.map((entry,i)=>allocateUniformRequirement(uniformStockSnaps[i].exists?uniformStockSnaps[i].data():{},entry.line,lines,now));
     uniformStockRefs.forEach((entry,i)=>tx.set(entry.ref,uniformUpdates[i],{merge:true}));
-    scheduleStockRefs.forEach((entry,i)=>{const stock=scheduleSnaps[i].exists?scheduleSnaps[i].data():{},planned=cents(stock.quantidadePlanejada||cfg.quantidadePadraoSalgados||30),used=dailyUsed(stock);if(used+entry.quantidadeSalgados>planned)throw new Error(`Não há salgados suficientes para ${entry.day}. Disponíveis: ${Math.max(0,planned-used)}.`);tx.set(entry.ref,{dataChave:entry.day,quantidadePlanejada:planned,pedidosConfirmados:cents(stock.pedidosConfirmados)+entry.quantidadeSalgados,atualizadoEm:now},{merge:true});});
+    scheduleStockRefs.forEach((entry,i)=>{const stock=scheduleSnaps[i].exists?scheduleSnaps[i].data():{},info=lunchDayInfo(entry.day,stock,cfg);if(!info.active)throw new Error(`Não haverá venda de lanche em ${entry.day.split('-').reverse().join('/')}.`);if(info.used+entry.quantidadeSalgados>info.capacity)throw new Error(`Não há salgados suficientes para ${entry.day}. Disponíveis: ${info.available}.`);tx.set(entry.ref,{dataChave:entry.day,quantidadePlanejada:info.planned,pedidosConfirmados:cents(stock.pedidosConfirmados)+entry.quantidadeSalgados,atualizadoEm:now},{merge:true});});
     tx.set(accRef,{...splitNet(after),bloqueioSaldoSemanal:after<0?Boolean(freshAcc.bloqueioSaldoSemanal):false,bloqueadoPorLimite:after<0&&cents(freshAcc.limiteFiadoCentavos)>0&&Math.abs(after)>=cents(freshAcc.limiteFiadoCentavos),ultimaRegularizacaoEm:after>=0?now:(freshAcc.ultimaRegularizacaoEm||null),atualizadoEm:now},{merge:true});
     if(applied>0)tx.set(paymentMoveRef,{id:paymentMoveRef.id,alunoId:student.id,alunosIds,tipo:'entrada_conta_aluno',subtipo:isAccountOnly?(operation==='regularizar_debito'?'regularizacao_saldo_secretaria':'credito_secretaria'):'pagamento_venda_secretaria',valorCentavos:applied,saldoAntesCentavos:before,saldoDepoisCentavos:afterPayment,formaPagamento:method,pagamentos:payments,vendaId:isAccountOnly?null:saleRef.id,usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,dataChave:dateKey(),criadoEm:now});
-    if(!isAccountOnly){tx.set(purchaseRef,{id:purchaseRef.id,alunoId:student.id,alunosIds,tipo:'compra',subtipo:'venda_secretaria',valorCentavos:-total,valorCompraCentavos:total,saldoAntesCentavos:afterPayment,saldoDepoisCentavos:after,vendaId:saleRef.id,itens:lines,origem:'secretaria',formaPagamento:method,pagamentos:payments,status:'confirmado',dataChave:dateKey(),criadoEm:now});tx.set(saleRef,{id:saleRef.id,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,alunosIds,origem:'secretaria',operadorId:actor.id,operadorNome:actor.nome,formaPagamento:method,valorBrutoCentavos:total,valorRecebidoCentavos:required,valorLiquidoRecebimentoCentavos:netSettlement,taxaMaquininhaCentavos:cardFee,valorSaldoUtilizadoCentavos:creditUsed,itens:lines,pagamentos:payments,pedidosCantinaIds:orderRefs.map(r=>r.id),pedidosFardaIds:uniformRefs.map(r=>r.id),pedidosOperacionaisIds:operationalRefs.map(r=>r.id),caixaId:cash?.id||null,sessaoCaixaId:cash?.id||null,periodoResponsabilidadeId:cash?.periodoAtualId||null,dataChave:dateKey(),criadoEm:now,status:'confirmada',schemaVersion:6,versao:'1.6.0-rc2.7.16'});}
+    if(!isAccountOnly){tx.set(purchaseRef,{id:purchaseRef.id,alunoId:student.id,alunosIds,tipo:'compra',subtipo:'venda_secretaria',valorCentavos:-total,valorCompraCentavos:total,saldoAntesCentavos:afterPayment,saldoDepoisCentavos:after,vendaId:saleRef.id,itens:lines,origem:'secretaria',formaPagamento:method,pagamentos:payments,status:'confirmado',dataChave:dateKey(),criadoEm:now});tx.set(saleRef,{id:saleRef.id,alunoId:student.id,alunoNome:student.nome,turma:student.turma||null,alunosIds,origem:'secretaria',operadorId:actor.id,operadorNome:actor.nome,formaPagamento:method,valorBrutoCentavos:total,valorRecebidoCentavos:required,valorLiquidoRecebimentoCentavos:netSettlement,taxaMaquininhaCentavos:cardFee,valorSaldoUtilizadoCentavos:creditUsed,itens:lines,pagamentos:payments,pedidosCantinaIds:orderRefs.map(r=>r.id),pedidosFardaIds:uniformRefs.map(r=>r.id),pedidosOperacionaisIds:operationalRefs.map(r=>r.id),caixaId:cash?.id||null,sessaoCaixaId:cash?.id||null,periodoResponsabilidadeId:cash?.periodoAtualId||null,dataChave:dateKey(),criadoEm:now,status:'confirmada',schemaVersion:6,versao:'1.6.0-rc2.7.18'});}
     payments.forEach((p,i)=>{tx.set(payRefs[i],{id:payRefs[i].id,vendaId:isAccountOnly?null:saleRef.id,alunoId:student.id,alunoNome:student.nome,alunosIds,...p,valorBrutoCentavos:p.metodo==='cartao'?p.valorBrutoPassadoCentavos:p.valorAplicadoCentavos,status:'confirmado',origem:'secretaria_presencial',usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,dataChave:dateKey(),criadoEm:now});if(feeRefs[i])tx.set(feeRefs[i],{id:feeRefs[i].id,pagamentoId:payRefs[i].id,vendaId:isAccountOnly?null:saleRef.id,alunoId:student.id,adquirente:p.adquirente,valorBrutoCentavos:p.valorBrutoPassadoCentavos,valorLiquidoCentavos:p.valorLiquidoCentavos,taxaCentavos:p.taxaCentavos,modalidadeCartao:p.modalidadeCartao,parcelas:p.parcelas,nsu:p.nsu||null,dataChave:dateKey(),criadoEm:now,status:'confirmada'});});
-    let ui=0;for(const line of lines.filter(x=>x.tipo==='farda')){const fr=uniformRefs[ui++];tx.set(fr,{id:fr.id,vendaId:saleRef.id,alunoId:line.alunoId||student.id,alunoNome:line.alunoNome||student.nome,turma:line.turma||student.turma||null,matricula:line.matricula||student.matricula||null,responsavelFinanceiroId:line.responsavelFinanceiroId||student.responsavelFinanceiroId||null,produto:line.nome,tamanho:line.tamanho||'',modelo:line.modelo||'',modeloFardaId:line.modeloFardaId||'catalogo',catalogoItemId:line.catalogoItemId||null,quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:line.statusAtendimento||'aguardando_producao',quantidadeReservadaEstoque:cents(line.quantidadeReservadaEstoque),quantidadeAguardandoProducao:cents(line.quantidadeAguardandoProducao),estoqueReservado:cents(line.quantidadeReservadaEstoque)>0,solicitadoVia:'secretaria_presencial',criadoPor:actor.id,criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'});}
-    operationalLines.forEach((line,i)=>{const or=operationalRefs[i],cat=operationalOrderCategory(line),status=operationalOrderInitialStatus(line);tx.set(or,{id:or.id,vendaId:saleRef.id,alunoId:line.alunoId||student.id,alunoNome:line.alunoNome||student.nome,turma:line.turma||student.turma||null,matricula:line.matricula||student.matricula||null,responsavelFinanceiroId:line.responsavelFinanceiroId||student.responsavelFinanceiroId||null,categoriaPedido:cat,tipoOperacional:line.tipoOperacional||'servico',nome:line.nome,descricao:line.descricao||'',quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:status,origem:'secretaria_presencial',criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'},{merge:true});});
-    programacoes.forEach((program,i)=>{const orderRef=orderRefs[i];tx.set(orderRef,{id:orderRef.id,vendaId:saleRef.id,alunoId:program.alunoId||student.id,alunoNome:program.alunoNome||student.nome,turma:program.turma||student.turma||null,turno:program.turno||student.turno||null,matricula:program.matricula||student.matricula||null,responsavelFinanceiroId:program.responsavelFinanceiroId||student.responsavelFinanceiroId||null,tipoPedido:'cantina',modalidade:program.modalidade,dias:program.days,totalCentavos:program.totalCentavos,usarSaldo:useBalance,statusPagamento:'pago',statusPedido:'confirmado',statusAplicacao:'aplicado',origem:'secretaria_presencial_venda_mista',criadoPorId:actor.id,criadoPorNome:actor.nome,criadoEm:now,confirmadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'});(program.days||[]).forEach((day,j)=>{const occurrenceRef=occurrenceRefs[i][j];tx.set(occurrenceRef,{id:occurrenceRef.id,pedidoId:orderRef.id,vendaId:saleRef.id,alunoId:program.alunoId||student.id,alunoNome:program.alunoNome||student.nome,turma:program.turma||student.turma||null,turno:program.turno||day.turno||student.turno||null,matricula:program.matricula||student.matricula||null,responsavelFinanceiroId:program.responsavelFinanceiroId||student.responsavelFinanceiroId||null,dataChave:day.dataChave,itens:day.itens||[],componentes:day.componentes||[],quantidadeSalgados:cents(day.quantidadeSalgados),valorCentavos:cents(day.totalCentavos),status:'pendente_entrega',statusPagamento:'pago',origem:'secretaria_presencial_venda_mista',criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.16'},{merge:true});});});
+    let ui=0;for(const line of lines.filter(x=>x.tipo==='farda')){const fr=uniformRefs[ui++];tx.set(fr,{id:fr.id,vendaId:saleRef.id,alunoId:line.alunoId||student.id,alunoNome:line.alunoNome||student.nome,turma:line.turma||student.turma||null,matricula:line.matricula||student.matricula||null,responsavelFinanceiroId:line.responsavelFinanceiroId||student.responsavelFinanceiroId||null,produto:line.nome,tamanho:line.tamanho||'',modelo:line.modelo||'',modeloFardaId:line.modeloFardaId||'catalogo',catalogoItemId:line.catalogoItemId||null,quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:line.statusAtendimento||'aguardando_producao',quantidadeReservadaEstoque:cents(line.quantidadeReservadaEstoque),quantidadeAguardandoProducao:cents(line.quantidadeAguardandoProducao),estoqueReservado:cents(line.quantidadeReservadaEstoque)>0,solicitadoVia:'secretaria_presencial',criadoPor:actor.id,criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'});}
+    operationalLines.forEach((line,i)=>{const or=operationalRefs[i],cat=operationalOrderCategory(line),status=operationalOrderInitialStatus(line);tx.set(or,{id:or.id,vendaId:saleRef.id,alunoId:line.alunoId||student.id,alunoNome:line.alunoNome||student.nome,turma:line.turma||student.turma||null,matricula:line.matricula||student.matricula||null,responsavelFinanceiroId:line.responsavelFinanceiroId||student.responsavelFinanceiroId||null,categoriaPedido:cat,tipoOperacional:line.tipoOperacional||'servico',nome:line.nome,descricao:line.descricao||'',quantidade:line.quantidade,precoUnitarioCentavos:line.precoUnitarioCentavos,totalCentavos:line.totalCentavos,statusPagamento:'pago',statusAtendimento:status,origem:'secretaria_presencial',criadoPorId:actor.id,criadoPorNome:actor.nome,criadoPorPerfil:actor.perfil,criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'},{merge:true});});
+    programacoes.forEach((program,i)=>{const orderRef=orderRefs[i];tx.set(orderRef,{id:orderRef.id,vendaId:saleRef.id,alunoId:program.alunoId||student.id,alunoNome:program.alunoNome||student.nome,turma:program.turma||student.turma||null,turno:program.turno||student.turno||null,matricula:program.matricula||student.matricula||null,responsavelFinanceiroId:program.responsavelFinanceiroId||student.responsavelFinanceiroId||null,tipoPedido:'cantina',modalidade:program.modalidade,dias:program.days,totalCentavos:program.totalCentavos,usarSaldo:useBalance,statusPagamento:'pago',statusPedido:'confirmado',statusAplicacao:'aplicado',origem:'secretaria_presencial_venda_mista',criadoPorId:actor.id,criadoPorNome:actor.nome,criadoEm:now,confirmadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'});(program.days||[]).forEach((day,j)=>{const occurrenceRef=occurrenceRefs[i][j];tx.set(occurrenceRef,{id:occurrenceRef.id,pedidoId:orderRef.id,vendaId:saleRef.id,alunoId:program.alunoId||student.id,alunoNome:program.alunoNome||student.nome,turma:program.turma||student.turma||null,turno:program.turno||day.turno||student.turno||null,matricula:program.matricula||student.matricula||null,responsavelFinanceiroId:program.responsavelFinanceiroId||student.responsavelFinanceiroId||null,dataChave:day.dataChave,itens:day.itens||[],componentes:day.componentes||[],quantidadeSalgados:cents(day.quantidadeSalgados),valorCentavos:cents(day.totalCentavos),status:'pendente_entrega',statusPagamento:'pago',origem:'secretaria_presencial_venda_mista',criadoEm:now,atualizadoEm:now,versao:'1.6.0-rc2.7.18'},{merge:true});});});
     if(cash&&cashInRef){tx.set(cashInRef,{id:cashInRef.id,caixaId:cash.id,sessaoCaixaId:cash.id,periodoResponsabilidadeId:cash.periodoAtualId||null,tipo:'venda',subtipo:'recebimento_venda',vendaId:isAccountOnly?null:saleRef.id,valorCentavos:cashNet,valorRecebidoCentavos:cashTendered,trocoCentavos:cashChange,valorLiquidoCentavos:cashNet,alunoId:student.id,alunosIds,usuarioId:actor.id,usuarioNome:actor.nome,dataChave:dateKey(),criadoEm:now});tx.set(cashSessionRef,{saldoEsperadoAtualCentavos:admin.firestore.FieldValue.increment(cashNet),atualizadoEm:now},{merge:true});if(cashPeriodRef)tx.set(cashPeriodRef,{saldoEsperadoAtualCentavos:admin.firestore.FieldValue.increment(cashNet),atualizadoEm:now},{merge:true});}
   });
   await audit(db,'venda_presencial_aluno',{vendaId:isAccountOnly?null:saleRef.id,alunoId:student.id,alunoNome:student.nome,alunosIds,valorCentavos:isAccountOnly?applied:total,usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,descricaoHumana:isAccountOnly?(operation==='regularizar_debito'?`${actor.nome} regularizou ${brl(applied)} da conta familiar de ${student.nome}.`:`${actor.nome} adicionou ${brl(applied)} à conta familiar de ${student.nome}.`):`${actor.nome} registrou uma venda de ${brl(total)} para ${alunosIds.length>1?`${alunosIds.length} alunos da mesma família`:student.nome}.`});
@@ -1330,6 +1458,8 @@ module.exports = {
   confirmWithInfinitePay,
   applyCheckoutConfirmation,
   recordInfinitePayEvent,
+  checkoutPaymentDiagnostic,
+  manualReconcileInfinitePay,
   isPaidResponse,
   mergePaymentEvidence,
   validatePaidCheckout,
@@ -1342,6 +1472,9 @@ module.exports = {
   buildReceiptInfo,
   accountNet,
   splitNet,
+  dailyUsed,
+  lunchDayDefaultActive,
+  lunchDayInfo,
   releasePendingOrder,
   discardCheckout,
   normalizeSecretarySaleItems,

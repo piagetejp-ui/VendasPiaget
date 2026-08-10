@@ -1,7 +1,7 @@
 const {initFirebase,json,parseBody,nowIso}=require('./_utils');
 const {verifyStaff}=require('./_family-utils');
 
-const VERSION='1.6.0-rc2.7.16';
+const VERSION='1.6.0-rc2.7.18';
 const BASE_META={anoLetivo:2026,geradoDe:'SIGA 07/08/2026',alunos:214,responsaveis:187,vinculos:214};
 const OPERATION_CUTOFF={
   dataLocal:'2026-08-10',
@@ -60,13 +60,16 @@ const REF_KEY_RE=/(venda|pedido|checkout|moviment|sessao|periodo|caixa|fechament
 function cents(v){const n=Number(v||0);return Number.isFinite(n)?Math.round(n):0}
 function accountSplit(net){net=Math.round(Number(net||0));return{saldoContaCentavos:net,saldoCreditoCentavos:Math.max(0,net),dividaCentavos:Math.max(0,-net)}}
 async function commitChunks(db,ops,max=420){for(let i=0;i<ops.length;i+=max){const batch=db.batch();for(const op of ops.slice(i,i+max)){if(op.kind==='set')batch.set(op.ref,op.data,op.options||{merge:true});else if(op.kind==='delete')batch.delete(op.ref)}await batch.commit()}}
+async function countQueryV218(q){
+ try{const s=await q.count().get();return Number(s.data()?.count||0)}catch(_){const s=await q.limit(500).get().catch(()=>({size:0}));return Number(s.size||0)}
+}
 async function actualBaseCounts(db){
  const [alunos,responsaveis,vinculos]=await Promise.all([
-  db.collection('alunos').where('ativo','==',true).get().catch(()=>({size:0})),
-  db.collection('responsaveis_financeiros').where('ativo','==',true).get().catch(()=>({size:0})),
-  db.collection('vinculos_responsavel_aluno').where('ativo','==',true).get().catch(()=>({size:0}))
+  countQueryV218(db.collection('alunos').where('ativo','==',true)),
+  countQueryV218(db.collection('responsaveis_financeiros').where('ativo','==',true)),
+  countQueryV218(db.collection('vinculos_responsavel_aluno').where('ativo','==',true))
  ]);
- return{alunos:Number(alunos.size||0),responsaveis:Number(responsaveis.size||0),vinculos:Number(vinculos.size||0)}
+ return{alunos,responsaveis,vinculos}
 }
 async function prepareBase(db){
  const cfg=await db.collection('configuracoes').doc('sistema').get();
@@ -76,7 +79,7 @@ async function prepareBase(db){
 async function status(db){
  const [cfg,invalid,marco,atual]=await Promise.all([
   db.collection('configuracoes').doc('sistema').get(),
-  db.collection('responsaveis_financeiros').where('cpfValido','==',false).get().catch(()=>({docs:[]})),
+  db.collection('responsaveis_financeiros').where('cpfValido','==',false).limit(50).get().catch(()=>({docs:[]})),
   db.collection('marcos_operacao').doc('operacao_oficial').get().catch(()=>null),
   actualBaseCounts(db)
  ]);

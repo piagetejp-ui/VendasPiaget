@@ -1,4 +1,4 @@
-const {initFirebase,json,parseBody,nowIso,accountNet,splitNet,audit,notify,getConfig,accountRefForStudent}=require('../server/_utils');
+const {initFirebase,json,parseBody,nowIso,accountNet,splitNet,audit,notify,getConfig,accountRefForStudent,lunchDayInfo}=require('../server/_utils');
 const {verifyFamilyForStudent,verifyStaff}=require('../server/_family-utils');
 const cents=v=>Math.round(Number(v||0));
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
@@ -17,11 +17,10 @@ module.exports=async function handler(req,res){
     if(actor.perfil==='responsavel')await verifyFamilyForStudent(db,req,alunoId);else await verifyStaff(db,req,['admin','gestao','secretaria','cantina']);
     if(action==='remarcar'){
       const newDate=String(body.novaData||'');if(!occurrenceId||!validDate(newDate)||newDate<=today())throw Object.assign(new Error('Escolha uma nova data futura.'),{status:400});
-      const d=new Date(`${newDate}T12:00:00`);if([0,6].includes(d.getDay()))throw Object.assign(new Error('Escolha um dia útil.'),{status:400});
-      const cfg=await getConfig(db);if((cfg.diasSemAula||[]).includes(newDate))throw Object.assign(new Error('A nova data está marcada como dia sem aula.'),{status:409});
+      const cfg=await getConfig(db);
       const oldRef=db.collection('ocorrencias_entrega').doc(occurrenceId),preOld=await oldRef.get();if(!preOld.exists)throw Object.assign(new Error('Entrega não encontrada.'),{status:404});
       const preData={id:preOld.id,...preOld.data()};if(preData.alunoId!==alunoId)throw Object.assign(new Error('Esta entrega não pertence ao aluno.'),{status:403});
-      const relatedQuery=await db.collection('ocorrencias_entrega').where('pedidoId','==',preData.pedidoId).get().catch(()=>({docs:[]}));
+      const relatedQuery=await db.collection('ocorrencias_entrega').where('pedidoId','==',preData.pedidoId).limit(120).get().catch(()=>({docs:[]}));
       const relatedRefs=relatedQuery.docs.map(s=>db.collection('ocorrencias_entrega').doc(s.id));
       const targetRef=db.collection('ocorrencias_entrega').doc();let result={};
       await db.runTransaction(async tx=>{
@@ -31,13 +30,14 @@ module.exports=async function handler(req,res){
         if(o.alunoId!==alunoId)throw Object.assign(new Error('Esta entrega não pertence ao aluno.'),{status:403});if(!activeStatus(o.status)||o.dataChave<=today())throw new Error('Somente entregas futuras e pendentes podem ser alteradas.');if(o.dataChave===newDate)throw Object.assign(new Error('Escolha uma data diferente da atual.'),{status:400});
         const activeRelated=relatedSnaps.filter(s=>s.exists).map(s=>({id:s.id,...s.data()})).filter(x=>x.id!==o.id&&activeStatus(x.status));
         if(activeRelated.some(x=>x.dataChave===newDate))throw Object.assign(new Error('Já existe uma entrega ativa desta programação na nova data.'),{status:409});
-        const order=orderSnap.exists?orderSnap.data():{},days=Array.isArray(order.dias)?order.dias:[],qty=occurrenceSalgados(o,order),oldStock=oldStockSnap.exists?oldStockSnap.data():{},newStock=newStockSnap.exists?newStockSnap.data():{},planned=cents(newStock.quantidadePlanejada||cfg.quantidadePadraoSalgados||30),available=Math.max(0,planned-used(newStock));
+        const order=orderSnap.exists?orderSnap.data():{},days=Array.isArray(order.dias)?order.dias:[],qty=occurrenceSalgados(o,order),oldStock=oldStockSnap.exists?oldStockSnap.data():{},newStock=newStockSnap.exists?newStockSnap.data():{},info=lunchDayInfo(newDate,newStock,cfg),available=info.available;
+        if(!info.active)throw Object.assign(new Error('A nova data está configurada sem venda de lanche.'),{status:409});
         if(qty>available)throw Object.assign(new Error(`Não há salgados suficientes na nova data. Disponíveis: ${available}.`),{status:409});
         const sourceDay=days.find(day=>day.dataChave===o.dataChave)||{dataChave:o.dataChave,itens:o.itens||[],totalCentavos:occurrenceValue(o,order),quantidadeSalgados:qty};
         const activeDates=new Set(activeRelated.map(x=>x.dataChave));
         const newDays=days.filter(day=>day.dataChave!==o.dataChave&&!(day.dataChave===newDate&&!activeDates.has(newDate))).concat([{...sourceDay,dataChave:newDate,status:'pendente_entrega',remarcadoDe:o.dataChave}]).sort((a,b)=>a.dataChave.localeCompare(b.dataChave)),now=nowIso();
         tx.set(oldStockRef,{pedidosConfirmados:Math.max(0,cents(oldStock.pedidosConfirmados)-qty),atualizadoEm:now},{merge:true});
-        tx.set(newStockRef,{dataChave:newDate,quantidadePlanejada:planned,pedidosConfirmados:cents(newStock.pedidosConfirmados)+qty,atualizadoEm:now},{merge:true});
+        tx.set(newStockRef,{dataChave:newDate,quantidadePlanejada:info.planned,pedidosConfirmados:cents(newStock.pedidosConfirmados)+qty,atualizadoEm:now},{merge:true});
         tx.set(oldRef,{status:'remarcado',remarcadoPara:newDate,remarcadoParaOcorrenciaId:targetRef.id,remarcadoEm:now,finalizadoEm:now,alteradoPorId:actor.id,alteradoPorNome:actor.nome,atualizadoEm:now},{merge:true});
         const clean={...o};delete clean.id;tx.set(targetRef,{...clean,status:'pendente_entrega',dataChave:newDate,remarcadoDe:o.dataChave,remarcadoDeOcorrenciaId:o.id,remarcadoEm:now,finalizadoEm:null,canceladoEm:null,creditadoCentavos:null,alteradoPorId:actor.id,alteradoPorNome:actor.nome,atualizadoEm:now},{merge:false});
         tx.set(orderRef,{dias:newDays,atualizadoEm:now},{merge:true});result={pedidoId:o.pedidoId,ocorrenciaAnteriorId:o.id,novaOcorrenciaId:targetRef.id,oldDate:o.dataChave,newDate};
