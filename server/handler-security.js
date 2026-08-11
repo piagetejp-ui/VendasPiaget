@@ -1,4 +1,4 @@
-const {admin,initFirebase,json,parseBody,nowIso}=require('./_utils');
+const {admin,initFirebase,json,parseBody,nowIso,audit}=require('./_utils');
 const {verifyStaff,validateFamilySession,familySessionTokenFromReq}=require('./_family-utils');
 
 module.exports=async function(req,res){
@@ -30,6 +30,7 @@ module.exports=async function(req,res){
       if(uid){
         await db.collection('usuarios_auth').doc(uid).set({uid,usuarioAcessoId:id,nome,email,perfil,turnos:row.turnos,permissoes:row.permissoes,caixaPermissao:row.caixaPermissao,ativo:row.ativo,atualizadoEm:nowIso(),sincronizadoPorId:actor.id||null},{merge:true});
       }
+      await audit(db,oldSnap.exists?'usuario_equipe_atualizado':'usuario_equipe_criado',{usuarioAlvoId:id,usuarioAlvoNome:nome,perfilAlvo:perfil,ativo:row.ativo,entidades:[{tipo:'usuario_equipe',id}],usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,descricaoHumana:`${actor.nome||'Gestão'} ${oldSnap.exists?'atualizou':'criou'} o acesso de ${nome}.`});
       return json(res,200,{ok:true,id,ativo:row.ativo,authUid:uid||null});
     }
 
@@ -54,6 +55,8 @@ module.exports=async function(req,res){
       const net=Number(acc.saldoContaCentavos??(Number(acc.saldoCreditoCentavos||0)-Number(acc.dividaCentavos||0)));
       const blockedByLimit=Boolean(authorized&&limit>0&&net<0&&Math.abs(net)>=limit);
       await ref.set({autorizadoSemSaldo:authorized,limiteFiadoCentavos:limit,bloqueadoPorLimite:blockedByLimit,atualizadoEm:nowIso()},{merge:true});
+      const firstStudent=students.docs.find(d=>d.data()?.ativo!==false)||students.docs[0]||null;
+      await audit(db,'preferencias_financeiras_responsavel_atualizadas',{responsavelId:s.responsavelId,alunoId:firstStudent?.id||null,alunoNome:firstStudent?.data()?.nome||null,autorizado:authorized,limiteCentavos:limit,limiteMaximoFamiliaCentavos:max,usuarioId:`responsavel:${s.responsavelId}`,usuarioNome:'Responsável',usuarioPerfil:'responsavel',descricaoHumana:`O responsável atualizou a autorização de compra sem saldo e o limite da conta familiar.`});
       return json(res,200,{ok:true,autorizadoSemSaldo:authorized,limiteFiadoCentavos:limit,bloqueadoPorLimite:blockedByLimit,limiteMaximoFamiliaCentavos:max});
     }
     if(acao==='family_access_status'){
@@ -64,8 +67,9 @@ module.exports=async function(req,res){
     if(acao==='family_audit'){
       const s=await validateFamilySession(db,familySessionTokenFromReq(req));if(!s)return json(res,401,{error:'Sessão encerrada.'});
       const action=String(b.action||'acao_responsavel').slice(0,80),raw=b.data&&typeof b.data==='object'?b.data:{};
-      const safe={};for(const k of ['alunoId','pedidoId','pagamentoId','vendaId','ocorrenciaId','autorizado','limiteCentavos','versao','origem'])if(raw[k]!==undefined)safe[k]=raw[k];
-      await db.collection('historico_auditoria').add({acao:action,dados:safe,usuarioId:`responsavel:${s.responsavelId}`,usuarioNome:'Responsável',usuarioPerfil:'responsavel',responsavelId:s.responsavelId,criadoEm:nowIso(),versao:'1.6.0-rc2.7.20'});
+      const safe={};for(const k of ['alunoId','alunoNome','pedidoId','pagamentoId','vendaId','ocorrenciaId','autorizado','limiteCentavos','versao','origem','orderNsu','descricao','referencia','entidades'])if(raw[k]!==undefined)safe[k]=raw[k];
+      safe.responsavelId=s.responsavelId;safe.usuarioId=`responsavel:${s.responsavelId}`;safe.usuarioNome='Responsável';safe.usuarioPerfil='responsavel';
+      await audit(db,action,safe);
       return json(res,200,{ok:true});
     }
     return json(res,400,{error:'Ação inválida.'});

@@ -1,9 +1,10 @@
-const {initFirebase,json,parseBody,nowIso,audit,accountNet,lunchDayInfo}=require('../server/_utils');
+const {admin,initFirebase,json,parseBody,nowIso,audit,accountNet,lunchDayInfo}=require('../server/_utils');
 const {verifyStaff}=require('../server/_family-utils');
 
 const cents=v=>Math.max(0,Math.round(Number(v||0)));
 const validDate=v=>/^\d{4}-\d{2}-\d{2}$/.test(String(v||''));
 const uniqDates=arr=>[...new Set((Array.isArray(arr)?arr:[]).map(String).filter(validDate))].sort();
+async function allAccountDocs(db,pageSize=250){const out=[];let cursor=null;while(true){let q=db.collection('contas_responsaveis').orderBy(admin.firestore.FieldPath.documentId()).limit(pageSize);if(cursor)q=q.startAfter(cursor);const snap=await q.get();out.push(...snap.docs);if(snap.size<pageSize)break;cursor=snap.docs[snap.docs.length-1]}return out}
 
 async function saveLunchPlanning(db,body,actor){
   const dates=uniqDates(body.datas||[body.dataChave]);
@@ -44,16 +45,16 @@ async function saveSystemConfig(db,body,actor){
   const minCredit=body.valorMinimoCheckoutPositivoCentavos!==undefined?cents(body.valorMinimoCheckoutPositivoCentavos):cents(oldCfg.valorMinimoCheckoutPositivoCentavos||100);
   const defaultSnacks=body.quantidadePadraoSalgados!==undefined?cents(body.quantidadePadraoSalgados):cents(oldCfg.quantidadePadraoSalgados||30);
   const weekly=body.bloqueioSemanalSaldoAtivo!==undefined?Boolean(body.bloqueioSemanalSaldoAtivo):oldCfg.bloqueioSemanalSaldoAtivo!==false;
-  const accountsSnap=await db.collection('contas_responsaveis').limit(400).get();
+  const accountDocs=await allAccountDocs(db);
   // quantidadeAlunosAtivos já é mantida na conta familiar; não varremos toda a coleção de alunos a cada ajuste.
-  const activeCounts=new Map(accountsSnap.docs.map(d=>[String(d.data()?.responsavelId||d.id),Math.max(1,Number(d.data()?.quantidadeAlunosAtivos||1))]));
+  const activeCounts=new Map(accountDocs.map(d=>[String(d.data()?.responsavelId||d.id),Math.max(1,Number(d.data()?.quantidadeAlunosAtivos||1))]));
   const now=nowIso(),ops=[];let reduced=0,blockedChanged=0;
-  accountsSnap.docs.forEach(d=>{const acc=d.data()||{},family=String(acc.responsavelId||d.id),count=Math.max(1,activeCounts.get(family)||Number(acc.quantidadeAlunosAtivos||0)||1),max=baseLimit*count,current=Math.max(0,Math.round(Number(acc.limiteFiadoCentavos||0))),next=Math.min(current,max),net=accountNet(acc),blocked=Boolean(net<0&&next>0&&Math.abs(net)>=next);if(next<current)reduced++;if(blocked!==Boolean(acc.bloqueadoPorLimite))blockedChanged++;ops.push({ref:d.ref,data:{quantidadeAlunosAtivos:count,limiteBasePorAlunoCentavos:baseLimit,limiteMaximoFamiliaCentavos:max,limiteFiadoCentavos:next,bloqueadoPorLimite:blocked,atualizadoEm:now}})});
-  const cfgPatch={limiteMaximoFiadoCentavos:baseLimit,valorMinimoCheckoutPositivoCentavos:minCredit,quantidadePadraoSalgados:defaultSnacks,bloqueioSemanalSaldoAtivo:weekly,diaBloqueioSemanalSaldo:'sexta',versao:'1.6.0-rc2.7.20',atualizadoEm:now};
+  accountDocs.forEach(d=>{const acc=d.data()||{},family=String(acc.responsavelId||d.id),count=Math.max(1,activeCounts.get(family)||Number(acc.quantidadeAlunosAtivos||0)||1),max=baseLimit*count,current=Math.max(0,Math.round(Number(acc.limiteFiadoCentavos||0))),next=Math.min(current,max),net=accountNet(acc),blocked=Boolean(net<0&&next>0&&Math.abs(net)>=next);if(next<current)reduced++;if(blocked!==Boolean(acc.bloqueadoPorLimite))blockedChanged++;ops.push({ref:d.ref,data:{quantidadeAlunosAtivos:count,limiteBasePorAlunoCentavos:baseLimit,limiteMaximoFamiliaCentavos:max,limiteFiadoCentavos:next,bloqueadoPorLimite:blocked,atualizadoEm:now}})});
+  const cfgPatch={limiteMaximoFiadoCentavos:baseLimit,valorMinimoCheckoutPositivoCentavos:minCredit,quantidadePadraoSalgados:defaultSnacks,bloqueioSemanalSaldoAtivo:weekly,diaBloqueioSemanalSaldo:'sexta',versao:'1.6.0-rc2.7.23',atualizadoEm:now};
   // O volume atual cabe em um batch. Mantemos fallback em blocos para crescimento futuro.
   const all=[{ref:cfgRef,data:cfgPatch},...ops];
   for(let i=0;i<all.length;i+=400){const batch=db.batch();all.slice(i,i+400).forEach(x=>batch.set(x.ref,x.data,{merge:true}));await batch.commit()}
-  await audit(db,'configuracao_financeira_atualizada',{limiteBasePorAlunoCentavos:baseLimit,valorMinimoCheckoutPositivoCentavos:minCredit,quantidadePadraoSalgados:defaultSnacks,contasReconciliadas:ops.length,limitesReduzidos:reduced,bloqueiosRecalculados:blockedChanged,usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,descricaoHumana:`${actor.nome||'Gestão'} atualizou os parâmetros operacionais e reconciliou ${ops.length} conta(s) familiares.`});
+  await audit(db,'configuracao_financeira_atualizada',{limiteBasePorAlunoCentavos:baseLimit,valorMinimoCheckoutPositivoCentavos:minCredit,quantidadePadraoSalgados:defaultSnacks,contasReconciliadas:ops.length,limitesReduzidos:reduced,bloqueiosRecalculados:blockedChanged,entidades:accountDocs.map(d=>({tipo:'conta_familiar',id:String(d.data()?.responsavelId||d.id)})),usuarioId:actor.id,usuarioNome:actor.nome,usuarioPerfil:actor.perfil,descricaoHumana:`${actor.nome||'Gestão'} atualizou os parâmetros operacionais e reconciliou ${ops.length} conta(s) familiares.`});
   return{ok:true,contasReconciliadas:ops.length,limitesReduzidos:reduced,bloqueiosRecalculados:blockedChanged,config:cfgPatch};
 }
 

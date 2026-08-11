@@ -1,6 +1,5 @@
 {
-  "version": "1.6.0-rc2.7.20",
-  "releasedAt": "2026-08-10T21:48:00.000Z",
-  "channel": "rc",
-  "notes": "Escala Firestore, auditoria cumulativa paginada e dashboard incremental"
+  "version": "1.6.0-rc2.7.23",
+  "name": "operacao-segura-reembolso-cadastro-autorizacao",
+  "date": "2026-08-11"
 }

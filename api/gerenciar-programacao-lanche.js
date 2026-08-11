@@ -20,7 +20,7 @@ module.exports=async function handler(req,res){
       const cfg=await getConfig(db);
       const oldRef=db.collection('ocorrencias_entrega').doc(occurrenceId),preOld=await oldRef.get();if(!preOld.exists)throw Object.assign(new Error('Entrega não encontrada.'),{status:404});
       const preData={id:preOld.id,...preOld.data()};if(preData.alunoId!==alunoId)throw Object.assign(new Error('Esta entrega não pertence ao aluno.'),{status:403});
-      const relatedQuery=await db.collection('ocorrencias_entrega').where('pedidoId','==',preData.pedidoId).limit(120).get().catch(()=>({docs:[]}));
+      const relatedQuery=await db.collection('ocorrencias_entrega').where('pedidoId','==',preData.pedidoId).get();
       const relatedRefs=relatedQuery.docs.map(s=>db.collection('ocorrencias_entrega').doc(s.id));
       const targetRef=db.collection('ocorrencias_entrega').doc();let result={};
       await db.runTransaction(async tx=>{
