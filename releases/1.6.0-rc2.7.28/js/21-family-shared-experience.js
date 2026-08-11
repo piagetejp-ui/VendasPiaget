@@ -3,7 +3,7 @@
    filtros por aluno e acesso do Meu Piaget incorporado a Alunos e Contas. */
 (()=>{
 'use strict';
-const VERSION='1.6.0-rc2.7.27';
+const VERSION='1.6.0-rc2.7.28';
 const BASE_REVIEW=window.reviewParentOrderV150;
 const BASE_UNIFORM=window.openParentUniformV151;
 const BASE_RENDER_USERS=window.renderUsuariosAcessosV130;
@@ -67,6 +67,10 @@ window.renderParentPortal=renderParentPortal=async function(){
   const qsV178=new URLSearchParams(location.search);if(qsV178.get('retornoCheckout')==='1'&&!state.v178CheckoutReturnShown){state.v178CheckoutReturnShown=true;setTimeout(()=>toast('Pagamento processado. Saldo e pedidos foram atualizados.'),250);qsV178.delete('retornoCheckout');const clean=`${location.pathname}${qsV178.toString()?`?${qsV178}`:''}${location.hash||''}`;history.replaceState({},'',clean)}
 };
 async function familyStatusRowsV221(collection,rows,statusField,statuses){
+  if(!state.user&&(state.parentFamily||state.parentStudent)&&typeof window.queryFamilyRecordsV221==='function'){
+    const all=await window.queryFamilyRecordsV221(collection,rows,{mode:'full'});
+    return all.filter(x=>statuses.includes(String(x?.[statusField]||'')));
+  }
   const rid=String(state.parentFamily?.responsavelId||familyKey(rows?.[0]||{})||''),specs=[],add=(field,value,array=false)=>{if(value&&!specs.some(x=>x.field===field&&String(x.value)===String(value)))specs.push({field,value,array})};
   if(rid){add('responsavelFinanceiroId',rid);add('responsavelId',rid)}for(const a of rows||[]){if(a?.id){add('alunoId',a.id);}}
   const out=[];try{for(const sp of specs){let cursor=null;while(true){let q=db.collection(collection);q=sp.array?q.where(sp.field,'array-contains',sp.value):q.where(sp.field,'==',sp.value);q=q.where(statusField,'in',statuses).limit(60);if(cursor)q=q.startAfter(cursor);const snap=await q.get();out.push(...snap.docs.map(d=>({id:d.id,...d.data(),_collection:collection})));if(snap.size<60)break;cursor=snap.docs[snap.docs.length-1]}}return dedupe(out)}catch(indexError){console.warn('familyStatusRowsV221 fallback',collection,indexError?.message||indexError);const all=typeof window.queryFamilyRecordsV221==='function'?await window.queryFamilyRecordsV221(collection,rows,{mode:'full'}):await queryByFamily(collection,rows);return all.filter(x=>statuses.includes(String(x?.[statusField]||'')))}}

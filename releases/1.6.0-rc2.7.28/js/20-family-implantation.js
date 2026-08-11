@@ -4,7 +4,7 @@
    identidade/acesso/conta familiar quando a base oficial 2026 estiver preparada. */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.27';
+const VERSION='1.6.0-rc2.7.28';
 const FAMILY_STUDENT_KEY='vp_parent_student';
 let LEGACY_FAMILY_SESSION_V176='';try{LEGACY_FAMILY_SESSION_V176=localStorage.getItem('vp_family_session')||'';localStorage.removeItem('vp_family_session')}catch(_){} /* migração única: sessão passa a HttpOnly */
 const BASE_RENDER_PARENT=window.renderParentPortal;
@@ -87,6 +87,10 @@ async function familyApiV167(acao,data={}){
 async function familySecurityApiV176(acao,data={}){
  const r=await fetch('/api/familias?modulo=security',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao,...data})}),j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Não foi possível validar a segurança do acesso.');return j;
 }
+async function familyDataApiV228(acao,data={}){
+ const r=await fetch('/api/familias?modulo=dados',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao,...data})}),j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Não foi possível carregar os dados da família.');return j;
+}
+window.familyDataApiV228=familyDataApiV228;
 async function staffApiV167(path,data={}){
  const user=authObjV130()?.currentUser;if(!user)throw new Error('Entre novamente no acesso da equipe.');const token=await user.getIdToken();const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`},body:JSON.stringify(data)}),j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Não foi possível concluir a operação.');return j;
 }

@@ -1,35 +1,30 @@
-# RC2.7.27 — Gestão da família, comprador padrão e autorização administrativa
+# Changelog — Sistema de Vendas Piaget
 
-Base de código: **RC2.7.26**.
+## 1.6.0-rc2.7.28 — 11/08/2026
 
-## O que mudou
+Base: **RC2.7.27**.
 
-### 1. Cadastro oficial do responsável separado do comprador padrão
-- A tela real de **Conta familiar → Resumo** agora expõe para Gestão/Secretaria os botões **Editar responsável** e **Editar comprador padrão**.
-- **Editar responsável** altera somente o cadastro oficial da família e os espelhos de nome/telefone/e-mail dos alunos vinculados.
-- A edição do responsável **não sobrescreve mais** `dados_pagamento_responsavel`.
-- **Editar comprador padrão** altera nome, telefone e e-mail usados nos próximos pagamentos, sem modificar o cadastro oficial do responsável.
-- A correção administrativa do comprador é propagada aos alunos vinculados à mesma família para preservar o comportamento atual, que ainda lê `dados_pagamento_responsavel` por aluno.
-- Pagamentos, vendas e comprovantes antigos não são reescritos.
-- As duas alterações geram auditoria, com antes/depois quando aplicável.
+### Hotfix: venda presencial de fardamento
+- Corrigido `ReferenceError: nome is not defined` em `addUniformStockRequirement()`.
+- O requisito de estoque da farda agora grava corretamente `nome: name`.
+- Incluído teste de execução da normalização de uma venda presencial de camisa, com preço e estoque de variação simulados.
 
-### 2. Autorização administrativa de consumo por aluno realmente funcional
-- A tela real de **Conta familiar → Resumo** agora mostra **Autorização de consumo por aluno**.
-- Gestão/Secretaria podem registrar uma condição pré-existente à implantação ou uma autorização administrativa individual.
-- A compra da Cantina passa a consultar o documento atual do aluno dentro da transação, evitando usar uma autorização antiga mantida apenas no cache da tela.
-- Quando existe regra administrativa individual, o limite efetivo passa a ser o `limiteConsumoCentavos` do aluno. Ele não depende mais de existir um limite familiar previamente configurado pelo responsável.
-- Compras pagas integralmente com saldo continuam possíveis mesmo sem autorização para gerar saldo devedor.
+### Hotfix: Cancelar / Estornar
+- Corrigido `ReferenceError: detalhes is not defined` no envio do cancelamento pelo frontend.
+- O campo visual `details` agora é enviado ao backend como `detalhes: details`.
+- Preservado o fluxo da RC2.7.26 para corrigir, durante o cancelamento, entrega marcada como `entregue` por engano.
 
-### 3. Responsável assume o controle quando altera o Meu Piaget
-- Ao salvar **Autorizações e limite** no Meu Piaget, o backend grava a regra familiar e encerra as regras administrativas individuais então existentes nos alunos vinculados.
-- Os campos individuais `consumoCreditoAutorizado` e `limiteConsumoCentavos` são removidos e a origem atual passa a ser `responsavel`.
-- A auditoria registra quais regras administrativas foram substituídas.
-- Depois disso, a Cantina usa a autorização e o limite da conta familiar. A Gestão/Secretaria pode consultar a regra, mas não pode substituir a decisão atual do responsável por uma nova autorização administrativa.
+### Meu Piaget: leitura familiar segura pelo backend
+- Criada uma camada de dados do portal dentro da função física já existente `/api/familias`, via `?modulo=dados`.
+- A sessão familiar HttpOnly é validada no servidor; o servidor deriva novamente o responsável e os alunos vinculados e não confia em IDs enviados pelo navegador para definir propriedade dos dados.
+- Movimentações/histórico, pedidos, pagamentos pendentes, avisos da página inicial, programação de lanches e notificações passam a usar a camada familiar segura onde havia consultas diretas suscetíveis a `Missing or insufficient permissions`.
+- Abrir notificação, marcar uma notificação como lida e marcar todas como lidas também passam pelo backend no Meu Piaget.
+- Acesso da equipe continua usando os caminhos já existentes; a mudança é específica ao modo responsável.
+- Nenhuma Firestore Rule foi ampliada para contornar o erro.
 
-## Preservado
-- **10 funções serverless**; nenhuma função nova foi criada.
-- Rewrites da consolidação da Vercel Hobby preservados.
-- Firestore Rules byte a byte iguais à RC2.7.26.
-- Marco Zero e dados reais preservados.
-- Núcleo InfinitePay/webhook não alterado.
-- Fluxo de Cancelar / Estornar da RC2.7.26 preservado.
+### Infraestrutura preservada
+- 10 funções físicas em `/api` — abaixo do limite de 12 observado no Vercel Hobby.
+- `firestore.rules` byte a byte igual à RC2.7.27.
+- Marco Zero não alterado.
+- Núcleo de checkout/InfinitePay e webhook não alterados.
+- Consolidação de endpoints da RC2.7.25 preservada.

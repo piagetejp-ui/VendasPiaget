@@ -2,7 +2,7 @@
    Fardamento unificado: produto-pai sem preço -> variações com preço/estoque/produção.
 */
 (function(){
-const VERSION='1.6.0-rc2.7.27';
+const VERSION='1.6.0-rc2.7.28';
 const MODEL_ID='camisa_padrao',CATALOG_ID='item_farda_camisa_padrao';
 const CHILD=['4','6','8','10','12','14'],ADULT=['P','M','G','GG','XGG'];
 const INITIAL={'4|':6,'6|':9,'8|':0,'10|':1,'12|':1,'14|':0,'P|feminino':2,'M|feminino':2,'G|feminino':0,'GG|feminino':0,'XGG|feminino':1,'P|masculino':1,'M|masculino':6,'G|masculino':4,'GG|masculino':0,'XGG|masculino':2};

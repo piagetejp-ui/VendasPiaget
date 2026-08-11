@@ -2,7 +2,7 @@
    Experiência integrada: navegação contextual, notificações e gestão auditável do caixa. */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.27';
+const VERSION='1.6.0-rc2.7.28';
 const SESSIONS='sessoes_caixa',PERIODS='periodos_responsabilidade_caixa',MOVES='movimentos_caixa',DIVERGENCES='divergencias_caixa';
 const baseRenderCashManagement=window.renderCashManagementV164;
 const baseRenderCaixa=window.renderCaixa;
@@ -137,7 +137,7 @@ function notificationContextActionsV165(n){
   return'';
 }
 async function openNotificationDetailV165(id){
-  const s=await db.collection('notificacoes').doc(id).get();if(!s.exists)return;const n={id:s.id,...s.data()},origin=window.notificationOriginLabelV165?.(n)||n.origem||n.criadoPorPerfil||'-';openModal('Detalhes da notificação',`<div class="v165-notif-detail"><small>${humanDate(n.criadoEm)}</small><strong>${esc(n.titulo||'Notificação')}</strong><p>${esc(n.mensagem||'')}</p></div><div class="v165-kpi-strip"><div><small>Aluno</small><strong>${n.alunoId?`<button class="v165-link" onclick="openSystemEntityV165('aluno','${esc(n.alunoId)}')">${esc(n.alunoNome||'Abrir aluno')}</button>`:'—'}</strong></div><div><small>Turma</small><strong>${esc(n.turma||'-')}</strong></div><div><small>Origem</small><strong>${esc(origin||'-')}</strong></div><div><small>Natureza</small><strong>${esc(notificationEffectiveStatusV165(n)==='pendente'?'Pendência':notificationEffectiveStatusV165(n)==='resolvida'?'Resolvida':'Informativa')}</strong></div></div><div class="actions" style="margin-top:14px">${notificationContextActionsV165(n)}${n.alunoId?`<button class="btn btn-light" onclick="openSystemEntityV165('aluno','${esc(n.alunoId)}')">Conta do aluno</button>`:''}${n.caixaId?`<button class="btn btn-light" onclick="openSystemEntityV165('caixa','${esc(n.caixaId)}')">Auditar caixa</button>`:''}</div>`)}
+  let n;if(state.parentStudent&&!state.user){if(typeof window.familyDataApiV228!=='function')return appMessage('Atualize a página para carregar a sessão segura do Meu Piaget.');const out=await window.familyDataApiV228('notification',{id});n=out.notification;if(!n)return;}else{const s=await db.collection('notificacoes').doc(id).get();if(!s.exists)return;n={id:s.id,...s.data()};}const origin=window.notificationOriginLabelV165?.(n)||n.origem||n.criadoPorPerfil||'-';openModal('Detalhes da notificação',`<div class="v165-notif-detail"><small>${humanDate(n.criadoEm)}</small><strong>${esc(n.titulo||'Notificação')}</strong><p>${esc(n.mensagem||'')}</p></div><div class="v165-kpi-strip"><div><small>Aluno</small><strong>${n.alunoId?`<button class="v165-link" onclick="openSystemEntityV165('aluno','${esc(n.alunoId)}')">${esc(n.alunoNome||'Abrir aluno')}</button>`:'—'}</strong></div><div><small>Turma</small><strong>${esc(n.turma||'-')}</strong></div><div><small>Origem</small><strong>${esc(origin||'-')}</strong></div><div><small>Natureza</small><strong>${esc(notificationEffectiveStatusV165(n)==='pendente'?'Pendência':notificationEffectiveStatusV165(n)==='resolvida'?'Resolvida':'Informativa')}</strong></div></div><div class="actions" style="margin-top:14px">${notificationContextActionsV165(n)}${n.alunoId?`<button class="btn btn-light" onclick="openSystemEntityV165('aluno','${esc(n.alunoId)}')">Conta do aluno</button>`:''}${n.caixaId?`<button class="btn btn-light" onclick="openSystemEntityV165('caixa','${esc(n.caixaId)}')">Auditar caixa</button>`:''}</div>`)}
 
 window.renderCaixa=async function(){
   if(window.isCashManagerV164?.()){

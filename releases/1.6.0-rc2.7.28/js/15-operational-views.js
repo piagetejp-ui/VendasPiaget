@@ -1,6 +1,6 @@
 /* Escola Piaget — Visões operacionais RC2.2 */
 (function(){
-const VERSION='1.6.0-rc2.7.27';
+const VERSION='1.6.0-rc2.7.28';
 const STAFF_PROFILES=new Set(['admin','gestao','secretaria']);
 function n(v){const x=Number(v||0);return Number.isFinite(x)?Math.round(x):0}
 function arr(v){return Array.isArray(v)?v:[]}
@@ -212,7 +212,7 @@ async function confirmCancelInPersonSaleV222(vendaId){
   if(!await appConfirm('A venda será cancelada e os efeitos financeiros serão revertidos. Entregas selecionadas como marcadas por engano também serão anuladas, mantendo o histórico para auditoria.',{title:'Confirmar correção da venda?',confirmLabel:'Confirmar cancelamento',cancelLabel:'Voltar'}))return;
   try{
     if(btn){btn.disabled=true;btn.textContent='Cancelando...'}
-    const token=await authObjV130().currentUser?.getIdToken(),resp=await fetch('/api/cancelar-venda-presencial',{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({vendaId,motivo:reason,detalhes,confirmoSemReembolso:true,confirmoSemEntrega:true,confirmoEntregaMarcadaPorEngano:delivery.ids.length>0,entregasMarcadasPorEnganoIds:delivery.ids})}),data=await resp.json().catch(()=>({}));
+    const token=await authObjV130().currentUser?.getIdToken(),resp=await fetch('/api/cancelar-venda-presencial',{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},body:JSON.stringify({vendaId,motivo:reason,detalhes:details,confirmoSemReembolso:true,confirmoSemEntrega:true,confirmoEntregaMarcadaPorEngano:delivery.ids.length>0,entregasMarcadasPorEnganoIds:delivery.ids})}),data=await resp.json().catch(()=>({}));
     if(!resp.ok){const blockers=arr(data.details?.blockers);throw new Error(`${data.error||'Não foi possível cancelar.'}${blockers.length?`\n\n${blockers.join('\n')}`:''}`)}
     closeModal();state.v221SalesPager=null;try{sessionStorage.removeItem('piaget:v221:dashboard')}catch(_){ }
     const corrected=Number(data.quantidadeEntregasEstornadas||0);toast(data.alreadyCancelled?'A venda já estava cancelada.':corrected?`Venda cancelada e ${corrected} entrega${corrected>1?'s':''} marcada${corrected>1?'s':''} por engano corrigida${corrected>1?'s':''}.`:'Venda cancelada e estornos registrados.');
