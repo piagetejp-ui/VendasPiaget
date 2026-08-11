@@ -1,69 +1,73 @@
 {
-  "version": "1.6.0-rc2.7.16",
-  "release": "RC2.7.16 — Marco Zero por origem da operação",
-  "generatedAt": "2026-08-10T11:32:00-03:00",
-  "base": "1.6.0-rc2.7.15",
-  "apiFunctions": 10,
-  "serverModules": 10,
-  "releaseJavaScriptFiles": 24,
+  "version": "1.6.0-rc2.7.25",
+  "release": "RC2.7.25 — consolidação de API para Vercel Hobby + estorno visível preservado",
+  "generatedAt": "2026-08-11T10:14:00-03:00",
+  "base": "1.6.0-rc2.7.24 (pacote enviado pelo usuário)",
+  "apiFunctionsBefore": 14,
+  "apiFunctionsAfter": 10,
+  "vercelHobbyFunctionLimitObserved": 12,
+  "consolidatedEndpoints": [
+    "/api/cancelar-venda-presencial",
+    "/api/configuracao-operacional",
+    "/api/gerenciar-programacao-lanche",
+    "/api/registrar-operacao-presencial",
+    "/api/resumo-operacional"
+  ],
+  "consolidatedTarget": "/api/operacoes?modulo=...",
+  "serverModules": 11,
+  "handlerModules": 5,
+  "releaseJavaScriptFiles": 27,
   "releaseCssFiles": 1,
-  "releaseFrontendRawBytes": 1126882,
-  "releaseFrontendGzipBytesApprox": 286109,
-  "htmlLocalReferencesChecked": 86,
-  "htmlLocalReferencesMissing": 0,
-  "serviceWorkerPrecacheItems": 9,
-  "firestoreRulesLines": 189,
-  "deployFileCount": 90,
+  "releaseFrontendRawBytes": 1300768,
+  "releaseFrontendGzipBytesApprox": 335714,
+  "firestoreRulesSha256": "a38abddf0e715f771cea18b8fdf4f1af94d6d4e4d82686480b66c7232c14f11b",
   "changes": {
-    "marcoZero": {
-      "cutoff": "2026-08-10T03:00:00.000Z",
-      "criterion": "origem_operacao",
-      "futureTargetDatesDoNotProtectOldTests": true,
-      "childrenInheritOperationalRoot": true,
-      "unknownOriginPreservedBySafety": true
+    "deploymentLimitFix": {
+      "physicalApiFilesReduced": true,
+      "legacyUrlsPreservedByRewrites": true,
+      "frontendApiCallsChanged": false,
+      "webhookInfinitePayKeptSeparate": true
     },
-    "retroactiveReal": {
-      "registrationTimeDeterminesImplantationOrigin": true,
-      "dataOperacaoMayBeBeforeCutoff": true,
-      "newRecordsSetRetroativoTrue": true,
-      "includedInAccountRebuild": true
+    "cancelRefund": {
+      "rc2724FrontendLogicPreserved": true,
+      "paidStatusIncludesConfirmada": true,
+      "cancelRefundButtonPresentInSalesAndBilling": true,
+      "cancelEndpointLegacyUrlPreserved": true
     },
-    "derivedReconciliation": {
-      "dailySnackCapacity": true,
-      "uniformReservationsAndProductionCommitments": true,
-      "physicalStockChanged": false
-    },
-    "authenticationPreserved": {
-      "firestoreRulesChanged": false,
-      "staffAuthChanged": false,
-      "familyAuthChanged": false
-    },
-    "deploymentPackage": {
-      "onlyActiveReleaseIncluded": true,
-      "activeRelease": "1.6.0-rc2.7.16",
-      "fileCountBelow100": true
+    "preserved": {
+      "firestoreRulesByteIdenticalToBase": true,
+      "marcoZeroLogicUntouched": true,
+      "infinitePayCoreUntouched": true,
+      "activeFrontendLogicByteEquivalentToRc2724ExceptVersion": true
     }
   },
   "validation": {
-    "releaseNodeCheckFiles": 24,
-    "apiNodeCheckFiles": 10,
-    "serverNodeCheckFiles": 10,
-    "serviceWorkerNodeCheck": true,
-    "jsonFilesParsed": 4,
-    "htmlLocalReferencesOk": true,
-    "activeReleaseReferencesOk": true,
-    "firestoreRulesIdenticalToRc2715": true,
-    "blanketOpenRuleAbsent": true,
-    "originClassifierMockTested": true,
-    "rootInheritanceMockTested": true,
-    "retroactiveBalanceMockTested": true,
-    "snackReconciliationMockTested": true,
-    "uniformReconciliationMockTested": true,
-    "firestoreRuntimeTested": false,
-    "marcoZeroExecuted": false
+    "nodeCheckFiles": 54,
+    "jsonParsed": true,
+    "movedHandlersByteIdenticalToBase": true,
+    "firestoreRulesByteIdenticalToBase": true,
+    "frontendLogicIdenticalToRc2724ExceptVersion": true,
+    "activeReleaseReferencesOnlyRc2725": true,
+    "cancelRefundStructuralChecks": true,
+    "rewriteMappingsChecked": 5,
+    "dispatcherMockTested": true,
+    "htmlLocalReferencesChecked": 92,
+    "htmlLocalReferencesMissing": 0,
+    "apiReferencesResolved": 17,
+    "relativeRequiresChecked": 48,
+    "relativeRequiresMissing": 0,
+    "firebaseRuntimeTested": false,
+    "vercelDeploymentPerformed": false
   },
   "deployment": {
     "performed": false,
-    "note": "Pacote gerado e validado localmente. As Firestore Rules são idênticas às da RC2.7.15; não é necessário republicá-las para esta release. Antes do Marco Zero, publicar a aplicação e revisar as três listas do corte."
+    "note": "Pacote validado local/estaticamente. Publicar a aplicação na Vercel; não republicar Firestore Rules. Depois executar smoke test real."
+  },
+  "deployFileCount": 75,
+  "deploymentPackage": {
+    "onlyActiveReleaseIncluded": true,
+    "activeRelease": "1.6.0-rc2.7.25",
+    "fileCountBelow100": true,
+    "apiFunctionCount": 10
   }
 }

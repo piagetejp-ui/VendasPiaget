@@ -1,3 +1,28 @@
+# Changelog — 1.6.0-rc2.7.25
+
+## Consolidação de funções para Vercel Hobby
+
+Esta release parte da RC2.7.24 preparada e preserva a correção de visibilidade de **Cancelar / Estornar**. A mudança nova é estrutural: reduz as funções serverless publicadas de 14 para 10 para respeitar o limite de 12 funções do plano Hobby.
+
+### Alterações
+
+- Cinco endpoints operacionais foram movidos, sem alteração de lógica, de `/api` para `handlers/`.
+- Um único endpoint `/api/operacoes` despacha internamente para esses cinco handlers.
+- `vercel.json` mantém as URLs públicas antigas por `rewrites`, evitando alteração no frontend e integrações internas.
+- `webhook-infinitepay`, conciliação, checkout e demais endpoints financeiros críticos permanecem separados.
+- Firestore Rules permanecem byte a byte iguais à base recebida.
+- A release ativa de frontend é uma cópia da RC2.7.24, com apenas o identificador de versão atualizado para RC2.7.25.
+
+### Endpoints consolidados
+
+- `/api/cancelar-venda-presencial`
+- `/api/configuracao-operacional`
+- `/api/gerenciar-programacao-lanche`
+- `/api/registrar-operacao-presencial`
+- `/api/resumo-operacional`
+
+---
+
 # Changelog — 1.6.0-rc2.7.16
 
 ## Marco Zero por origem da operação

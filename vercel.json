@@ -87,7 +87,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.7.24/(.*)",
+      "source": "/releases/1.6.0-rc2.7.25/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -124,6 +124,26 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/api/cancelar-venda-presencial",
+      "destination": "/api/operacoes?modulo=cancelar-venda-presencial"
+    },
+    {
+      "source": "/api/configuracao-operacional",
+      "destination": "/api/operacoes?modulo=configuracao-operacional"
+    },
+    {
+      "source": "/api/gerenciar-programacao-lanche",
+      "destination": "/api/operacoes?modulo=gerenciar-programacao-lanche"
+    },
+    {
+      "source": "/api/registrar-operacao-presencial",
+      "destination": "/api/operacoes?modulo=registrar-operacao-presencial"
+    },
+    {
+      "source": "/api/resumo-operacional",
+      "destination": "/api/operacoes?modulo=resumo-operacional"
+    },
     {
       "source": "/api/acesso-meu-piaget",
       "destination": "/api/familias?modulo=acesso"
