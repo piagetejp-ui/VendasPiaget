@@ -1,7 +1,7 @@
 const {initFirebase,json,parseBody,nowIso}=require('./_utils');
 const {verifyStaff}=require('./_family-utils');
 
-const VERSION='1.6.0-rc2.7.23';
+const VERSION='1.6.0-rc2.7.24';
 const BASE_META={anoLetivo:2026,geradoDe:'SIGA 07/08/2026',alunos:214,responsaveis:187,vinculos:214};
 const OPERATION_CUTOFF={
   dataLocal:'2026-08-10',

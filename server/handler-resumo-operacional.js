@@ -1,7 +1,7 @@
 const {admin,initFirebase,json,parseBody,nowIso}=require('./_utils');
 const {verifyStaff}=require('./_family-utils');
 
-const VERSION='1.6.0-rc2.7.23';
+const VERSION='1.6.0-rc2.7.24';
 const PAGE=250;
 const ACCOUNT_TX_CHUNK=80;
 const FieldPath=admin.firestore.FieldPath;
