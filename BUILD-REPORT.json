@@ -1,60 +1,32 @@
 {
-  "version": "1.6.0-rc2.7.26",
-  "release": "RC2.7.26 — cancelamento legível + correção de entrega marcada por engano",
-  "generatedAt": "2026-08-11T10:33:00-03:00",
-  "base": "1.6.0-rc2.7.25 (confirmada em produção pelo usuário)",
-  "apiFunctions": 10,
-  "vercelHobbyFunctionLimitObserved": 12,
-  "firestoreRulesSha256": "a38abddf0e715f771cea18b8fdf4f1af94d6d4e4d82686480b66c7232c14f11b",
-  "firestoreRulesByteIdenticalToRc2725": true,
-  "changes": {
-    "cancelUx": {
-      "solidRedTriggersRemoved": true,
-      "neutralChoiceModal": true,
-      "softDestructiveFinalButton": true,
-      "neutralFinalConfirmation": true
-    },
-    "mistakenDeliveryCorrection": {
-      "loadsOccurrencesBySaleId": true,
-      "requiresExplicitOccurrenceSelection": true,
-      "backendRevalidatesSelectionInsideTransaction": true,
-      "preservesDeliveredTimestampHistory": true,
-      "setsOccurrenceCancelledWithReversalMetadata": true,
-      "saleStoresCorrectedDeliveryIds": true,
-      "dedicatedAuditEvent": true,
-      "correctionNotification": true,
-      "refundFlowSupported": true,
-      "partialCancellationWithRealConsumption": false
-    },
-    "preserved": {
-      "apiConsolidation": true,
-      "firestoreRules": true,
-      "marcoZero": true,
-      "infinitePayCore": true
-    }
+  "version": "1.6.0-rc2.7.27",
+  "date": "2026-08-11",
+  "base": "1.6.0-rc2.7.26",
+  "status": "local_static_and_mock_validation_passed",
+  "scope": [
+    "staff_edit_official_responsible_without_overwriting_saved_buyer",
+    "staff_edit_saved_buyer_for_family",
+    "administrative_student_credit_authorization",
+    "parent_takes_control_after_meu_piaget_preference_change"
+  ],
+  "checks": {
+    "javascript_files_checked": 54,
+    "javascript_syntax_errors": 0,
+    "physical_api_functions": 10,
+    "html_local_references_checked": 92,
+    "relative_requires_checked": 48,
+    "frontend_api_urls": 17,
+    "handler_gestao_mock": "passed_including_parent_ownership_guard",
+    "handler_security_parent_takeover_mock": "passed",
+    "firestore_rules_changed": false,
+    "firestore_rules_sha256": "a38abddf0e715f771cea18b8fdf4f1af94d6d4e4d82686480b66c7232c14f11b"
   },
-  "validation": {
-    "nodeCheckFiles": 54,
-    "nodeCheckFailures": 0,
-    "htmlLocalReferencesChecked": 92,
-    "htmlLocalReferencesMissing": 0,
-    "relativeRequiresChecked": 48,
-    "relativeRequiresMissing": 0,
-    "apiReferencesResolved": 17,
-    "apiReferencesUnresolved": 0,
-    "deliveryBlockerUnitCases": 3,
-    "deliveryBlockerUnitPassed": true,
-    "firebaseProductionTested": false,
-    "vercelDeploymentPerformed": false,
-    "browserVisualTested": false
-  },
-  "deployment": {
-    "performed": false,
-    "note": "Publicar a RC2.7.26 sem republicar Firestore Rules e executar o smoke test específico de entrega marcada por engano."
-  },
-  "deploymentPackage": {
-    "onlyActiveReleaseIncluded": true,
-    "activeRelease": "1.6.0-rc2.7.26",
-    "apiFunctionCount": 10
-  }
+  "not_run": [
+    "vercel_deploy",
+    "production_firestore_transaction",
+    "real_cantina_sale",
+    "real_meu_piaget_preference_change",
+    "real_infinitepay_checkout",
+    "browser_visual_smoke"
+  ]
 }

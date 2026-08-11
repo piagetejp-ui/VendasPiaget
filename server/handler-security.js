@@ -50,14 +50,17 @@ module.exports=async function(req,res){
       const cfgSnap=await db.collection('configuracoes').doc('sistema').get(),cfg=cfgSnap.exists?(cfgSnap.data()||{}):{};
       const students=await db.collection('alunos').where('responsavelFinanceiroId','==',s.responsavelId).get(),activeCount=Math.max(1,students.docs.filter(d=>d.data()?.ativo!==false).length);
       const baseMax=Math.max(0,Number(cfg.limiteMaximoFiadoCentavos||5000)),max=baseMax*activeCount;
-      const requested=Math.max(0,Math.round(Number(b.limiteFiadoCentavos||0))),limit=Math.min(max,requested),authorized=Boolean(b.autorizadoSemSaldo);
+      const requested=Math.max(0,Math.round(Number(b.limiteFiadoCentavos||0))),limit=Math.min(max,requested),authorized=Boolean(b.autorizadoSemSaldo),now=nowIso();
       const ref=db.collection('contas_responsaveis').doc(s.responsavelId),snap=await ref.get(),acc=snap.exists?(snap.data()||{}):{};
       const net=Number(acc.saldoContaCentavos??(Number(acc.saldoCreditoCentavos||0)-Number(acc.dividaCentavos||0)));
       const blockedByLimit=Boolean(authorized&&limit>0&&net<0&&Math.abs(net)>=limit);
-      await ref.set({autorizadoSemSaldo:authorized,limiteFiadoCentavos:limit,bloqueadoPorLimite:blockedByLimit,atualizadoEm:nowIso()},{merge:true});
+      const previousOverrides=students.docs.map(d=>({id:d.id,data:d.data()||{}})).filter(x=>typeof x.data.consumoCreditoAutorizado==='boolean').map(x=>({alunoId:x.id,alunoNome:x.data.nome||null,autorizado:Boolean(x.data.consumoCreditoAutorizado),limiteCentavos:Number(x.data.limiteConsumoCentavos||0),origem:x.data.origemAutorizacaoConsumo||null}));
+      const batch=db.batch();batch.set(ref,{autorizadoSemSaldo:authorized,limiteFiadoCentavos:limit,bloqueadoPorLimite:blockedByLimit,origemAutorizacaoConsumo:'responsavel',autorizacaoConsumoAtualizadaEm:now,atualizadoEm:now},{merge:true});
+      for(const d of students.docs){batch.set(d.ref,{consumoCreditoAutorizado:admin.firestore.FieldValue.delete(),limiteConsumoCentavos:admin.firestore.FieldValue.delete(),origemAutorizacaoConsumo:'responsavel',autorizacaoConsumoAtualizadaEm:now,autorizacaoConsumoAtualizadaPorId:`responsavel:${s.responsavelId}`,autorizacaoConsumoAtualizadaPorNome:'Responsável',autorizacaoConsumoAssumidaPeloResponsavelEm:now,atualizadoEm:now},{merge:true});}
+      await batch.commit();
       const firstStudent=students.docs.find(d=>d.data()?.ativo!==false)||students.docs[0]||null;
-      await audit(db,'preferencias_financeiras_responsavel_atualizadas',{responsavelId:s.responsavelId,alunoId:firstStudent?.id||null,alunoNome:firstStudent?.data()?.nome||null,autorizado:authorized,limiteCentavos:limit,limiteMaximoFamiliaCentavos:max,usuarioId:`responsavel:${s.responsavelId}`,usuarioNome:'Responsável',usuarioPerfil:'responsavel',descricaoHumana:`O responsável atualizou a autorização de compra sem saldo e o limite da conta familiar.`});
-      return json(res,200,{ok:true,autorizadoSemSaldo:authorized,limiteFiadoCentavos:limit,bloqueadoPorLimite:blockedByLimit,limiteMaximoFamiliaCentavos:max});
+      await audit(db,'preferencias_financeiras_responsavel_atualizadas',{responsavelId:s.responsavelId,alunoId:firstStudent?.id||null,alunoNome:firstStudent?.data()?.nome||null,autorizado:authorized,limiteCentavos:limit,limiteMaximoFamiliaCentavos:max,origem:'responsavel',regrasAdministrativasSubstituidas:previousOverrides,usuarioId:`responsavel:${s.responsavelId}`,usuarioNome:'Responsável',usuarioPerfil:'responsavel',descricaoHumana:previousOverrides.length?`O responsável assumiu o controle da autorização de compra sem saldo da família e substituiu ${previousOverrides.length} regra(s) administrativa(s) individual(is).`:`O responsável atualizou a autorização de compra sem saldo e o limite da conta familiar.`});
+      return json(res,200,{ok:true,autorizadoSemSaldo:authorized,limiteFiadoCentavos:limit,bloqueadoPorLimite:blockedByLimit,limiteMaximoFamiliaCentavos:max,controleOrigem:'responsavel',regrasAdministrativasSubstituidas:previousOverrides.length,alunosAtualizados:students.docs.length});
     }
     if(acao==='family_access_status'){
       const s=await validateFamilySession(db,familySessionTokenFromReq(req));if(!s)return json(res,401,{error:'Sessão encerrada.'});
