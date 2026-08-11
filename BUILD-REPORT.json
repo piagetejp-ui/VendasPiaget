@@ -1,73 +1,60 @@
 {
-  "version": "1.6.0-rc2.7.25",
-  "release": "RC2.7.25 — consolidação de API para Vercel Hobby + estorno visível preservado",
-  "generatedAt": "2026-08-11T10:14:00-03:00",
-  "base": "1.6.0-rc2.7.24 (pacote enviado pelo usuário)",
-  "apiFunctionsBefore": 14,
-  "apiFunctionsAfter": 10,
+  "version": "1.6.0-rc2.7.26",
+  "release": "RC2.7.26 — cancelamento legível + correção de entrega marcada por engano",
+  "generatedAt": "2026-08-11T10:33:00-03:00",
+  "base": "1.6.0-rc2.7.25 (confirmada em produção pelo usuário)",
+  "apiFunctions": 10,
   "vercelHobbyFunctionLimitObserved": 12,
-  "consolidatedEndpoints": [
-    "/api/cancelar-venda-presencial",
-    "/api/configuracao-operacional",
-    "/api/gerenciar-programacao-lanche",
-    "/api/registrar-operacao-presencial",
-    "/api/resumo-operacional"
-  ],
-  "consolidatedTarget": "/api/operacoes?modulo=...",
-  "serverModules": 11,
-  "handlerModules": 5,
-  "releaseJavaScriptFiles": 27,
-  "releaseCssFiles": 1,
-  "releaseFrontendRawBytes": 1300768,
-  "releaseFrontendGzipBytesApprox": 335714,
   "firestoreRulesSha256": "a38abddf0e715f771cea18b8fdf4f1af94d6d4e4d82686480b66c7232c14f11b",
+  "firestoreRulesByteIdenticalToRc2725": true,
   "changes": {
-    "deploymentLimitFix": {
-      "physicalApiFilesReduced": true,
-      "legacyUrlsPreservedByRewrites": true,
-      "frontendApiCallsChanged": false,
-      "webhookInfinitePayKeptSeparate": true
+    "cancelUx": {
+      "solidRedTriggersRemoved": true,
+      "neutralChoiceModal": true,
+      "softDestructiveFinalButton": true,
+      "neutralFinalConfirmation": true
     },
-    "cancelRefund": {
-      "rc2724FrontendLogicPreserved": true,
-      "paidStatusIncludesConfirmada": true,
-      "cancelRefundButtonPresentInSalesAndBilling": true,
-      "cancelEndpointLegacyUrlPreserved": true
+    "mistakenDeliveryCorrection": {
+      "loadsOccurrencesBySaleId": true,
+      "requiresExplicitOccurrenceSelection": true,
+      "backendRevalidatesSelectionInsideTransaction": true,
+      "preservesDeliveredTimestampHistory": true,
+      "setsOccurrenceCancelledWithReversalMetadata": true,
+      "saleStoresCorrectedDeliveryIds": true,
+      "dedicatedAuditEvent": true,
+      "correctionNotification": true,
+      "refundFlowSupported": true,
+      "partialCancellationWithRealConsumption": false
     },
     "preserved": {
-      "firestoreRulesByteIdenticalToBase": true,
-      "marcoZeroLogicUntouched": true,
-      "infinitePayCoreUntouched": true,
-      "activeFrontendLogicByteEquivalentToRc2724ExceptVersion": true
+      "apiConsolidation": true,
+      "firestoreRules": true,
+      "marcoZero": true,
+      "infinitePayCore": true
     }
   },
   "validation": {
     "nodeCheckFiles": 54,
-    "jsonParsed": true,
-    "movedHandlersByteIdenticalToBase": true,
-    "firestoreRulesByteIdenticalToBase": true,
-    "frontendLogicIdenticalToRc2724ExceptVersion": true,
-    "activeReleaseReferencesOnlyRc2725": true,
-    "cancelRefundStructuralChecks": true,
-    "rewriteMappingsChecked": 5,
-    "dispatcherMockTested": true,
+    "nodeCheckFailures": 0,
     "htmlLocalReferencesChecked": 92,
     "htmlLocalReferencesMissing": 0,
-    "apiReferencesResolved": 17,
     "relativeRequiresChecked": 48,
     "relativeRequiresMissing": 0,
-    "firebaseRuntimeTested": false,
-    "vercelDeploymentPerformed": false
+    "apiReferencesResolved": 17,
+    "apiReferencesUnresolved": 0,
+    "deliveryBlockerUnitCases": 3,
+    "deliveryBlockerUnitPassed": true,
+    "firebaseProductionTested": false,
+    "vercelDeploymentPerformed": false,
+    "browserVisualTested": false
   },
   "deployment": {
     "performed": false,
-    "note": "Pacote validado local/estaticamente. Publicar a aplicação na Vercel; não republicar Firestore Rules. Depois executar smoke test real."
+    "note": "Publicar a RC2.7.26 sem republicar Firestore Rules e executar o smoke test específico de entrega marcada por engano."
   },
-  "deployFileCount": 75,
   "deploymentPackage": {
     "onlyActiveReleaseIncluded": true,
-    "activeRelease": "1.6.0-rc2.7.25",
-    "fileCountBelow100": true,
+    "activeRelease": "1.6.0-rc2.7.26",
     "apiFunctionCount": 10
   }
 }
