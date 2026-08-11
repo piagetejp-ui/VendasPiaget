@@ -1,47 +1,25 @@
 {
-  "version": "1.6.0-rc2.7.28",
+  "version": "1.6.0-rc2.7.29",
   "date": "2026-08-11",
-  "base": "1.6.0-rc2.7.27",
-  "status": "local_static_and_targeted_runtime_validation_passed",
+  "base": "1.6.0-rc2.7.28",
+  "status": "local_static_validation_passed",
   "scope": [
-    "fix_in_person_uniform_reference_error_name",
-    "fix_cancel_reference_error_details",
-    "secure_family_portal_reads_via_existing_familias_api"
+    "fix_sales_list_tab_switch_reset_and_stale_after_submit",
+    "fix_sale_wizard_close_cancel_lands_on_wrong_sales_view",
+    "auto_settle_open_manual_pendencies_on_account_payment"
   ],
   "checks": {
     "javascript_files_checked": 55,
     "javascript_syntax_errors": 0,
     "physical_api_functions": 10,
-    "html_local_references_checked": 92,
-    "relative_requires_checked": 51,
-    "frontend_api_urls": 17,
-    "targeted_static_checks": "passed",
-    "uniform_normalization_runtime_mock": "passed",
-    "cancel_frontend_payload_runtime_vm": "passed",
-    "family_data_backend_mock": "passed",
-    "family_data_backend_tests": [
-      "ownership",
-      "history-pagination",
-      "notifications",
-      "notification-403",
-      "mark-read",
-      "programs",
-      "whitelist"
-    ],
     "firestore_rules_changed": false,
     "firestore_rules_sha256": "a38abddf0e715f771cea18b8fdf4f1af94d6d4e4d82686480b66c7232c14f11b"
   },
-  "runtime_mock_evidence": {
-    "uniform_total_centavos": 4700,
-    "uniform_stock_name": "Camisa de farda",
-    "uniform_status": "reservado_estoque"
-  },
   "not_run": [
     "vercel_deploy",
-    "production_firestore_family_data_api",
-    "real_browser_meu_piaget",
-    "real_in_person_uniform_sale",
-    "real_sale_cancellation",
+    "production_firestore_reads",
+    "real_browser_secretaria_sales_tabs",
+    "real_manual_pendency_payment_settlement",
     "real_infinitepay_checkout"
   ]
 }

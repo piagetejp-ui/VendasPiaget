@@ -424,7 +424,7 @@ window.openResponsibleAccessManagerV130=openResponsibleAccessManagerV130;
 /* atualização de versão herdada removida pela V1.5.0-dev2 */
 
 
-/* V1.6.0-rc2.7.28 — logout canônico do botão superior. */
+/* V1.6.0-rc2.7.29 — logout canônico do botão superior. */
 async function logoutProfile(){
   try{closeMobileMenuV151?.()}catch(e){}
   try{if(state.user?.authMode==='firebase'||authObjV130()?.currentUser)await authObjV130()?.signOut()}catch(e){console.warn('logout Firebase',e)}

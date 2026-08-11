@@ -272,7 +272,7 @@ window.parentToggleAuthorization=parentToggleAuthorization=async function(val){c
 })();
 
 
-/* V1.6.0-rc2.7.28 — tentativa idempotente e feedback de checkout */
+/* V1.6.0-rc2.7.29 — tentativa idempotente e feedback de checkout */
 function stableCheckoutStringV154(value){
   if(Array.isArray(value))return `[${value.map(stableCheckoutStringV154).join(',')}]`;
   if(value&&typeof value==='object')return `{${Object.keys(value).sort().map(k=>`${JSON.stringify(k)}:${stableCheckoutStringV154(value[k])}`).join(',')}}`;
