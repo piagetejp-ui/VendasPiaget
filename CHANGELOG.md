@@ -1,5 +1,15 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.31 — 11/08/2026
+
+Base: **RC2.7.30**.
+
+### Hotfix: autorização de consumo da secretaria não chegava na cantina
+- A tela "Autorização de consumo" (usada pela secretaria/gestão para liberar um aluno a consumir sem saldo, até um limite) só gravava os campos `consumoCreditoAutorizado`/`limiteConsumoCentavos` no cadastro do aluno.
+- A checagem real feita no caixa da cantina (`registerAccountConsumption`) e o resumo de conta em qualquer tela (`getAccount`) sempre leram `autorizadoSemSaldo`/`limiteFiadoCentavos` da conta financeira — um documento e campos completamente diferentes, nunca atualizados por essa tela.
+- Resultado: a secretaria autorizava, via o toast de sucesso parecia ter funcionado, mas a cantina continuava vendo a conta bloqueada (ou com o limite antigo).
+- `/api/gestao-familias` (`configurar_consumo_aluno`) agora espelha a autorização/limite na conta financeira do aluno na mesma chamada, exatamente como a permissão dada pelo próprio responsável no Meu Piaget já fazia. Continua respeitando a regra existente: se o responsável já assumiu o controle da autorização pelo Meu Piaget, a escola não pode mais sobrescrevê-la.
+
 ## 1.6.0-rc2.7.30 — 11/08/2026
 
 Base: **RC2.7.29**.

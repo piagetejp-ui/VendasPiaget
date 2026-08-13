@@ -1,7 +1,7 @@
 /* Escola Piaget · RC2.7.17 · Planejamento operacional de lanches e limites familiares */
 (()=>{
 'use strict';
-const VERSION='1.6.0-rc2.7.30';
+const VERSION='1.6.0-rc2.7.31';
 const PLANNING_ROLES=new Set(['admin','gestao','secretaria','cantina']);
 const MANAGEMENT_ROLES=new Set(['admin','gestao']);
 state.v181LunchMonth=state.v181LunchMonth||dateKey().slice(0,7);

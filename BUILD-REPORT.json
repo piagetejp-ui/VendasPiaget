@@ -1,10 +1,10 @@
 {
-  "version": "1.6.0-rc2.7.30",
+  "version": "1.6.0-rc2.7.31",
   "date": "2026-08-11",
-  "base": "1.6.0-rc2.7.29",
+  "base": "1.6.0-rc2.7.30",
   "status": "local_static_validation_passed",
   "scope": [
-    "fix_cantina_atendimento_missing_product_catalog"
+    "fix_staff_consumption_authorization_not_reaching_cantina_pos_check"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -15,6 +15,6 @@
   },
   "not_run": [
     "vercel_deploy",
-    "real_browser_cantina_profile_atendimento"
+    "real_browser_secretaria_authorize_then_cantina_consume"
   ]
 }
