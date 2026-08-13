@@ -1,12 +1,10 @@
 {
-  "version": "1.6.0-rc2.7.29",
+  "version": "1.6.0-rc2.7.30",
   "date": "2026-08-11",
-  "base": "1.6.0-rc2.7.28",
+  "base": "1.6.0-rc2.7.29",
   "status": "local_static_validation_passed",
   "scope": [
-    "fix_sales_list_tab_switch_reset_and_stale_after_submit",
-    "fix_sale_wizard_close_cancel_lands_on_wrong_sales_view",
-    "auto_settle_open_manual_pendencies_on_account_payment"
+    "fix_cantina_atendimento_missing_product_catalog"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -17,9 +15,6 @@
   },
   "not_run": [
     "vercel_deploy",
-    "production_firestore_reads",
-    "real_browser_secretaria_sales_tabs",
-    "real_manual_pendency_payment_settlement",
-    "real_infinitepay_checkout"
+    "real_browser_cantina_profile_atendimento"
   ]
 }

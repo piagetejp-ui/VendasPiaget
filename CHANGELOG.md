@@ -1,5 +1,13 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.30 — 11/08/2026
+
+Base: **RC2.7.29**.
+
+### Hotfix: perfil cantina sem produtos no Atendimento
+- A otimização de leitura que decide quais páginas pré-carregam o catálogo de produtos antes de renderizar (`STAFF_COMMERCE_PAGES`, introduzida na RC2.7.25) incluía `vendas`, `produtos` e `config`, mas não `atendimento` — a tela principal do perfil cantina. Resultado: o catálogo nunca era carregado para esse perfil, deixando "Venda rápida em dinheiro" e "Lançar na conta do aluno" sem nenhum produto pra selecionar.
+- `atendimento` foi adicionado à lista de páginas que pré-carregam o catálogo.
+
 ## 1.6.0-rc2.7.29 — 11/08/2026
 
 Base: **RC2.7.28**.

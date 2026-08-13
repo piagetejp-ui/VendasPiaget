@@ -8,10 +8,10 @@
 */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.29';
+const VERSION='1.6.0-rc2.7.30';
 const STAFF_COMMERCE_TTL=5*60*1000,FAMILY_COMMERCE_TTL=10*60*1000,DASHBOARD_TTL=45*1000;
 const AUDIT_PAGE=50,FAMILY_PAGE=30,CATALOG_PAGE=200;
-const STAFF_COMMERCE_PAGES=new Set(['vendas','produtos','config']);
+const STAFF_COMMERCE_PAGES=new Set(['vendas','produtos','config','atendimento']);
 const DIAG_KEY='vp_read_diag_v221',FAMILY_CACHE_KEY='vp_family_commerce_v221';
 const baseNavigateV221=window.navigate,baseDashboardV221=window.renderDashboard,baseLoadCoreV221=window.loadCore;
 const baseParentMovesV221=window.openParentMovementsV151,baseParentOrdersV221=window.openParentOrdersV151;
