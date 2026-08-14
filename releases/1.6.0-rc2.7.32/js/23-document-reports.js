@@ -2,7 +2,7 @@
    O PDF materializa apenas dados que o perfil já pode visualizar. */
 (()=>{
 'use strict';
-const VERSION='1.6.0-rc2.7.31';
+const VERSION='1.6.0-rc2.7.32';
 const BLUE=[44,56,150],ORANGE=[255,152,31],TEXT=[28,34,55],MUTED=[92,99,120],LINE=[229,232,243],SOFT=[247,248,253];
 const LOGO='/assets/logo-piaget-icon-v152.png';
 const money=v=>{try{return fmt(Number(v||0)).replace(/\u00a0/g,' ')}catch(_){return `R$ ${(Number(v||0)/100).toFixed(2).replace('.',',')}`}};

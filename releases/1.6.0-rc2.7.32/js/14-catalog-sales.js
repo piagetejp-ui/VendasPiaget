@@ -1,6 +1,6 @@
 /* Escola Piaget — Catálogo de vendas e motor unificado RC2.1 */
 (function(){
-const VERSION='1.6.0-rc2.7.31';
+const VERSION='1.6.0-rc2.7.32';
 const BASE_LOAD=window.loadCore;
 const BASE_RENDER_VENDAS=window.renderVendas;
 const BASE_START_SALE=window.startSecretarySaleV151;

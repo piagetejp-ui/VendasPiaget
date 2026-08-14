@@ -1,5 +1,14 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.32 — 11/08/2026
+
+Base: **RC2.7.31**.
+
+### Melhoria: link de pagamento junto com o Relatório de valores em aberto
+- Investigado o relato de que o PDF "não emite" para alunos com conta bloqueada: o PDF sempre foi gerado normalmente (sem erro), mas o link dentro dele apontava só para a página inicial genérica do Meu Piaget — sem nenhum link de pagamento de verdade.
+- O único lugar que já reunia PDF + link de regularização lado a lado era o painel de Fechamento semanal, que só cobre contas que passaram por aquele fechamento — uma conta bloqueada no meio da semana por estourar o limite numa compra não aparecia lá até o próximo fechamento.
+- Adicionado o botão **"Gerar link de pagamento"** na tela de Relatório (`generateReport`, disponível para qualquer aluno com saldo em aberto, bloqueado ou não), reaproveitando a mesma função que já gera o link no painel semanal (`openAccountPaymentV141`). O link não foi embutido dentro do PDF em si — ele expira em 24h e o PDF pode ficar salvo/impresso por mais tempo que isso; o botão gera um link novo, sempre válido, no momento em que é clicado.
+
 ## 1.6.0-rc2.7.31 — 11/08/2026
 
 Base: **RC2.7.30**.

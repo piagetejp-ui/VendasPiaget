@@ -1,10 +1,10 @@
 {
-  "version": "1.6.0-rc2.7.31",
+  "version": "1.6.0-rc2.7.32",
   "date": "2026-08-11",
-  "base": "1.6.0-rc2.7.30",
+  "base": "1.6.0-rc2.7.31",
   "status": "local_static_validation_passed",
   "scope": [
-    "fix_staff_consumption_authorization_not_reaching_cantina_pos_check"
+    "add_payment_link_button_to_student_open_balance_report"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -15,6 +15,6 @@
   },
   "not_run": [
     "vercel_deploy",
-    "real_browser_secretaria_authorize_then_cantina_consume"
+    "real_browser_generate_report_then_payment_link"
   ]
 }
