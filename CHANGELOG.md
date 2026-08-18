@@ -1,5 +1,13 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.34 — 11/08/2026
+
+Base: **RC2.7.33**.
+
+### Hotfix: lista de Cobranças/contas bloqueadas incompleta e sem opção de Relatório
+- `loadAllFinancialAccountsV221` (usada pela tela de Cobranças ao filtrar "Contas bloqueadas" ou "Saldo em aberto") só consultava a coleção `contas_responsaveis` (contas de família já consolidada). Alunos cuja conta ainda está em `contas_alunos` — sem responsável financeiro vinculado — ficavam completamente de fora da lista, não importa o quanto estivessem bloqueados ou negativos. A função agora busca as duas coleções e junta o resultado.
+- Adicionado o botão **"Relatório"** direto nas linhas da lista de Cobranças (contas com saldo em aberto/bloqueadas), do mesmo jeito que já existe dentro da tela "Ver conta" — antes era preciso abrir a conta do aluno individualmente pra chegar até essa opção.
+
 ## 1.6.0-rc2.7.33 — 11/08/2026
 
 Base: **RC2.7.32**.

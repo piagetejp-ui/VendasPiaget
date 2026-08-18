@@ -8,7 +8,7 @@
 */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.33';
+const VERSION='1.6.0-rc2.7.34';
 const STAFF_COMMERCE_TTL=5*60*1000,FAMILY_COMMERCE_TTL=10*60*1000,DASHBOARD_TTL=45*1000;
 const AUDIT_PAGE=50,FAMILY_PAGE=30,CATALOG_PAGE=200;
 const STAFF_COMMERCE_PAGES=new Set(['vendas','produtos','config','atendimento']);
@@ -124,6 +124,6 @@ for(const name of ['startUnifiedSaleV160','startSaleWizardV120']){const base=win
 for(const name of ['openParentOrderV151','openParentUniformV151']){const base=window[name];if(typeof base==='function')window[name]=async function(...args){try{await ensureFamilyCommerceV221(false);return base.apply(this,args)}catch(e){appMessage(e.message||'Não foi possível carregar o catálogo.')}}}
 
 /* Contas financeiras completas quando o usuário escolhe uma listagem total. */
-window.loadAllFinancialAccountsV221=async function(){if(typeof ensureStudentsLoadedV218==='function')await ensureStudentsLoadedV218();const rows=await allCollectionRowsV221('contas_responsaveis',200),students=state.students||[],famKey=a=>String(a.contaFinanceiraId||a.responsavelFinanceiroId||'');return rows.map(d=>{const children=students.filter(a=>a.ativo!==false&&famKey(a)===String(d.id)),primary=children.find(a=>String(a.id)===String(d.alunoPrincipalId||''))||children[0],ids=children.length?children.map(a=>a.id):(Array.isArray(d.alunosIds)?d.alunosIds:[]);return{...d,responsavelId:d.id,alunoPrincipalId:primary?.id||d.alunoPrincipalId||ids[0]||null,alunosIds:ids,quantidadeAlunosAtivos:children.length||Number(d.quantidadeAlunosAtivos||ids.length||0)}})};
+window.loadAllFinancialAccountsV221=async function(){if(typeof ensureStudentsLoadedV218==='function')await ensureStudentsLoadedV218();const [famRows,soloRows]=await Promise.all([allCollectionRowsV221('contas_responsaveis',200),allCollectionRowsV221('contas_alunos',200)]),students=state.students||[],famKey=a=>String(a.contaFinanceiraId||a.responsavelFinanceiroId||'');const famAccounts=famRows.map(d=>{const children=students.filter(a=>a.ativo!==false&&famKey(a)===String(d.id)),primary=children.find(a=>String(a.id)===String(d.alunoPrincipalId||''))||children[0],ids=children.length?children.map(a=>a.id):(Array.isArray(d.alunosIds)?d.alunosIds:[]);return{...d,responsavelId:d.id,alunoPrincipalId:primary?.id||d.alunoPrincipalId||ids[0]||null,alunosIds:ids,quantidadeAlunosAtivos:children.length||Number(d.quantidadeAlunosAtivos||ids.length||0)}});const coveredIds=new Set(famAccounts.flatMap(a=>a.alunosIds||[]).map(String));const soloAccounts=soloRows.filter(d=>!coveredIds.has(String(d.id))).map(d=>{const a=students.find(x=>String(x.id)===String(d.id));return{...d,responsavelId:d.id,alunoPrincipalId:d.id,alunosIds:[d.id],quantidadeAlunosAtivos:a&&a.ativo!==false?1:0}});return[...famAccounts,...soloAccounts]};
 
 })();

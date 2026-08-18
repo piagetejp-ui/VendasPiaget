@@ -1,6 +1,6 @@
 /* Escola Piaget — Visões operacionais RC2.2 */
 (function(){
-const VERSION='1.6.0-rc2.7.33';
+const VERSION='1.6.0-rc2.7.34';
 const STAFF_PROFILES=new Set(['admin','gestao','secretaria']);
 function n(v){const x=Number(v||0);return Number.isFinite(x)?Math.round(x):0}
 function arr(v){return Array.isArray(v)?v:[]}
@@ -105,7 +105,7 @@ function billingRowActionsV162(r){
  if(r.kind==='conta'){
   const reg=r.regularization,c=reg?.checkout||{};
   if(reg)return `${reg.link||reg.checkout?.checkoutUrl?`<button class="btn btn-primary" onclick="openBillingLinkV162('${safeJs(reg.key)}')">Abrir cobrança</button>`:''}${reg.orderNsu?`<button class="btn btn-light" onclick="syncInfinitePayV218('${safeJs(reg.orderNsu)}','${safeJs(c.transactionNsu||'')}','${safeJs(c.invoiceSlug||'')}')">Sincronizar</button><button class="btn btn-orange" onclick="openManualReconciliationV218('${safeJs(reg.orderNsu)}')">Confirmar recebimento</button>`:''}${r.alunoId?`<button class="btn btn-outline" onclick="openStudentDetails('${safeJs(r.alunoId)}')">Ver conta</button>`:''}`;
-  return `${r.alunoId?`<button class="btn btn-primary" onclick="openStudentDetails('${safeJs(r.alunoId)}')">Ver conta</button><button class="btn btn-outline" onclick="openAccountPaymentV141('${safeJs(r.alunoId)}','staff')">Gerar link</button><button class="btn btn-green" onclick="registerManualPaymentV141('${safeJs(r.alunoId)}')">Registrar pagamento</button>`:'<button class="btn btn-light" disabled>Conta sem aluno vinculado</button>'}`;
+  return `${r.alunoId?`<button class="btn btn-primary" onclick="openStudentDetails('${safeJs(r.alunoId)}')">Ver conta</button><button class="btn btn-outline" onclick="openAccountPaymentV141('${safeJs(r.alunoId)}','staff')">Gerar link</button><button class="btn btn-green" onclick="registerManualPaymentV141('${safeJs(r.alunoId)}')">Registrar pagamento</button><button class="btn btn-light" onclick="generateReport('${safeJs(r.alunoId)}')">Relatório</button>`:'<button class="btn btn-light" disabled>Conta sem aluno vinculado</button>'}`;
  }
  if(r.kinds.includes('pago'))return `<button class="btn btn-primary" onclick="openBillingDetailV162('${safeJs(r.key)}')">Detalhar</button>${r.orderNsu?`<button class="btn btn-green" onclick="openReceiptV142('${safeJs(r.orderNsu)}')">Comprovante</button>`:''}${STAFF_PROFILES.has(state.user?.perfil)?`<button class="btn btn-outline v226-cancel-trigger" onclick="openCancelOrRefundFromBillingV224('${safeJs(r.key)}')">Cancelar / Estornar</button>`:''}`;
  const c=r.checkout||{};

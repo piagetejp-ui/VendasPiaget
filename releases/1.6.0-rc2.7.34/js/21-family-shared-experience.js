@@ -3,7 +3,7 @@
    filtros por aluno e acesso do Meu Piaget incorporado a Alunos e Contas. */
 (()=>{
 'use strict';
-const VERSION='1.6.0-rc2.7.33';
+const VERSION='1.6.0-rc2.7.34';
 const BASE_REVIEW=window.reviewParentOrderV150;
 const BASE_UNIFORM=window.openParentUniformV151;
 const BASE_RENDER_USERS=window.renderUsuariosAcessosV130;
