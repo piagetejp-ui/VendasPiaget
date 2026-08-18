@@ -1,5 +1,13 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.33 — 11/08/2026
+
+Base: **RC2.7.32**.
+
+### Hotfix: "Remover bloqueio" não desbloqueava de verdade
+- Uma conta pode ficar bloqueada por três motivos independentes: bloqueio manual da secretaria, limite de fiado estourado numa compra, ou bloqueio do fechamento semanal. O botão existente só desligava o bloqueio manual — se o motivo fosse um dos outros dois, a conta continuava bloqueada mesmo depois de clicar em "Remover bloqueio".
+- O botão na tela de conta do aluno agora mostra "Desbloquear conta" sempre que há qualquer tipo de bloqueio ativo, e ao clicar limpa os três motivos de uma vez — pensado justamente para o caso de uma negociação/decisão interna liberar o aluno independente da causa original do bloqueio.
+
 ## 1.6.0-rc2.7.32 — 11/08/2026
 
 Base: **RC2.7.31**.

@@ -1,7 +1,7 @@
 const {initFirebase,json,parseBody,nowIso,admin}=require('./_utils');
 const {validateFamilySession,familySessionTokenFromReq,studentsForResponsible}=require('./_family-utils');
 
-const VERSION='1.6.0-rc2.7.32';
+const VERSION='1.6.0-rc2.7.33';
 const ALLOWED_COLLECTIONS=new Set([
   'movimentos_conta','pagamentos_checkout','vendas','vendas_online_links',
   'pedidos','pedidos_farda','pedidos_operacionais','ocorrencias_entrega'

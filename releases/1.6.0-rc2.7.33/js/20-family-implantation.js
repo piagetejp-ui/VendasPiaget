@@ -4,7 +4,7 @@
    identidade/acesso/conta familiar quando a base oficial 2026 estiver preparada. */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.32';
+const VERSION='1.6.0-rc2.7.33';
 const FAMILY_STUDENT_KEY='vp_parent_student';
 let LEGACY_FAMILY_SESSION_V176='';try{LEGACY_FAMILY_SESSION_V176=localStorage.getItem('vp_family_session')||'';localStorage.removeItem('vp_family_session')}catch(_){} /* migração única: sessão passa a HttpOnly */
 const BASE_RENDER_PARENT=window.renderParentPortal;
