@@ -1,11 +1,10 @@
 {
-  "version": "1.6.0-rc2.7.34",
+  "version": "1.6.0-rc2.7.35",
   "date": "2026-08-11",
-  "base": "1.6.0-rc2.7.33",
+  "base": "1.6.0-rc2.7.34",
   "status": "local_static_validation_passed",
   "scope": [
-    "add_report_button_to_billing_list_rows",
-    "fix_blocked_accounts_list_missing_contas_alunos"
+    "fix_pedidos_list_never_refetching_after_first_load"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -16,6 +15,6 @@
   },
   "not_run": [
     "vercel_deploy",
-    "real_browser_cobrancas_bloqueada_filter_and_report_button"
+    "real_browser_cantina_baixa_then_secretaria_pedidos_view"
   ]
 }

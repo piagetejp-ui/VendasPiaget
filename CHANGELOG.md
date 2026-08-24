@@ -1,5 +1,14 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.35 — 11/08/2026
+
+Base: **RC2.7.34**.
+
+### Hotfix: tela de Pedidos não sincronizava as baixas da cantina para secretaria/gestão
+- `loadUnifiedOrdersV166` (tela "Pedidos" usada por secretaria/gestão) só busca dados novos do Firestore na primeira vez que é aberta na sessão. Depois disso, nenhuma ação — nem mesmo a própria secretaria mudando o status de um pedido — forçava uma nova busca; a tela só redesenhava o que já estava em memória. Resultado: quando a cantina dava baixa numa entrega, quem já tinha essa tela carregada só via a atualização recarregando a página inteira.
+- Adicionado um botão **"Atualizar"** no topo da tela de Pedidos.
+- As ações que mudam o status de um pedido (secretaria atualizando fardamento/serviço, cantina confirmando ou não uma entrega) agora forçam a lista a buscar dado novo em vez de só redesenhar o estado antigo.
+
 ## 1.6.0-rc2.7.34 — 11/08/2026
 
 Base: **RC2.7.33**.
