@@ -1,11 +1,11 @@
 {
-  "version": "1.6.0-rc2.7.37",
+  "version": "1.6.0-rc2.7.38",
   "date": "2026-08-11",
-  "base": "1.6.0-rc2.7.36",
+  "base": "1.6.0-rc2.7.37",
   "status": "local_static_validation_passed",
   "scope": [
-    "fix_cantina_account_consumption_missing_student_name",
-    "ensure_students_loaded_for_all_staff_commerce_pages"
+    "fix_cash_movement_double_submit",
+    "add_cancel_cash_movement_before_closing"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -16,6 +16,7 @@
   },
   "not_run": [
     "vercel_deploy",
-    "real_browser_cantina_lancar_conta_then_vendas_list"
+    "real_browser_double_click_sangria",
+    "real_browser_cancel_cash_movement"
   ]
 }

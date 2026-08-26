@@ -1,7 +1,7 @@
-/* Escola Piaget — service worker V1.6.0-rc2.7.37 */
-const VERSION='1.6.0-rc2.7.37';
+/* Escola Piaget — service worker V1.6.0-rc2.7.38 */
+const VERSION='1.6.0-rc2.7.38';
 const CACHE=`piaget-${VERSION}`;
-const RELEASE='/releases/1.6.0-rc2.7.37/';
+const RELEASE='/releases/1.6.0-rc2.7.38/';
 const PRECACHE=[
   '/',
   '/index.html',

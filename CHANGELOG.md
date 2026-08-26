@@ -1,5 +1,17 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.38 — 11/08/2026
+
+Base: **RC2.7.37**.
+
+### Hotfix: sangria/movimento de caixa duplicado ao clicar duas vezes
+- Diagnóstico: **foi falha do sistema, não erro da secretária.** O botão "Confirmar saída"/"Confirmar entrada" não tinha nenhuma proteção contra clique duplo — cada clique disparava um lançamento novo e independente. Se o clique parecesse não ter respondido (rede lenta, etc.) e a pessoa clicasse de novo, o sistema registrava dois movimentos idênticos sem nenhum aviso.
+- Corrigido: o botão agora desabilita e mostra "Registrando..." assim que clicado, e só volta a ficar disponível se der erro.
+
+### Melhoria: cancelar um lançamento manual de caixa antes de fechar
+- Adicionada a opção **"Cancelar"** em cada entrada/saída manual (sangria, despesa, entrada manual) na tela "Caixa da Secretaria", disponível enquanto o caixa está aberto e você é o responsável atual.
+- Cancelar ajusta o saldo esperado do caixa na hora e marca o lançamento como "Cancelado" na lista — o registro não é apagado (fica visível e sinalizado, preservando a auditoria), e o valor deixa de contar no saldo. Movimentos gerados pelo próprio sistema (vendas, abertura de caixa, estornos) não aparecem com essa opção, só os lançamentos manuais.
+
 ## 1.6.0-rc2.7.37 — 11/08/2026
 
 Base: **RC2.7.36**.
