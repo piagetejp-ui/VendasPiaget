@@ -1,5 +1,14 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.37 — 11/08/2026
+
+Base: **RC2.7.36**.
+
+### Hotfix: vendas lançadas pela cantina na conta do aluno apareciam sem o nome
+- `registerAccountConsumption` (tela "Lançar na conta do aluno", usada pelo operador da cantina em Atendimento) gravava a venda e o movimento financeiro só com o `alunoId` — sem o nome, turma ou matrícula do aluno. A lista de Vendas usa o nome como referência principal e só cai pro ID interno quando não acha nada; sem o nome gravado e sem a lista de alunos carregada, ela mostrava algo como "aluno_250603" no lugar do nome. O nome que aparecia embaixo (ex: "Ruan de Jesus Silva") era o **operador da cantina**, não o aluno.
+- Corrigido: a venda e o movimento agora gravam nome, turma e matrícula do aluno, do mesmo jeito que os outros fluxos de venda já fazem.
+- Reforço geral: `ensureStaffCommerceV221` (usada antes de abrir Vendas, Produtos, Configurações e Atendimento) agora também garante que a lista de alunos está carregada, então mesmo vendas antigas sem o nome gravado direto no registro vão exibir o nome certo pelo cadastro do aluno, em vez de cair no ID.
+
 ## 1.6.0-rc2.7.36 — 11/08/2026
 
 Base: **RC2.7.35**.

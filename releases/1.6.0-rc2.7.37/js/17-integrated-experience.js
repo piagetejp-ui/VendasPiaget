@@ -2,7 +2,7 @@
    Experiência integrada: navegação contextual, notificações e gestão auditável do caixa. */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.36';
+const VERSION='1.6.0-rc2.7.37';
 const SESSIONS='sessoes_caixa',PERIODS='periodos_responsabilidade_caixa',MOVES='movimentos_caixa',DIVERGENCES='divergencias_caixa';
 const baseRenderCashManagement=window.renderCashManagementV164;
 const baseRenderCaixa=window.renderCaixa;
