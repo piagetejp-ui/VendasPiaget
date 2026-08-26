@@ -1,5 +1,14 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.36 — 11/08/2026
+
+Base: **RC2.7.35**.
+
+### Hotfix: perfil do aluno sem nome ao abrir pela Auditoria do caixa
+- Ao abrir "Auditoria do caixa" → "Períodos de responsabilidade" → clicar em "Aluno" numa movimentação, o perfil que abria mostrava o ID interno do aluno no lugar do nome, e turma/matrícula em branco — porque essa tela nunca garantia que a lista de alunos (`state.students`) estivesse carregada antes de tentar montar o perfil.
+- `openStudentDetailsV162` (o perfil correto/único usado em todo o sistema — não existe um "perfil diferente", era esse mesmo, só sem os dados do aluno carregados) agora garante que a lista de alunos está carregada antes de montar a tela, não importa de qual tela você chegou até ele.
+- A tela de auditoria de caixa também passa a carregar essa lista antes de montar a tabela de movimentações, então os links "Aluno" já mostram o nome certo, não um rótulo genérico.
+
 ## 1.6.0-rc2.7.35 — 11/08/2026
 
 Base: **RC2.7.34**.

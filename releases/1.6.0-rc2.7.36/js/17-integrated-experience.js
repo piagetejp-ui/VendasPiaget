@@ -2,7 +2,7 @@
    Experiência integrada: navegação contextual, notificações e gestão auditável do caixa. */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.35';
+const VERSION='1.6.0-rc2.7.36';
 const SESSIONS='sessoes_caixa',PERIODS='periodos_responsabilidade_caixa',MOVES='movimentos_caixa',DIVERGENCES='divergencias_caixa';
 const baseRenderCashManagement=window.renderCashManagementV164;
 const baseRenderCaixa=window.renderCaixa;
@@ -48,6 +48,7 @@ function v165DedupeDocs(rows){const map=new Map();for(const d of rows||[])map.se
 async function v165RangeDocs(collection,field,start,end){return v165PagedQuery(db.collection(collection).where(field,'>=',start).where(field,'<',end).orderBy(field,'asc'),160)}
 async function v165RelationDocs(collection,sessionId){const specs=collection===PERIODS?['sessaoCaixaId']:['sessaoCaixaId','caixaId'],all=[];for(const field of specs){const docs=await v165PagedQuery(db.collection(collection).where(field,'==',sessionId),160);all.push(...docs)}return v165DedupeDocs(all)}
 async function v165CashData(options={}){
+  await (window.ensureStudentsLoadedV218?.()||Promise.resolve());
   const nowDate=new Date(),level=options.level||state.cashManagerLevelV165||'mes',month=options.month||state.cashManagerMonthV165||`${nowDate.getFullYear()}-${String(nowDate.getMonth()+1).padStart(2,'0')}`,year=options.year||state.cashManagerYearV165||month.slice(0,4),day=options.day||state.cashManagerDayV165||dateKey();
   let sessionDocs=[];
   if(options.sessionId){const one=await db.collection(SESSIONS).doc(String(options.sessionId)).get();if(one.exists)sessionDocs=[one]}

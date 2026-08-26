@@ -1,7 +1,7 @@
 
-/* Escola Piaget — V1.6.0-rc2.7.35
+/* Escola Piaget — V1.6.0-rc2.7.36
    Inicialização única. Nenhuma função histórica é redirecionada após o login. */
-const APP_VERSION_CLEAN='1.6.0-rc2.7.35';
+const APP_VERSION_CLEAN='1.6.0-rc2.7.36';
 let appBootedClean=false;
 
 

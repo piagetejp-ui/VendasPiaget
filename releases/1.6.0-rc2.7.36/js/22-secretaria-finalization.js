@@ -1,4 +1,4 @@
-/* Escola Piaget — 1.6.0-rc2.7.35
+/* Escola Piaget — 1.6.0-rc2.7.36
    Fechamento da etapa Secretaria:
    - login interno centralizado;
    - referência de aluno padronizada;
@@ -9,7 +9,7 @@
 */
 (()=>{
 'use strict';
-const VERSION='1.6.0-rc2.7.35';
+const VERSION='1.6.0-rc2.7.36';
 async function familyPagedDocsV221(query,pageSize=100){const out=[];let cursor=null;while(true){let q=query.limit(pageSize);if(cursor)q=q.startAfter(cursor);const snap=await q.get();out.push(...snap.docs);if(snap.size<pageSize)break;cursor=snap.docs[snap.docs.length-1]}return out}
 const FIELD=firebase.firestore.FieldValue;
 const FINAL_ORDER=new Set(['entregue','concluido','cancelado','concluido_com_devolucao','utilizado','nao_entregue','aluno_ausente']);

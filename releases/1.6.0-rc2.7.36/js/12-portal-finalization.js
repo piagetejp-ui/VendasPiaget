@@ -1,5 +1,5 @@
 /* Escola Piaget — RC1.2: checkout, comprador, programação e diálogos operacionais */
-const V157_VERSION='1.6.0-rc2.7.35';
+const V157_VERSION='1.6.0-rc2.7.36';
 const V157_DIALOG_KEEP=Symbol('dialog_keep');
 const V157_FINAL_DELIVERY=new Set(['entregue','aluno_ausente','ausente','nao_entregue','cancelado','cancelado_responsavel','remarcado','encerrado']);
 let v157DialogResolve=null;
