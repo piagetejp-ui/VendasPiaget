@@ -1,5 +1,5 @@
 
-const V151_VERSION='1.6.0-rc2.7.38';
+const V151_VERSION='1.6.0-rc2.7.39';
 const FINAL_DELIVERY_V151=['entregue','aluno_ausente','ausente','nao_entregue','cancelado','cancelado_responsavel','remarcado','encerrado'];
 state.v151ProductTab=state.v151ProductTab||'cantina';
 state.v151Sale=state.v151Sale||null;

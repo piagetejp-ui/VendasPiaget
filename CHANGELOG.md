@@ -1,5 +1,13 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.39 — 11/08/2026
+
+Base: **RC2.7.38**.
+
+### Hotfix urgente: "Caixa da Secretaria" não abria (`safeJs is not defined`)
+- Regressão introduzida na RC2.7.38: o botão "Cancelar" adicionado à lista de movimentos usava uma função (`safeJs`) que existe em outros arquivos do sistema, mas não nesse — cada arquivo só enxerga suas próprias funções internas, então a tela inteira quebrava ao tentar montar a lista de movimentos.
+- Corrigido usando o mesmo padrão que o próprio arquivo já usa em outros botões (inserir o ID do Firestore direto, sem função de escape — são IDs gerados pelo sistema, sempre seguros).
+
 ## 1.6.0-rc2.7.38 — 11/08/2026
 
 Base: **RC2.7.37**.

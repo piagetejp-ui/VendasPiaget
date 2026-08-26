@@ -1,6 +1,6 @@
 /* Escola Piaget — Visões operacionais RC2.2 */
 (function(){
-const VERSION='1.6.0-rc2.7.38';
+const VERSION='1.6.0-rc2.7.39';
 const STAFF_PROFILES=new Set(['admin','gestao','secretaria']);
 function n(v){const x=Number(v||0);return Number.isFinite(x)?Math.round(x):0}
 function arr(v){return Array.isArray(v)?v:[]}

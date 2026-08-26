@@ -1,11 +1,10 @@
 {
-  "version": "1.6.0-rc2.7.38",
+  "version": "1.6.0-rc2.7.39",
   "date": "2026-08-11",
-  "base": "1.6.0-rc2.7.37",
+  "base": "1.6.0-rc2.7.38",
   "status": "local_static_validation_passed",
   "scope": [
-    "fix_cash_movement_double_submit",
-    "add_cancel_cash_movement_before_closing"
+    "fix_caixa_secretaria_broken_by_undefined_safeJs"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -16,7 +15,6 @@
   },
   "not_run": [
     "vercel_deploy",
-    "real_browser_double_click_sangria",
-    "real_browser_cancel_cash_movement"
+    "real_browser_caixa_secretaria_loads"
   ]
 }
