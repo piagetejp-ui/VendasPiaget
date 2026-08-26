@@ -1,5 +1,14 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.40 — 11/08/2026
+
+Base: **RC2.7.39**.
+
+### Hotfix: cancelar movimento não refletia direito no saldo nem na tela de gestão
+- Causa raiz: `cashEffectV164` (tela da secretaria) e `v165CashEffect` (Auditoria do caixa, usada pela gestão) **recalculam** o efeito de cada movimento a partir do tipo/valor toda vez que a tela é montada — nenhuma delas sabia que um movimento podia estar marcado como cancelado. Resultado: mesmo com o campo de saldo já ajustado na hora do cancelamento (RC2.7.38), qualquer nova consulta — inclusive a própria tela da secretaria depois de atualizar — recontava o movimento cancelado como se estivesse ativo, e a tela de gestão nunca teve nenhuma noção de cancelamento.
+- As duas funções agora retornam efeito zero para um movimento cancelado, então o saldo esperado, entradas, saídas, sangrias e despesas ficam corretos em qualquer tela que consultar os movimentos, de forma consistente.
+- A tabela de auditoria da gestão agora também mostra visualmente quando um movimento foi cancelado (selo "Cancelado", valor original riscado, e quem/quando cancelou) — antes ela não distinguia em nada um movimento cancelado de um ativo.
+
 ## 1.6.0-rc2.7.39 — 11/08/2026
 
 Base: **RC2.7.38**.

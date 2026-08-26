@@ -3,7 +3,7 @@
    Objetivo operacional: impedir varreduras completas repetitivas durante a rotina. */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.39';
+const VERSION='1.6.0-rc2.7.40';
 const STUDENT_CACHE_KEY='vp_staff_students_v218';
 const STUDENT_TTL=10*60*1000;
 const CORE_CACHE_KEY='vp_staff_core_v218';

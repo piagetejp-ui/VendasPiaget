@@ -2,7 +2,7 @@
    Caixa único da Secretaria, responsabilidade por operador e hierarquia gerencial. */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.39';
+const VERSION='1.6.0-rc2.7.40';
 const SESSIONS='sessoes_caixa';
 const PERIODS='periodos_responsabilidade_caixa';
 const DIVERGENCES='divergencias_caixa';
@@ -28,6 +28,7 @@ function monthKeyV164(value=new Date()){
   const d=value instanceof Date?value:new Date(value);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
 }
 function cashEffectV164(m){
+  if(m?.cancelado)return 0;
   const v=Number(m?.valorCentavos||0),t=String(m?.tipo||'');
   if(['venda','estorno_venda','transferencia_entrada','transferencia_entrada_cantina','ajuste_entrada','entrada_manual','suprimento_caixa'].includes(t))return v;
   if(['transferencia_saida','transferencia_saida_secretaria','suprimento_cantina','sangria','despesa','retirada','ajuste_saida','reembolso_dinheiro','reembolso_venda'].includes(t))return-v;

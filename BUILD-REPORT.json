@@ -1,10 +1,11 @@
 {
-  "version": "1.6.0-rc2.7.39",
+  "version": "1.6.0-rc2.7.40",
   "date": "2026-08-11",
-  "base": "1.6.0-rc2.7.38",
+  "base": "1.6.0-rc2.7.39",
   "status": "local_static_validation_passed",
   "scope": [
-    "fix_caixa_secretaria_broken_by_undefined_safeJs"
+    "fix_cancelled_cash_movements_still_counted_in_balances",
+    "show_cancelled_status_in_gestao_cash_audit_view"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -15,6 +16,6 @@
   },
   "not_run": [
     "vercel_deploy",
-    "real_browser_caixa_secretaria_loads"
+    "real_browser_cancel_then_check_secretaria_and_gestao_balances"
   ]
 }
