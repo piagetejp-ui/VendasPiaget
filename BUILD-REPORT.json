@@ -1,11 +1,10 @@
 {
-  "version": "1.6.0-rc2.7.40",
+  "version": "1.6.0-rc2.7.41",
   "date": "2026-08-11",
-  "base": "1.6.0-rc2.7.39",
+  "base": "1.6.0-rc2.7.40",
   "status": "local_static_validation_passed",
   "scope": [
-    "fix_cancelled_cash_movements_still_counted_in_balances",
-    "show_cancelled_status_in_gestao_cash_audit_view"
+    "fix_snack_order_crash_null_student_and_double_submit"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -16,6 +15,6 @@
   },
   "not_run": [
     "vercel_deploy",
-    "real_browser_cancel_then_check_secretaria_and_gestao_balances"
+    "real_browser_add_snack_order_to_cart"
   ]
 }

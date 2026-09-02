@@ -1,5 +1,14 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.41 — 11/08/2026
+
+Base: **RC2.7.40**.
+
+### Hotfix: erro `Cannot read properties of null (reading 'id')` ao fechar pedido de lanche
+- Causa: no fluxo de programar lanche para mais de um aluno numa mesma venda (`captureSaleSnackV172`/`captureParentSnackV172`), o aluno de destino não era encontrado e a função tentava montar o item do carrinho mesmo assim, quebrando ao ler `student.id` de um valor nulo.
+- Corrigido com uma validação explícita, que agora mostra uma mensagem clara ("Não foi possível identificar o aluno desta programação...") em vez do erro técnico cru.
+- Também reforçada a proteção contra duplo clique no botão "Adicionar ao carrinho"/"Revisar pedido" desse fluxo — não tinha nenhuma trava nas três camadas de função que esse botão atravessa, mesma categoria do bug já corrigido no caixa (RC2.7.38).
+
 ## 1.6.0-rc2.7.40 — 11/08/2026
 
 Base: **RC2.7.39**.

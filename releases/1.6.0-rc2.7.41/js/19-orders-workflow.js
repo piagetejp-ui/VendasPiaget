@@ -1,6 +1,6 @@
 /* Escola Piaget · RC2.6 · Pedidos unificados, navegação operacional e refinamentos de produção */
 (()=>{
-const VERSION='1.6.0-rc2.7.40';
+const VERSION='1.6.0-rc2.7.41';
 const ORDER_CATEGORIES=[
   ['todos','Todos'],['cantina','Cantina'],['fardamento','Fardamento'],['eventos','Eventos'],['servicos','Serviços e cobranças'],['mensalidades','Mensalidades'],['negociacoes','Negociações']
 ];
