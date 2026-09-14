@@ -1,5 +1,22 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.42 — 14/09/2026
+
+Base: **RC2.7.41**.
+
+### Correção: venda em dinheiro duplicada no caixa sem duplicar no aluno
+
+- **Causa raiz identificada**: em uma venda paga **100% em dinheiro** (sem usar saldo do aluno e sem gerar dívida), o saldo do aluno antes e depois da operação é matematicamente igual (o pagamento em dinheiro cobre exatamente o valor da compra). A trava de segurança existente no backend (`registerInPersonOperation`) só bloqueia uma segunda tentativa comparando o saldo do aluno antes/depois — e como esse saldo não muda nesse tipo de venda, uma segunda tentativa (duplo clique, nova tentativa após timeout de rede, ou reabertura do rascunho de venda salvo) passava pela trava sem ser barrada. O caixa em dinheiro (`movimentos_caixa`/`saldoEsperadoAtualCentavos`) é incrementado a cada chamada, então duplicava; a conta do aluno não mostrava duplicidade porque, mesmo duplicada, cada lançamento individual tinha efeito líquido zero no saldo dele.
+- **Correção**: `registerInPersonOperation` agora aceita uma chave de idempotência (`operationId`) opcional enviada pelo front-end. Antes de aplicar qualquer efeito financeiro, a transação verifica se aquela operação já foi registrada; se já foi, a chamada é tratada como duplicata e nenhum novo lançamento é criado (nem venda, nem movimento de caixa, nem auditoria/notificação repetida).
+- A tela **Vendas da secretaria** (venda presencial/online) agora gera um `operationId` estável por venda, inclusive quando o rascunho salvo automaticamente é retomado após um problema de conexão — evitando duplicar a mesma venda mesmo em reenvios manuais.
+- O botão **Confirmar recebimento** de "Registrar pagamento presencial" (Caixa → conta do aluno) não tinha proteção contra duplo clique; agora desabilita durante o envio, como já acontece nas demais telas de operação financeira, e também usa a nova chave de idempotência.
+- **Como corrigir uma venda que já foi duplicada antes desta correção**: abra a venda duplicada em **Vendas** → clique na venda → **Cancelar / Estornar** → **Pagamento não foi recebido / venda lançada por engano** → motivo **"Registro duplicado"**. Esse fluxo já existia no sistema e desfaz corretamente o efeito no caixa em dinheiro daquela venda específica, preservando a venda original.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.41.
+- Nenhuma mudança de comportamento para quem não envia `operationId` (compatibilidade retroativa total).
+
 ## 1.6.0-rc2.7.41 — 11/08/2026
 
 Base: **RC2.7.40**.

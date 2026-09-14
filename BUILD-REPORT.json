@@ -1,20 +1,23 @@
 {
-  "version": "1.6.0-rc2.7.41",
-  "date": "2026-08-11",
-  "base": "1.6.0-rc2.7.40",
-  "status": "local_static_validation_passed",
+  "version": "1.6.0-rc2.7.42",
+  "date": "2026-09-14",
+  "base": "1.6.0-rc2.7.41",
+  "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "fix_snack_order_crash_null_student_and_double_submit"
+    "prevent_duplicate_in_person_cash_sales_via_server_side_idempotency_key",
+    "harden_manual_presencial_payment_button_against_double_submit",
+    "root_cause_fix_for_cash_ledger_doubling_without_student_balance_change_on_fully_paid_cash_sales"
   ],
   "checks": {
-    "javascript_files_checked": 55,
+    "javascript_files_checked": 54,
     "javascript_syntax_errors": 0,
     "physical_api_functions": 10,
-    "firestore_rules_changed": false,
-    "firestore_rules_sha256": "a38abddf0e715f771cea18b8fdf4f1af94d6d4e4d82686480b66c7232c14f11b"
+    "firestore_rules_changed": false
   },
   "not_run": [
     "vercel_deploy",
-    "real_browser_add_snack_order_to_cart"
+    "production_firestore_transaction",
+    "real_cantina_sale",
+    "browser_visual_smoke"
   ]
 }
