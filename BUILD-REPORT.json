@@ -1,12 +1,10 @@
 {
-  "version": "1.6.0-rc2.7.42",
-  "date": "2026-09-14",
-  "base": "1.6.0-rc2.7.41",
+  "version": "1.6.0-rc2.7.43",
+  "date": "2026-09-17",
+  "base": "1.6.0-rc2.7.42",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "prevent_duplicate_in_person_cash_sales_via_server_side_idempotency_key",
-    "harden_manual_presencial_payment_button_against_double_submit",
-    "root_cause_fix_for_cash_ledger_doubling_without_student_balance_change_on_fully_paid_cash_sales"
+    "fix_unblock_account_button_ignoring_weekly_closure_and_limit_block_reasons_on_the_live_student_family_profile"
   ],
   "checks": {
     "javascript_files_checked": 54,
@@ -16,8 +14,6 @@
   },
   "not_run": [
     "vercel_deploy",
-    "production_firestore_transaction",
-    "real_cantina_sale",
     "browser_visual_smoke"
   ]
 }

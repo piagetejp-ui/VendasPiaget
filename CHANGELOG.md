@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.43 — 17/09/2026
+
+Base: **RC2.7.42**.
+
+### Correção: botão de desbloqueio não aparecia para conta bloqueada pelo fechamento semanal
+
+- **Causa raiz**: a tela que abre hoje ao clicar em um aluno (perfil / "Conta familiar") tem um botão único de bloquear/desbloquear conta. Ele só verificava a flag de bloqueio **manual** (`bloqueioManual`) para decidir o texto do botão e a ação — ignorando os outros dois motivos de bloqueio existentes no sistema: bloqueio automático do **fechamento semanal** (`bloqueioSaldoSemanal`) e bloqueio por **limite** (`bloqueadoPorLimite`). Resultado: uma conta bloqueada pelo fechamento semanal mostrava o selo "Conta bloqueada" no topo da tela, mas o botão logo abaixo continuava dizendo "Bloquear conta" (como se estivesse liberada) — sem nenhuma forma de desbloquear por ali.
+- O botão agora usa a mesma verificação já usada no selo (`familyAccountBlockedV174`, que considera os três motivos de bloqueio). Com isso, sempre que a conta estiver bloqueada por qualquer motivo, o botão mostra **"Desbloquear conta"** e, ao clicar, remove os três bloqueios de uma vez (reaproveitando a função `toggleManualBlock` já existente desde a RC2.7.33).
+- Essa é a tela alcançada tanto ao clicar diretamente no aluno quanto pelo botão "Ver conta" em **Cobranças**, então a correção cobre os dois caminhos.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.42.
+
 ## 1.6.0-rc2.7.42 — 14/09/2026
 
 Base: **RC2.7.41**.
