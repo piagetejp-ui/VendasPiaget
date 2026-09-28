@@ -1,5 +1,55 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.44 — 28/09/2026
+
+Base: **RC2.7.43**.
+
+### Correção: não era possível estornar uma cobrança indevida da Cantina
+
+- **Causa raiz**: o fluxo "Cancelar / Estornar" de uma venda (usado para corrigir vendas lançadas por engano ou duplicadas) só reconhecia vendas de origem `secretaria`/`secretaria_presencial`. Uma cobrança feita pela Cantina em "Lançar na conta do aluno" (ex.: um lanche cobrado por engano quando o aluno já tinha uma programação de lanche pagando o mesmo consumo) fica registrada com origem `cantina` e era **rejeitada** por esse fluxo com o erro "Esta venda não foi registrada como venda presencial da Secretaria...". Não havia nenhuma outra forma de reverter esse tipo de lançamento no sistema.
+- O botão de confirmação também exigia declarar "nenhum item foi entregue", o que não fazia sentido para um consumo de cantina genuinamente entregue (o aluno comeu o lanche) — o problema nunca foi a entrega, foi a cobrança duplicada.
+- **Correção**:
+  - O cancelamento/estorno agora também aceita vendas de origem `cantina`, revertendo corretamente o débito na conta do aluno (e o estoque de salgado, se aplicável), sem mexer no caixa (esse tipo de consumo nunca movimenta caixa).
+  - Para consumo de Cantina, a confirmação exigida passou a ser "Cobrança indevida ou duplicada" — mais honesta com o que realmente aconteceu — em vez de "nenhum item foi entregue".
+  - O modo de reembolso (para dinheiro/Pix/cartão devolvido ao pagador) foi bloqueado para consumo de Cantina, já que esse tipo de venda é sempre pago com saldo da conta, nunca com pagamento externo.
+  - A tela de **detalhe de uma movimentação** (extrato do aluno) agora mostra diretamente o botão **"Cancelar / Estornar"** quando a movimentação está ligada a uma venda cancelável — antes só existia esse botão na lista de Vendas, obrigando a Gestão/Secretaria a localizar a venda separadamente por ID.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.43.
+- Nenhuma mudança de comportamento para o fluxo já existente de vendas da Secretaria.
+
+## 1.6.0-rc2.7.43 — 17/09/2026
+
+Base: **RC2.7.42**.
+
+### Correção: botão de desbloqueio não aparecia para conta bloqueada pelo fechamento semanal
+
+- **Causa raiz**: a tela que abre hoje ao clicar em um aluno (perfil / "Conta familiar") tem um botão único de bloquear/desbloquear conta. Ele só verificava a flag de bloqueio **manual** (`bloqueioManual`) para decidir o texto do botão e a ação — ignorando os outros dois motivos de bloqueio existentes no sistema: bloqueio automático do **fechamento semanal** (`bloqueioSaldoSemanal`) e bloqueio por **limite** (`bloqueadoPorLimite`). Resultado: uma conta bloqueada pelo fechamento semanal mostrava o selo "Conta bloqueada" no topo da tela, mas o botão logo abaixo continuava dizendo "Bloquear conta" (como se estivesse liberada) — sem nenhuma forma de desbloquear por ali.
+- O botão agora usa a mesma verificação já usada no selo (`familyAccountBlockedV174`, que considera os três motivos de bloqueio). Com isso, sempre que a conta estiver bloqueada por qualquer motivo, o botão mostra **"Desbloquear conta"** e, ao clicar, remove os três bloqueios de uma vez (reaproveitando a função `toggleManualBlock` já existente desde a RC2.7.33).
+- Essa é a tela alcançada tanto ao clicar diretamente no aluno quanto pelo botão "Ver conta" em **Cobranças**, então a correção cobre os dois caminhos.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.42.
+
+## 1.6.0-rc2.7.42 — 14/09/2026
+
+Base: **RC2.7.41**.
+
+### Correção: venda em dinheiro duplicada no caixa sem duplicar no aluno
+
+- **Causa raiz identificada**: em uma venda paga **100% em dinheiro** (sem usar saldo do aluno e sem gerar dívida), o saldo do aluno antes e depois da operação é matematicamente igual (o pagamento em dinheiro cobre exatamente o valor da compra). A trava de segurança existente no backend (`registerInPersonOperation`) só bloqueia uma segunda tentativa comparando o saldo do aluno antes/depois — e como esse saldo não muda nesse tipo de venda, uma segunda tentativa (duplo clique, nova tentativa após timeout de rede, ou reabertura do rascunho de venda salvo) passava pela trava sem ser barrada. O caixa em dinheiro (`movimentos_caixa`/`saldoEsperadoAtualCentavos`) é incrementado a cada chamada, então duplicava; a conta do aluno não mostrava duplicidade porque, mesmo duplicada, cada lançamento individual tinha efeito líquido zero no saldo dele.
+- **Correção**: `registerInPersonOperation` agora aceita uma chave de idempotência (`operationId`) opcional enviada pelo front-end. Antes de aplicar qualquer efeito financeiro, a transação verifica se aquela operação já foi registrada; se já foi, a chamada é tratada como duplicata e nenhum novo lançamento é criado (nem venda, nem movimento de caixa, nem auditoria/notificação repetida).
+- A tela **Vendas da secretaria** (venda presencial/online) agora gera um `operationId` estável por venda, inclusive quando o rascunho salvo automaticamente é retomado após um problema de conexão — evitando duplicar a mesma venda mesmo em reenvios manuais.
+- O botão **Confirmar recebimento** de "Registrar pagamento presencial" (Caixa → conta do aluno) não tinha proteção contra duplo clique; agora desabilita durante o envio, como já acontece nas demais telas de operação financeira, e também usa a nova chave de idempotência.
+- **Como corrigir uma venda que já foi duplicada antes desta correção**: abra a venda duplicada em **Vendas** → clique na venda → **Cancelar / Estornar** → **Pagamento não foi recebido / venda lançada por engano** → motivo **"Registro duplicado"**. Esse fluxo já existia no sistema e desfaz corretamente o efeito no caixa em dinheiro daquela venda específica, preservando a venda original.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.41.
+- Nenhuma mudança de comportamento para quem não envia `operationId` (compatibilidade retroativa total).
+
 ## 1.6.0-rc2.7.41 — 11/08/2026
 
 Base: **RC2.7.40**.
