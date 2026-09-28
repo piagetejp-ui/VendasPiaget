@@ -1,5 +1,24 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.44 — 28/09/2026
+
+Base: **RC2.7.43**.
+
+### Correção: não era possível estornar uma cobrança indevida da Cantina
+
+- **Causa raiz**: o fluxo "Cancelar / Estornar" de uma venda (usado para corrigir vendas lançadas por engano ou duplicadas) só reconhecia vendas de origem `secretaria`/`secretaria_presencial`. Uma cobrança feita pela Cantina em "Lançar na conta do aluno" (ex.: um lanche cobrado por engano quando o aluno já tinha uma programação de lanche pagando o mesmo consumo) fica registrada com origem `cantina` e era **rejeitada** por esse fluxo com o erro "Esta venda não foi registrada como venda presencial da Secretaria...". Não havia nenhuma outra forma de reverter esse tipo de lançamento no sistema.
+- O botão de confirmação também exigia declarar "nenhum item foi entregue", o que não fazia sentido para um consumo de cantina genuinamente entregue (o aluno comeu o lanche) — o problema nunca foi a entrega, foi a cobrança duplicada.
+- **Correção**:
+  - O cancelamento/estorno agora também aceita vendas de origem `cantina`, revertendo corretamente o débito na conta do aluno (e o estoque de salgado, se aplicável), sem mexer no caixa (esse tipo de consumo nunca movimenta caixa).
+  - Para consumo de Cantina, a confirmação exigida passou a ser "Cobrança indevida ou duplicada" — mais honesta com o que realmente aconteceu — em vez de "nenhum item foi entregue".
+  - O modo de reembolso (para dinheiro/Pix/cartão devolvido ao pagador) foi bloqueado para consumo de Cantina, já que esse tipo de venda é sempre pago com saldo da conta, nunca com pagamento externo.
+  - A tela de **detalhe de uma movimentação** (extrato do aluno) agora mostra diretamente o botão **"Cancelar / Estornar"** quando a movimentação está ligada a uma venda cancelável — antes só existia esse botão na lista de Vendas, obrigando a Gestão/Secretaria a localizar a venda separadamente por ID.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.43.
+- Nenhuma mudança de comportamento para o fluxo já existente de vendas da Secretaria.
+
 ## 1.6.0-rc2.7.43 — 17/09/2026
 
 Base: **RC2.7.42**.
