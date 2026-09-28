@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.45 — 28/09/2026
+
+Base: **RC2.7.44**.
+
+### Correção: botão "Cancelar / Estornar" não aparecia para consumo de Cantina
+
+- **Causa raiz**: o consumo lançado em "Lançar na conta do aluno" (Cantina) grava dois documentos — o movimento financeiro (`movimentos_conta`, o que aparece na aba Movimentações) e a venda (`vendas`, usada pelo fluxo de cancelamento). O movimento financeiro **nunca gravava o ID da venda vinculada** (`vendaId`). A tela de detalhe da movimentação usa esse campo para carregar a venda e decidir se mostra o botão "Cancelar / Estornar" — como o campo sempre vinha vazio, o botão adicionado na RC2.7.44 nunca aparecia para esse tipo de consumo, mesmo depois da correção anterior liberar o cancelamento no backend.
+- **Correção**:
+  - O consumo de Cantina agora grava `vendaId` corretamente no movimento financeiro, então novos lançamentos já saem prontos para cancelamento direto pela tela de Movimentações.
+  - Para lançamentos **antigos** (já registrados antes desta correção, como o consumo indevido do dia 23/09), a tela de detalhe agora busca a venda correspondente automaticamente por aluno + data + valor quando o vínculo direto não existe, então o botão "Cancelar / Estornar" passa a aparecer também para eles.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.44.
+
 ## 1.6.0-rc2.7.44 — 28/09/2026
 
 Base: **RC2.7.43**.
