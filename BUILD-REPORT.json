@@ -1,12 +1,11 @@
 {
-  "version": "1.6.0-rc2.7.44",
+  "version": "1.6.0-rc2.7.45",
   "date": "2026-09-28",
-  "base": "1.6.0-rc2.7.43",
+  "base": "1.6.0-rc2.7.44",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "allow_cancelling_reversing_erroneous_or_duplicate_cantina_point_of_sale_consumption_charges",
-    "add_direct_cancelar_estornar_action_from_the_student_account_extract_movement_detail",
-    "block_refund_mode_for_cantina_consumption_sales_since_there_is_no_external_payment_to_refund"
+    "fix_cantina_consumption_movement_missing_vendaId_link_preventing_cancel_button_from_appearing",
+    "add_legacy_fallback_lookup_to_find_the_matching_sale_for_orphaned_pre_fix_cantina_movements"
   ],
   "checks": {
     "javascript_files_checked": 54,
