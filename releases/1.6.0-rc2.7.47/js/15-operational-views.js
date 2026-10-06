@@ -1,6 +1,6 @@
 /* Escola Piaget — Visões operacionais RC2.2 */
 (function(){
-const VERSION='1.6.0-rc2.7.46';
+const VERSION='1.6.0-rc2.7.47';
 const STAFF_PROFILES=new Set(['admin','gestao','secretaria']);
 function n(v){const x=Number(v||0);return Number.isFinite(x)?Math.round(x):0}
 function arr(v){return Array.isArray(v)?v:[]}
@@ -127,10 +127,9 @@ async function renderCobrancasV162(filter,opts={}){
 window.loadMoreBillingV221=async function(){return renderCobrancasV162(state.v162BillingFilter||'hoje',{more:true})};
 
 function dateKeyOffsetV230(days){const d=new Date();d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
-function categoryLabelV230(k){return({lanche:'Lanche / Cantina',farda:'Farda',mensalidade:'Mensalidade',passeio:'Passeio / Evento',negociacao:'Negociação',outros:'Outros'})[k]||k}
 window.openCategoryReportV230=function(){
   state.v230CategoryReport=null;
-  openModal('Relatório por categoria',`<div class="muted" style="margin-bottom:10px">Consolida as vendas já confirmadas do sistema por categoria (lanche, farda, mensalidade, passeio/evento), para conferência com extratos externos (ex.: InfinitePay).</div><div class="form-row"><div class="fg"><label>De</label><input type="date" id="v230DataInicio" class="fi" value="${dateKeyOffsetV230(-30)}"></div><div class="fg"><label>Até</label><input type="date" id="v230DataFim" class="fi" value="${dateKey()}"></div></div><button class="btn btn-primary" style="width:100%" onclick="generateCategoryReportV230()">Gerar relatório</button><div id="v230ReportBody" style="margin-top:14px"></div>`);
+  openModal('Relatório por categoria',`<div class="muted" style="margin-bottom:10px">Consolida as vendas já confirmadas do sistema pelas categorias do seu catálogo (ex.: Lanche, Farda, Passeio, Gincana, Mensalidade), para conferência com extratos externos (ex.: InfinitePay).</div><div class="form-row"><div class="fg"><label>De</label><input type="date" id="v230DataInicio" class="fi" value="${dateKeyOffsetV230(-30)}"></div><div class="fg"><label>Até</label><input type="date" id="v230DataFim" class="fi" value="${dateKey()}"></div></div><button class="btn btn-primary" style="width:100%" onclick="generateCategoryReportV230()">Gerar relatório</button><div id="v230ReportBody" style="margin-top:14px"></div>`);
 };
 window.generateCategoryReportV230=async function(){
   const dataInicio=$('#v230DataInicio')?.value,dataFim=$('#v230DataFim')?.value,host=$('#v230ReportBody');
@@ -140,14 +139,14 @@ window.generateCategoryReportV230=async function(){
   try{
     const data=await staffPostV218('/api/resumo-operacional',{acao:'relatorio_categorias',dataInicio,dataFim});
     state.v230CategoryReport=data;
-    const order=['lanche','farda','mensalidade','passeio','negociacao','outros'],rows=order.map(k=>data.categorias[k]).filter(c=>c.quantidade>0);
+    const rows=Object.values(data.categorias||{}).filter(c=>c.quantidade>0).sort((a,b)=>b.valorCentavos-a.valorCentavos);
     host.innerHTML=`<div class="v162-balance-grid" style="margin-bottom:10px"><div><small>Total do período</small><strong>${fmt(data.totalCentavos)}</strong></div><div><small>Lançamentos</small><strong>${data.quantidadeVendas}</strong></div></div>${rows.length?`<div class="table-wrap"><table><thead><tr><th>Categoria</th><th>Itens</th><th style="text-align:right">Valor</th></tr></thead><tbody>${rows.map(c=>`<tr><td>${esc(c.label)}</td><td>${c.quantidade}</td><td class="money">${fmt(c.valorCentavos)}</td></tr>`).join('')}</tbody></table></div><button class="btn btn-light" style="width:100%;margin-top:10px" onclick="downloadCategoryReportCsvV230()">Baixar lista detalhada (CSV)</button>`:'<div class="empty">Nenhuma venda confirmada neste período.</div>'}`;
   }catch(e){host.innerHTML=`<div class="alert danger">${esc(e.message)}</div>`}
 };
 window.downloadCategoryReportCsvV230=function(){
   const data=state.v230CategoryReport;if(!data)return;
   const rows=[['Data','Aluno','Categoria','Item','Valor (R$)','Forma de pagamento','Canal','ID da venda']];
-  data.vendas.forEach(v=>{(v.itens||[]).forEach(it=>{rows.push([v.data||'',v.alunoNome||'',categoryLabelV230(it.categoria),it.nome||'',(it.valorCentavos/100).toFixed(2).replace('.',','),v.formaPagamento||'',v.canal||'',v.id])})});
+  data.vendas.forEach(v=>{(v.itens||[]).forEach(it=>{rows.push([v.data||'',v.alunoNome||'',it.categoria||'Outros',it.nome||'',(it.valorCentavos/100).toFixed(2).replace('.',','),v.formaPagamento||'',v.canal||'',v.id])})});
   const csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(';')).join('\n'),blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=`relatorio-categorias-${data.dataInicio}-a-${data.dataFim}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
 };
