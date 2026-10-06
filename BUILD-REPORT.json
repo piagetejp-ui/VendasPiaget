@@ -1,11 +1,11 @@
 {
-  "version": "1.6.0-rc2.7.46",
+  "version": "1.6.0-rc2.7.47",
   "date": "2026-10-06",
-  "base": "1.6.0-rc2.7.45",
+  "base": "1.6.0-rc2.7.46",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "add_sales_report_by_category_lanche_farda_mensalidade_passeio_evento_for_bookkeeping_reconciliation",
-    "add_csv_export_of_the_underlying_sale_line_items_for_manual_cross_check_against_external_statements"
+    "resolve_sale_line_categories_against_the_school_own_catalogo_categorias_tree_instead_of_a_fixed_6_bucket_taxonomy",
+    "surface_specific_event_subcategories_like_gincana_and_passeio_as_distinct_categories_in_the_bookkeeping_report"
   ],
   "checks": {
     "javascript_files_checked": 54,

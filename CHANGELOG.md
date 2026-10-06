@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.47 — 06/10/2026
+
+Base: **RC2.7.46**.
+
+### Melhoria: categorias do Relatório por categoria agora seguem o catálogo da escola
+
+- A RC2.7.46 agrupava tudo em 6 categorias fixas (Lanche, Farda, Mensalidade, **Passeio/Evento** — tudo junto —, Negociação, Outros). Isso misturava passeio, gincana e qualquer outro tipo de evento numa única linha.
+- O relatório agora resolve a categoria de cada item pela **árvore de categorias do próprio catálogo** (a mesma usada em Catálogo de vendas). Resultado: cada categoria específica que a escola já cadastrou — por exemplo, uma "Gincana" e um "Passeio" criados como categorias diferentes dentro de Eventos — aparece **separada** no relatório, com o nome exato que está cadastrado.
+- Produtos/Combos da Cantina continuam consolidados como **"Lanche / Cantina"** (nomes genéricos demais para servirem de categoria própria). Mensalidade, Negociação e Farda continuam com rótulos claros quando não há uma categoria mais específica cadastrada.
+- Se quiser separar algo que hoje aparece junto (ex.: criar uma categoria "Gincana" específica dentro de Eventos), é só cadastrar essa categoria em **Catálogo de vendas** e usá-la nos itens — o relatório reflete automaticamente, sem precisar de nova alteração no sistema.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.46.
+
 ## 1.6.0-rc2.7.46 — 06/10/2026
 
 Base: **RC2.7.45**.
