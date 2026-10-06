@@ -1,5 +1,21 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.46 — 06/10/2026
+
+Base: **RC2.7.45**.
+
+### Novidade: Relatório de vendas por categoria (escrituração/conferência externa)
+
+- Em **Cobranças e saldos**, novo botão **"Relatório por categoria"**.
+- Escolhendo um período (data inicial e final), o sistema consolida todas as vendas confirmadas (já excluindo canceladas) em: **Lanche / Cantina**, **Farda**, **Mensalidade**, **Passeio / Evento**, **Negociação** e **Outros** — com total de lançamentos e valor por categoria.
+- Vendas com carrinho misto (ex.: lanche + farda na mesma compra) são divididas item a item, não jogadas inteiras em uma única categoria.
+- Botão **"Baixar lista detalhada (CSV)"** exporta cada item de cada venda (data, aluno, categoria, valor, forma de pagamento, canal, ID da venda) — pensado para conferência linha a linha contra extratos externos (ex.: relatório de movimentações da InfinitePay) antes de lançar em outro sistema de contabilidade/escrituração.
+- Acesso restrito a Gestão, Secretaria e Admin.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada (ação nova dentro do handler já existente de `resumo-operacional`).
+- Firestore Rules byte a byte iguais à RC2.7.45.
+
 ## 1.6.0-rc2.7.45 — 28/09/2026
 
 Base: **RC2.7.44**.
