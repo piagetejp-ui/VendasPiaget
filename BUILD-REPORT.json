@@ -1,11 +1,11 @@
 {
-  "version": "1.6.0-rc2.7.45",
-  "date": "2026-09-28",
-  "base": "1.6.0-rc2.7.44",
+  "version": "1.6.0-rc2.7.46",
+  "date": "2026-10-06",
+  "base": "1.6.0-rc2.7.45",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "fix_cantina_consumption_movement_missing_vendaId_link_preventing_cancel_button_from_appearing",
-    "add_legacy_fallback_lookup_to_find_the_matching_sale_for_orphaned_pre_fix_cantina_movements"
+    "add_sales_report_by_category_lanche_farda_mensalidade_passeio_evento_for_bookkeeping_reconciliation",
+    "add_csv_export_of_the_underlying_sale_line_items_for_manual_cross_check_against_external_statements"
   ],
   "checks": {
     "javascript_files_checked": 54,
@@ -15,6 +15,7 @@
   },
   "not_run": [
     "vercel_deploy",
-    "browser_visual_smoke"
+    "browser_visual_smoke",
+    "live_report_against_production_sales_data"
   ]
 }
