@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.51 — 09/10/2026
+
+Base: **RC2.7.50**.
+
+### Melhoria: o Relatório por categoria agora mostra o que compõe cada "Regularização de saldo"
+
+- **Pedido**: uma "Regularização de saldo" pode ter origens bem diferentes — uma mensalidade atrasada, um consumo na cantina, um passeio não pago — e o relatório só mostrava o valor regularizado numa categoria genérica, sem dizer o que, de fato, estava sendo quitado.
+- A conta do aluno é um saldo corrente único (não existe uma "fatura" por compra), então o sistema não tinha, em lugar nenhum, a informação de "o que gerou esse saldo negativo". A partir de agora, toda vez que uma regularização aparece no relatório (seja feita na secretaria, seja embutida automaticamente numa venda online — RC2.7.50), o sistema reconstrói a origem andando pelo extrato do aluno: soma as compras e consumos mais recentes (mensalidade, cantina, passeio, farda, etc.) até explicar o valor regularizado, parando exatamente no ponto em que a conta esteve zerada da última vez — para nunca misturar com um ciclo de dívida antigo já quitado.
+- Resultado: em vez de uma linha única "Regularização de saldo", o relatório agora mostra as categorias reais por trás dela (ex.: "Mensalidade R$ 30,00" + "Lanche / Cantina R$ 6,00"). Quando o histórico não é suficiente para explicar todo o valor (conta muito antiga, por exemplo), o restante aparece como "Regularização de saldo (origem não identificada no histórico)" — para o total nunca deixar de bater.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.50.
+
 ## 1.6.0-rc2.7.50 — 09/10/2026
 
 Base: **RC2.7.49**.

@@ -1,17 +1,17 @@
 {
-  "version": "1.6.0-rc2.7.50",
+  "version": "1.6.0-rc2.7.51",
   "date": "2026-10-09",
-  "base": "1.6.0-rc2.7.49",
+  "base": "1.6.0-rc2.7.50",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "reconstruct_and_show_debt_regularization_amounts_that_were_folded_into_an_online_secretariat_checkout_but_never_saved_as_a_sale_line_item",
-    "fix_online_checkout_payments_being_mislabeled_as_saldo_da_conta_in_the_category_report_when_no_explicit_pagamentos_array_was_stored"
+    "trace_what_originally_caused_a_negative_balance_mensalidade_cantina_passeio_etc_and_break_a_regularizacao_de_saldo_line_down_into_those_original_categories_in_the_category_report_instead_of_a_single_generic_bucket"
   ],
   "checks": {
     "javascript_files_checked": 55,
     "javascript_syntax_errors": 0,
     "physical_api_functions": 10,
-    "firestore_rules_changed": false
+    "firestore_rules_changed": false,
+    "standalone_mock_validation_of_debt_composition_walk_algorithm": "passed_2_scenarios_partial_payment_attribution_and_prior_cycle_boundary"
   },
   "not_run": [
     "vercel_deploy",

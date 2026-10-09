@@ -124,6 +124,41 @@ function paymentLabel(p={}){
   return base;
 }
 const MANUAL_MOVEMENT_LABELS={regularizacao_saldo_secretaria:'Regularização de saldo',credito_secretaria:'Crédito adicionado',pagamento_presencial:'Pagamento presencial'};
+const DEBT_MOVEMENT_TYPES=new Set(['compra','consumo']);
+// A conta do aluno é um saldo corrente (sem fatura por item), então "o que causou esse saldo negativo" não é
+// um campo salvo em lugar nenhum — precisa ser reconstruído andando para trás no extrato do aluno a partir do
+// momento da regularização, somando as compras/consumos até explicar o valor pago, e parando assim que a conta
+// esteve zerada ou positiva (fronteira do ciclo de dívida atual, para não misturar com um ciclo já quitado antes).
+async function debtCompositionItems(db,alunoId,cutoffIso,valorAlvoCentavos,categoryMap){
+  if(!alunoId||valorAlvoCentavos<=0)return [];
+  const snap=await db.collection('movimentos_conta').where('alunoId','==',alunoId).limit(400).get();
+  const moves=snap.docs.map(d=>({id:d.id,...d.data()}))
+    .filter(m=>String(m.criadoEm||'')<String(cutoffIso||''))
+    .sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')));
+  const out=[];let restante=valorAlvoCentavos;
+  for(const m of moves){
+    if(restante<=0)break;
+    if(m.tipo==='entrada_conta_aluno'&&n(m.saldoDepoisCentavos)>=0)break;
+    if(!DEBT_MOVEMENT_TYPES.has(String(m.tipo||'')))continue;
+    const itensM=Array.isArray(m.itens)?m.itens:[],valorM=Math.abs(n(m.valorCentavos));
+    if(valorM<=0)continue;
+    const usar=Math.min(valorM,restante),fator=usar/valorM;
+    if(itensM.length){
+      itensM.forEach(line=>{const val=Math.round(lineValueCentavos(line)*fator);if(val>0)out.push({data:m.dataChave||null,nome:line.nome||line.produto||'Item',categoria:lineCategoryName(line,categoryMap),valorCentavos:val})});
+    }else{
+      out.push({data:m.dataChave||null,nome:MANUAL_MOVEMENT_LABELS[m.subtipo]||m.subtipo||'Consumo',categoria:'Outros',valorCentavos:usar});
+    }
+    restante-=usar;
+  }
+  return out;
+}
+function resolveRegularizationPlaceholder(breakdown,placeholder,items,valorAlvoCentavos){
+  const idx=breakdown.indexOf(placeholder);if(idx===-1)return;
+  const explicado=items.reduce((s,x)=>s+n(x.valorCentavos),0),faltante=valorAlvoCentavos-explicado;
+  const resolved=items.slice();
+  if(faltante>0)resolved.push({nome:'Regularização de saldo (origem não identificada no histórico)',categoria:'Regularização de saldo',valorCentavos:faltante});
+  breakdown.splice(idx,1,...resolved);
+}
 function registerPayments(pagamentosOriginais,total,formasPagamento){
   const saldoAplicadoCentavos=Math.max(0,n(total)-pagamentosOriginais.reduce((s,p)=>s+n(p.valorAplicadoCentavos),0));
   const pagamentos=pagamentosOriginais.map(p=>({metodo:p.metodo||null,label:paymentLabel(p),valorCentavos:n(p.valorAplicadoCentavos)}));
@@ -141,8 +176,9 @@ async function relatorioCategorias(db,dataInicio,dataFim){
     pageAll(db.collection('movimentos_conta').where('dataChave','>=',dataInicio).where('dataChave','<=',dataFim).orderBy('dataChave','asc')),
     loadCatalogCategoryNameMap(db)
   ]);
-  const categorias={},formasPagamento={};
+  const formasPagamento={};
   const vendas=[];
+  const composicaoPendente=[];
   for(const d of docs){
     const v=d.data()||{};
     if(String(v.status||'').toLowerCase().includes('cancel'))continue;
@@ -159,9 +195,12 @@ async function relatorioCategorias(db,dataInicio,dataFim){
     // link de pagamento, a quitação de um saldo devedor anterior do aluno. Esse valor nunca vira um item em
     // "itens" (só o produto comprado aparece lá), então precisa ser reconstruído a partir dos totais salvos.
     const regularizacaoEmbutida=Math.max(0,n(v.valorRecebidoCentavos)-total+n(v.valorSaldoUtilizadoCentavos));
-    if(regularizacaoEmbutida>0)breakdown.push({nome:'Regularização de saldo (quitada junto com esta compra)',categoria:'Regularização de saldo',valorCentavos:regularizacaoEmbutida});
+    if(regularizacaoEmbutida>0){
+      const placeholder={nome:'Regularização de saldo (quitada junto com esta compra)',categoria:'Regularização de saldo',valorCentavos:regularizacaoEmbutida};
+      breakdown.push(placeholder);
+      composicaoPendente.push({breakdown,placeholder,alunoId:v.alunoId,cutoffIso:v.criadoEm||v.dataChave,valorAlvoCentavos:regularizacaoEmbutida});
+    }
     const totalComRegularizacao=total+regularizacaoEmbutida;
-    for(const b of breakdown){const cat=b.categoria||'Outros';if(!categorias[cat])categorias[cat]={quantidade:0,valorCentavos:0,label:cat};categorias[cat].quantidade+=1;categorias[cat].valorCentavos+=n(b.valorCentavos)}
     let pagamentosOriginais=Array.isArray(v.pagamentos)?v.pagamentos:[];
     if(!pagamentosOriginais.length&&v.origem==='secretaria_online'&&n(v.valorRecebidoCentavos)>0){
       pagamentosOriginais=[{metodo:'infinitepay',valorAplicadoCentavos:n(v.valorRecebidoCentavos)}];
@@ -175,13 +214,26 @@ async function relatorioCategorias(db,dataInicio,dataFim){
   if(missingAlunoIds.length){const students=await Promise.all(missingAlunoIds.map(id=>getStudent(db,id).catch(()=>null)));students.forEach((s,i)=>{if(s)alunoNomeMap.set(missingAlunoIds[i],s.nome)})}
   for(const m of manualMoves){
     const label=MANUAL_MOVEMENT_LABELS[m.subtipo],total=n(m.valorCentavos);
-    if(!categorias[label])categorias[label]={quantidade:0,valorCentavos:0,label};
-    categorias[label].quantidade+=1;categorias[label].valorCentavos+=total;
+    const breakdown=[{nome:label,categoria:label,valorCentavos:total}];
+    if(m.subtipo==='regularizacao_saldo_secretaria'){
+      const placeholder=breakdown[0];
+      composicaoPendente.push({breakdown,placeholder,alunoId:m.alunoId,cutoffIso:m.criadoEm||m.dataChave,valorAlvoCentavos:total});
+    }
     const pagamentos=registerPayments(Array.isArray(m.pagamentos)?m.pagamentos:[],total,formasPagamento);
-    vendas.push({id:m.id,data:m.dataChave||null,criadoEm:m.criadoEm||null,alunoNome:m.alunoNome||alunoNomeMap.get(m.alunoId)||null,valorCentavos:total,formaPagamento:m.formaPagamento||null,resumoPagamento:paymentSummary(pagamentos,m.formaPagamento),pagamentos,canal:'secretaria',itens:[{nome:label,categoria:label,valorCentavos:total}]});
+    vendas.push({id:m.id,data:m.dataChave||null,criadoEm:m.criadoEm||null,alunoNome:m.alunoNome||alunoNomeMap.get(m.alunoId)||null,valorCentavos:total,formaPagamento:m.formaPagamento||null,resumoPagamento:paymentSummary(pagamentos,m.formaPagamento),pagamentos,canal:'secretaria',itens:breakdown});
   }
+  let composicaoReads=0;
+  if(composicaoPendente.length){
+    await Promise.all(composicaoPendente.map(async req=>{
+      const items=await debtCompositionItems(db,req.alunoId,req.cutoffIso,req.valorAlvoCentavos,categoryMap);
+      composicaoReads+=1;
+      resolveRegularizationPlaceholder(req.breakdown,req.placeholder,items,req.valorAlvoCentavos);
+    }));
+  }
+  const categorias={};
+  for(const row of vendas){for(const b of row.itens){const cat=b.categoria||'Outros';if(!categorias[cat])categorias[cat]={quantidade:0,valorCentavos:0,label:cat};categorias[cat].quantidade+=1;categorias[cat].valorCentavos+=n(b.valorCentavos)}}
   const totalCentavos=Object.values(categorias).reduce((s,c)=>s+c.valorCentavos,0);
-  return {ok:true,dataInicio,dataFim,totalCentavos,quantidadeVendas:vendas.length,categorias,formasPagamento,vendas,_reads:docs.length+manualDocs.length+categoryMap.size+missingAlunoIds.length};
+  return {ok:true,dataInicio,dataFim,totalCentavos,quantidadeVendas:vendas.length,categorias,formasPagamento,vendas,_reads:docs.length+manualDocs.length+categoryMap.size+missingAlunoIds.length+composicaoReads};
 }
 function fmtCentavos(c){return `R$ ${(n(c)/100).toFixed(2).replace('.',',')}`}
 function prettifyFallback(s){return s?String(s).replaceAll('_',' '):null}
