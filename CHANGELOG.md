@@ -1,5 +1,18 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.49 — 09/10/2026
+
+Base: **RC2.7.48**.
+
+### Correção: regularização de saldo e crédito manual não apareciam no Relatório por categoria
+
+- **Causa raiz**: quando a secretaria registra uma "Regularização de saldo" ou um "Crédito adicionado" avulso (sem estar vinculado à compra de um item específico — ex.: a mãe quita uma dívida em aberto, sem comprar nada novo naquele lançamento), o sistema **não cria um documento de venda** para essa operação — só o lançamento financeiro na conta do aluno. Como o Relatório por categoria só lia a coleção de vendas, esses lançamentos simplesmente não apareciam — exatamente o caso relatado: a mãe pagou o passeio (apareceu) e regularizou o saldo da conta separadamente (não apareceu).
+- O relatório agora também lê esses lançamentos financeiros sem venda vinculada e os inclui como categorias próprias — **"Regularização de saldo"** e **"Crédito adicionado"** — com a forma de pagamento completa (incluindo mesclado).
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.48.
+
 ## 1.6.0-rc2.7.48 — 09/10/2026
 
 Base: **RC2.7.47**.

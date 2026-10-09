@@ -1,4 +1,4 @@
-const {admin,initFirebase,json,parseBody,nowIso}=require('./_utils');
+const {admin,initFirebase,json,parseBody,nowIso,getStudent}=require('./_utils');
 const {verifyStaff}=require('./_family-utils');
 
 const VERSION='1.6.0-rc2.7.24';
@@ -123,9 +123,24 @@ function paymentLabel(p={}){
   if(p.metodo==='cartao'&&p.adquirente)return `${base} · ${p.adquirente==='infinitepay'?'InfinitePay':p.adquirente==='rede_laranjinha'?'Rede/Laranjinha':p.adquirente}`;
   return base;
 }
+const MANUAL_MOVEMENT_LABELS={regularizacao_saldo_secretaria:'Regularização de saldo',credito_secretaria:'Crédito adicionado',pagamento_presencial:'Pagamento presencial'};
+function registerPayments(pagamentosOriginais,total,formasPagamento){
+  const saldoAplicadoCentavos=Math.max(0,n(total)-pagamentosOriginais.reduce((s,p)=>s+n(p.valorAplicadoCentavos),0));
+  const pagamentos=pagamentosOriginais.map(p=>({metodo:p.metodo||null,label:paymentLabel(p),valorCentavos:n(p.valorAplicadoCentavos)}));
+  if(saldoAplicadoCentavos>0)pagamentos.push({metodo:'saldo_conta',label:'Saldo da conta',valorCentavos:saldoAplicadoCentavos});
+  for(const p of pagamentos){const key=p.label;if(!formasPagamento[key])formasPagamento[key]={quantidade:0,valorCentavos:0,label:key};formasPagamento[key].quantidade+=1;formasPagamento[key].valorCentavos+=p.valorCentavos}
+  return pagamentos;
+}
+function paymentSummary(pagamentos,fallbackFormaPagamento){
+  return pagamentos.length>1?pagamentos.map(p=>`${p.label} ${fmtCentavos(p.valorCentavos)}`).join(' + '):(pagamentos[0]?.label||prettifyFallback(fallbackFormaPagamento)||'-');
+}
 async function relatorioCategorias(db,dataInicio,dataFim){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(dataInicio)||!/^\d{4}-\d{2}-\d{2}$/.test(dataFim)||dataInicio>dataFim)throw Object.assign(new Error('Informe um período válido (data inicial até data final, no formato AAAA-MM-DD).'),{status:400});
-  const [docs,categoryMap]=await Promise.all([pageAll(db.collection('vendas').where('dataChave','>=',dataInicio).where('dataChave','<=',dataFim).orderBy('dataChave','asc')),loadCatalogCategoryNameMap(db)]);
+  const [docs,manualDocs,categoryMap]=await Promise.all([
+    pageAll(db.collection('vendas').where('dataChave','>=',dataInicio).where('dataChave','<=',dataFim).orderBy('dataChave','asc')),
+    pageAll(db.collection('movimentos_conta').where('dataChave','>=',dataInicio).where('dataChave','<=',dataFim).orderBy('dataChave','asc')),
+    loadCatalogCategoryNameMap(db)
+  ]);
   const categorias={},formasPagamento={};
   const vendas=[];
   for(const d of docs){
@@ -141,15 +156,22 @@ async function relatorioCategorias(db,dataInicio,dataFim){
       breakdown=[{nome:v.operacao||'Operação',categoria:'Outros',valorCentavos:total}];
     }
     for(const b of breakdown){const cat=b.categoria||'Outros';if(!categorias[cat])categorias[cat]={quantidade:0,valorCentavos:0,label:cat};categorias[cat].quantidade+=1;categorias[cat].valorCentavos+=n(b.valorCentavos)}
-    const pagamentosOriginais=Array.isArray(v.pagamentos)?v.pagamentos:[],saldoAplicadoCentavos=Math.max(0,total-pagamentosOriginais.reduce((s,p)=>s+n(p.valorAplicadoCentavos),0));
-    const pagamentos=pagamentosOriginais.map(p=>({metodo:p.metodo||null,label:paymentLabel(p),valorCentavos:n(p.valorAplicadoCentavos)}));
-    if(saldoAplicadoCentavos>0)pagamentos.push({metodo:'saldo_conta',label:'Saldo da conta',valorCentavos:saldoAplicadoCentavos});
-    for(const p of pagamentos){const key=p.label;if(!formasPagamento[key])formasPagamento[key]={quantidade:0,valorCentavos:0,label:key};formasPagamento[key].quantidade+=1;formasPagamento[key].valorCentavos+=p.valorCentavos}
-    const resumoPagamento=pagamentos.length>1?pagamentos.map(p=>`${p.label} ${fmtCentavos(p.valorCentavos)}`).join(' + '):(pagamentos[0]?.label||prettifyFallback(v.formaPagamento)||'-');
-    vendas.push({id:d.id,data:v.dataChave||null,criadoEm:v.criadoEm||null,alunoNome:v.alunoNome||null,valorCentavos:total,formaPagamento:v.formaPagamento||null,resumoPagamento,pagamentos,canal:v.canal||v.origem||null,itens:breakdown});
+    const pagamentos=registerPayments(Array.isArray(v.pagamentos)?v.pagamentos:[],total,formasPagamento);
+    vendas.push({id:d.id,data:v.dataChave||null,criadoEm:v.criadoEm||null,alunoNome:v.alunoNome||null,valorCentavos:total,formaPagamento:v.formaPagamento||null,resumoPagamento:paymentSummary(pagamentos,v.formaPagamento),pagamentos,canal:v.canal||v.origem||null,itens:breakdown});
+  }
+  const manualMoves=manualDocs.map(d=>({id:d.id,...d.data()})).filter(m=>m.tipo==='entrada_conta_aluno'&&!m.vendaId&&MANUAL_MOVEMENT_LABELS[m.subtipo]);
+  const missingAlunoIds=[...new Set(manualMoves.filter(m=>!m.alunoNome&&m.alunoId).map(m=>m.alunoId))];
+  const alunoNomeMap=new Map();
+  if(missingAlunoIds.length){const students=await Promise.all(missingAlunoIds.map(id=>getStudent(db,id).catch(()=>null)));students.forEach((s,i)=>{if(s)alunoNomeMap.set(missingAlunoIds[i],s.nome)})}
+  for(const m of manualMoves){
+    const label=MANUAL_MOVEMENT_LABELS[m.subtipo],total=n(m.valorCentavos);
+    if(!categorias[label])categorias[label]={quantidade:0,valorCentavos:0,label};
+    categorias[label].quantidade+=1;categorias[label].valorCentavos+=total;
+    const pagamentos=registerPayments(Array.isArray(m.pagamentos)?m.pagamentos:[],total,formasPagamento);
+    vendas.push({id:m.id,data:m.dataChave||null,criadoEm:m.criadoEm||null,alunoNome:m.alunoNome||alunoNomeMap.get(m.alunoId)||null,valorCentavos:total,formaPagamento:m.formaPagamento||null,resumoPagamento:paymentSummary(pagamentos,m.formaPagamento),pagamentos,canal:'secretaria',itens:[{nome:label,categoria:label,valorCentavos:total}]});
   }
   const totalCentavos=Object.values(categorias).reduce((s,c)=>s+c.valorCentavos,0);
-  return {ok:true,dataInicio,dataFim,totalCentavos,quantidadeVendas:vendas.length,categorias,formasPagamento,vendas,_reads:docs.length+categoryMap.size};
+  return {ok:true,dataInicio,dataFim,totalCentavos,quantidadeVendas:vendas.length,categorias,formasPagamento,vendas,_reads:docs.length+manualDocs.length+categoryMap.size+missingAlunoIds.length};
 }
 function fmtCentavos(c){return `R$ ${(n(c)/100).toFixed(2).replace('.',',')}`}
 function prettifyFallback(s){return s?String(s).replaceAll('_',' '):null}

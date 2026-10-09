@@ -1,16 +1,10 @@
 {
-  "version": "1.6.0-rc2.7.48",
+  "version": "1.6.0-rc2.7.49",
   "date": "2026-10-09",
-  "base": "1.6.0-rc2.7.47",
+  "base": "1.6.0-rc2.7.48",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "add_student_and_item_description_to_secretaria_cash_audit_cash_movements",
-    "add_detalhar_action_to_cash_audit_sale_movements_reusing_the_universal_sale_detail_view",
-    "fix_broken_venda_link_in_gestao_cash_movement_table_pointing_to_a_mismatched_row_key",
-    "make_sale_detail_opener_work_from_any_bare_venda_id_not_only_rows_already_loaded_in_vendas_list",
-    "show_mixed_payment_method_breakdown_in_the_account_movement_detail_view",
-    "add_forma_de_pagamento_breakdown_including_mixed_payments_to_the_category_report_screen_and_csv",
-    "add_missing_portuguese_label_for_regularizacao_saldo_secretaria_movement_subtype"
+    "include_manual_balance_regularization_and_manual_credit_entries_in_the_category_report_they_had_no_linked_sale_document_and_were_invisible_to_it"
   ],
   "checks": {
     "javascript_files_checked": 54,

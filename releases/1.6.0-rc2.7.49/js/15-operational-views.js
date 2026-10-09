@@ -1,6 +1,6 @@
 /* Escola Piaget — Visões operacionais RC2.2 */
 (function(){
-const VERSION='1.6.0-rc2.7.48';
+const VERSION='1.6.0-rc2.7.49';
 const STAFF_PROFILES=new Set(['admin','gestao','secretaria']);
 function n(v){const x=Number(v||0);return Number.isFinite(x)?Math.round(x):0}
 function arr(v){return Array.isArray(v)?v:[]}
@@ -129,7 +129,7 @@ window.loadMoreBillingV221=async function(){return renderCobrancasV162(state.v16
 function dateKeyOffsetV230(days){const d=new Date();d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
 window.openCategoryReportV230=function(){
   state.v230CategoryReport=null;
-  openModal('Relatório por categoria',`<div class="muted" style="margin-bottom:10px">Consolida as vendas já confirmadas do sistema pelas categorias do seu catálogo (ex.: Lanche, Farda, Passeio, Gincana, Mensalidade), para conferência com extratos externos (ex.: InfinitePay).</div><div class="form-row"><div class="fg"><label>De</label><input type="date" id="v230DataInicio" class="fi" value="${dateKeyOffsetV230(-30)}"></div><div class="fg"><label>Até</label><input type="date" id="v230DataFim" class="fi" value="${dateKey()}"></div></div><button class="btn btn-primary" style="width:100%" onclick="generateCategoryReportV230()">Gerar relatório</button><div id="v230ReportBody" style="margin-top:14px"></div>`);
+  openModal('Relatório por categoria',`<div class="muted" style="margin-bottom:10px">Consolida vendas e regularizações/créditos manuais confirmados pelas categorias do seu catálogo (ex.: Lanche, Farda, Passeio, Gincana, Mensalidade), para conferência com extratos externos (ex.: InfinitePay).</div><div class="form-row"><div class="fg"><label>De</label><input type="date" id="v230DataInicio" class="fi" value="${dateKeyOffsetV230(-30)}"></div><div class="fg"><label>Até</label><input type="date" id="v230DataFim" class="fi" value="${dateKey()}"></div></div><button class="btn btn-primary" style="width:100%" onclick="generateCategoryReportV230()">Gerar relatório</button><div id="v230ReportBody" style="margin-top:14px"></div>`);
 };
 window.generateCategoryReportV230=async function(){
   const dataInicio=$('#v230DataInicio')?.value,dataFim=$('#v230DataFim')?.value,host=$('#v230ReportBody');
@@ -146,7 +146,7 @@ window.generateCategoryReportV230=async function(){
 };
 window.downloadCategoryReportCsvV230=function(){
   const data=state.v230CategoryReport;if(!data)return;
-  const rows=[['Data','Aluno','Categoria','Item','Valor do item (R$)','Valor total da venda (R$)','Forma de pagamento','Canal','ID da venda']];
+  const rows=[['Data','Aluno','Categoria','Item','Valor do item (R$)','Valor total do lançamento (R$)','Forma de pagamento','Canal','ID do lançamento']];
   data.vendas.forEach(v=>{(v.itens||[]).forEach(it=>{rows.push([v.data||'',v.alunoNome||'',it.categoria||'Outros',it.nome||'',(it.valorCentavos/100).toFixed(2).replace('.',','),(v.valorCentavos/100).toFixed(2).replace('.',','),v.resumoPagamento||v.formaPagamento||'',v.canal||'',v.id])})});
   const csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(';')).join('\n'),blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=`relatorio-categorias-${data.dataInicio}-a-${data.dataFim}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
