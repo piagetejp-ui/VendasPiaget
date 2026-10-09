@@ -1,13 +1,14 @@
 {
-  "version": "1.6.0-rc2.7.49",
+  "version": "1.6.0-rc2.7.50",
   "date": "2026-10-09",
-  "base": "1.6.0-rc2.7.48",
+  "base": "1.6.0-rc2.7.49",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "include_manual_balance_regularization_and_manual_credit_entries_in_the_category_report_they_had_no_linked_sale_document_and_were_invisible_to_it"
+    "reconstruct_and_show_debt_regularization_amounts_that_were_folded_into_an_online_secretariat_checkout_but_never_saved_as_a_sale_line_item",
+    "fix_online_checkout_payments_being_mislabeled_as_saldo_da_conta_in_the_category_report_when_no_explicit_pagamentos_array_was_stored"
   ],
   "checks": {
-    "javascript_files_checked": 54,
+    "javascript_files_checked": 55,
     "javascript_syntax_errors": 0,
     "physical_api_functions": 10,
     "firestore_rules_changed": false

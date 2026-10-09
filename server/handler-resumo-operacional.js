@@ -116,7 +116,7 @@ function lineCategoryName(line={},categoryMap){
   if(tipoOp==='negociacao')return 'Negociação';
   return 'Outros';
 }
-const PAYMENT_METHOD_LABELS={dinheiro:'Dinheiro',pix:'Pix',cartao:'Cartão',saldo_conta:'Saldo da conta'};
+const PAYMENT_METHOD_LABELS={dinheiro:'Dinheiro',pix:'Pix',cartao:'Cartão',saldo_conta:'Saldo da conta',infinitepay:'InfinitePay (link de pagamento)'};
 function paymentLabel(p={}){
   const base=PAYMENT_METHOD_LABELS[p.metodo]||p.metodo||'Outro';
   if(p.metodo==='pix'&&p.origemPix)return `${base} · ${({banco:'Pix bancário',infinitepay:'InfinitePay',rede_laranjinha:'Rede/Laranjinha',outro:'Outro'})[p.origemPix]||p.origemPix}`;
@@ -155,9 +155,19 @@ async function relatorioCategorias(db,dataInicio,dataFim){
     }else{
       breakdown=[{nome:v.operacao||'Operação',categoria:'Outros',valorCentavos:total}];
     }
+    // Vendas feitas via checkout online da secretaria (origem='secretaria_online') podem embutir, no mesmo
+    // link de pagamento, a quitação de um saldo devedor anterior do aluno. Esse valor nunca vira um item em
+    // "itens" (só o produto comprado aparece lá), então precisa ser reconstruído a partir dos totais salvos.
+    const regularizacaoEmbutida=Math.max(0,n(v.valorRecebidoCentavos)-total+n(v.valorSaldoUtilizadoCentavos));
+    if(regularizacaoEmbutida>0)breakdown.push({nome:'Regularização de saldo (quitada junto com esta compra)',categoria:'Regularização de saldo',valorCentavos:regularizacaoEmbutida});
+    const totalComRegularizacao=total+regularizacaoEmbutida;
     for(const b of breakdown){const cat=b.categoria||'Outros';if(!categorias[cat])categorias[cat]={quantidade:0,valorCentavos:0,label:cat};categorias[cat].quantidade+=1;categorias[cat].valorCentavos+=n(b.valorCentavos)}
-    const pagamentos=registerPayments(Array.isArray(v.pagamentos)?v.pagamentos:[],total,formasPagamento);
-    vendas.push({id:d.id,data:v.dataChave||null,criadoEm:v.criadoEm||null,alunoNome:v.alunoNome||null,valorCentavos:total,formaPagamento:v.formaPagamento||null,resumoPagamento:paymentSummary(pagamentos,v.formaPagamento),pagamentos,canal:v.canal||v.origem||null,itens:breakdown});
+    let pagamentosOriginais=Array.isArray(v.pagamentos)?v.pagamentos:[];
+    if(!pagamentosOriginais.length&&v.origem==='secretaria_online'&&n(v.valorRecebidoCentavos)>0){
+      pagamentosOriginais=[{metodo:'infinitepay',valorAplicadoCentavos:n(v.valorRecebidoCentavos)}];
+    }
+    const pagamentos=registerPayments(pagamentosOriginais,totalComRegularizacao,formasPagamento);
+    vendas.push({id:d.id,data:v.dataChave||null,criadoEm:v.criadoEm||null,alunoNome:v.alunoNome||null,valorCentavos:totalComRegularizacao,formaPagamento:v.formaPagamento||null,resumoPagamento:paymentSummary(pagamentos,v.formaPagamento),pagamentos,canal:v.canal||v.origem||null,itens:breakdown});
   }
   const manualMoves=manualDocs.map(d=>({id:d.id,...d.data()})).filter(m=>m.tipo==='entrada_conta_aluno'&&!m.vendaId&&MANUAL_MOVEMENT_LABELS[m.subtipo]);
   const missingAlunoIds=[...new Set(manualMoves.filter(m=>!m.alunoNome&&m.alunoId).map(m=>m.alunoId))];

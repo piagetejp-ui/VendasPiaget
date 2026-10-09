@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.50 — 09/10/2026
+
+Base: **RC2.7.49**.
+
+### Correção: regularização de saldo paga junto com uma venda online da secretaria sumia do Relatório por categoria
+
+- **Causa raiz**: quando a família (ou a secretaria em nome dela) paga uma venda pelo **link de pagamento online** (checkout da secretaria) e o aluno já tinha um saldo devedor em aberto, o sistema cobra os dois valores juntos num único link da InfinitePay — soma o preço do item (ex.: Passeio) com a dívida em aberto. Só que, ao salvar a venda, o campo "itens" grava apenas o produto comprado; o valor da regularização embutida nunca virava um item nem entrava no total da venda salva. Resultado: o relatório mostrava só o passeio (ex.: R$ 36,00) e a regularização paga junto — que já tinha saído de fato da InfinitePay — ficava invisível. Esse era exatamente o caso do José Otávio: o valor mostrado batia com o item, mas não com o que realmente foi cobrado no pagamento.
+- O relatório agora reconstrói esse valor embutido a partir dos totais que a venda já guarda (valor recebido pela InfinitePay, valor bruto dos itens e valor de saldo usado) e o exibe como uma linha própria — **"Regularização de saldo (quitada junto com esta compra)"**, categoria **"Regularização de saldo"** — somada ao valor total do lançamento.
+- Corrigido também um problema relacionado: vendas feitas por esse checkout online, quando pagas via InfinitePay, apareciam no relatório rotuladas como **"Saldo da conta"** na forma de pagamento (porque essas vendas não guardam a lista detalhada de pagamentos que as vendas presenciais guardam). Agora a parte paga pela InfinitePay aparece como tal, e só o valor efetivamente descontado do saldo do aluno aparece como "Saldo da conta".
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.49.
+
 ## 1.6.0-rc2.7.49 — 09/10/2026
 
 Base: **RC2.7.48**.
