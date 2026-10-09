@@ -1,5 +1,22 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.48 — 09/10/2026
+
+Base: **RC2.7.47**.
+
+### Correção: faltava detalhamento em vários lugares e forma de pagamento mesclada não aparecia
+
+- **Caixa da Secretaria**: os movimentos de "Venda em dinheiro" não mostravam nem o nome do aluno nem o que foi vendido — só o valor. Agora cada venda mostra o aluno e um resumo dos itens direto na tabela, além de um botão **"Detalhar"** para ver a composição completa.
+- Corrigido um link quebrado: na tela de Gestão (Caixa integrado), o botão **"Venda"** de cada movimento não abria nada, porque usava um formato de identificador que não batia com o esperado. Agora abre corretamente os detalhes da venda.
+- A função que abre os detalhes de uma venda agora funciona a partir de qualquer ID de venda, não só das que já estavam carregadas na tela de Vendas — então "Detalhar" passa a funcionar de forma confiável em qualquer lugar do sistema que mostre uma venda.
+- **Extrato do aluno** (detalhe de uma movimentação): quando o pagamento foi mesclado (ex.: parte dinheiro, parte Pix), agora mostra a composição completa — antes só aparecia uma forma de pagamento genérica.
+- **Relatório por categoria**: além do total por categoria, agora mostra também um quadro **"Por forma de pagamento"** (Dinheiro, Pix · InfinitePay, Cartão, Saldo da conta, etc.) com total de cada uma. O CSV detalhado também ganhou uma coluna com a composição do pagamento de cada venda (ex.: "Dinheiro R$ 60,00 + Pix · InfinitePay R$ 40,00") em vez de só "pagamento combinado".
+- Corrigido rótulo que faltava para regularização manual de saldo na secretaria (antes aparecia sem tradução no extrato).
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.47.
+
 ## 1.6.0-rc2.7.47 — 06/10/2026
 
 Base: **RC2.7.46**.

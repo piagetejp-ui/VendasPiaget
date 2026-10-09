@@ -116,10 +116,17 @@ function lineCategoryName(line={},categoryMap){
   if(tipoOp==='negociacao')return 'Negociação';
   return 'Outros';
 }
+const PAYMENT_METHOD_LABELS={dinheiro:'Dinheiro',pix:'Pix',cartao:'Cartão',saldo_conta:'Saldo da conta'};
+function paymentLabel(p={}){
+  const base=PAYMENT_METHOD_LABELS[p.metodo]||p.metodo||'Outro';
+  if(p.metodo==='pix'&&p.origemPix)return `${base} · ${({banco:'Pix bancário',infinitepay:'InfinitePay',rede_laranjinha:'Rede/Laranjinha',outro:'Outro'})[p.origemPix]||p.origemPix}`;
+  if(p.metodo==='cartao'&&p.adquirente)return `${base} · ${p.adquirente==='infinitepay'?'InfinitePay':p.adquirente==='rede_laranjinha'?'Rede/Laranjinha':p.adquirente}`;
+  return base;
+}
 async function relatorioCategorias(db,dataInicio,dataFim){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(dataInicio)||!/^\d{4}-\d{2}-\d{2}$/.test(dataFim)||dataInicio>dataFim)throw Object.assign(new Error('Informe um período válido (data inicial até data final, no formato AAAA-MM-DD).'),{status:400});
   const [docs,categoryMap]=await Promise.all([pageAll(db.collection('vendas').where('dataChave','>=',dataInicio).where('dataChave','<=',dataFim).orderBy('dataChave','asc')),loadCatalogCategoryNameMap(db)]);
-  const categorias={};
+  const categorias={},formasPagamento={};
   const vendas=[];
   for(const d of docs){
     const v=d.data()||{};
@@ -134,10 +141,17 @@ async function relatorioCategorias(db,dataInicio,dataFim){
       breakdown=[{nome:v.operacao||'Operação',categoria:'Outros',valorCentavos:total}];
     }
     for(const b of breakdown){const cat=b.categoria||'Outros';if(!categorias[cat])categorias[cat]={quantidade:0,valorCentavos:0,label:cat};categorias[cat].quantidade+=1;categorias[cat].valorCentavos+=n(b.valorCentavos)}
-    vendas.push({id:d.id,data:v.dataChave||null,criadoEm:v.criadoEm||null,alunoNome:v.alunoNome||null,valorCentavos:total,formaPagamento:v.formaPagamento||null,canal:v.canal||v.origem||null,itens:breakdown});
+    const pagamentosOriginais=Array.isArray(v.pagamentos)?v.pagamentos:[],saldoAplicadoCentavos=Math.max(0,total-pagamentosOriginais.reduce((s,p)=>s+n(p.valorAplicadoCentavos),0));
+    const pagamentos=pagamentosOriginais.map(p=>({metodo:p.metodo||null,label:paymentLabel(p),valorCentavos:n(p.valorAplicadoCentavos)}));
+    if(saldoAplicadoCentavos>0)pagamentos.push({metodo:'saldo_conta',label:'Saldo da conta',valorCentavos:saldoAplicadoCentavos});
+    for(const p of pagamentos){const key=p.label;if(!formasPagamento[key])formasPagamento[key]={quantidade:0,valorCentavos:0,label:key};formasPagamento[key].quantidade+=1;formasPagamento[key].valorCentavos+=p.valorCentavos}
+    const resumoPagamento=pagamentos.length>1?pagamentos.map(p=>`${p.label} ${fmtCentavos(p.valorCentavos)}`).join(' + '):(pagamentos[0]?.label||prettifyFallback(v.formaPagamento)||'-');
+    vendas.push({id:d.id,data:v.dataChave||null,criadoEm:v.criadoEm||null,alunoNome:v.alunoNome||null,valorCentavos:total,formaPagamento:v.formaPagamento||null,resumoPagamento,pagamentos,canal:v.canal||v.origem||null,itens:breakdown});
   }
   const totalCentavos=Object.values(categorias).reduce((s,c)=>s+c.valorCentavos,0);
-  return {ok:true,dataInicio,dataFim,totalCentavos,quantidadeVendas:vendas.length,categorias,vendas,_reads:docs.length+categoryMap.size};
+  return {ok:true,dataInicio,dataFim,totalCentavos,quantidadeVendas:vendas.length,categorias,formasPagamento,vendas,_reads:docs.length+categoryMap.size};
 }
+function fmtCentavos(c){return `R$ ${(n(c)/100).toFixed(2).replace('.',',')}`}
+function prettifyFallback(s){return s?String(s).replaceAll('_',' '):null}
 
 module.exports=async function(req,res){if(!['GET','POST'].includes(req.method))return json(res,405,{ok:false,error:'Método não permitido.'});try{const db=initFirebase(),body=req.method==='POST'?parseBody(req):{},actor=await verifyStaff(db,req,['admin','gestao','secretaria','cantina']),action=String(body.acao||req.query?.acao||'dashboard'),date=String(body.dataChave||req.query?.dataChave||new Date().toISOString().slice(0,10));if(action==='dashboard')return json(res,200,await dashboard(db,actor,date));if(action==='contas_resumo'){const accounts=await syncAccounts(db,actor);return json(res,200,{ok:true,version:VERSION,accounts:{saldoEmAbertoCentavos:n(accounts?.saldoEmAbertoCentavos),familiasPendentes:n(accounts?.familiasPendentes),familiasBloqueadas:n(accounts?.familiasBloqueadas),contasIndexadas:n(accounts?.contasIndexadas),atualizadoEm:accounts?.atualizadoEm||null,modo:accounts?.modo||null,contasAlteradas:n(accounts?._changed)},diagnostics:{estimatedDocumentReads:n(accounts?._reads),changedAccounts:n(accounts?._changed),noRuntimeCap:true,accountStrategy:'changed_entity_queue'}})}if(action==='reconstruir_contas'){if(!['admin','gestao'].includes(actor.perfil))return json(res,403,{ok:false,error:'Somente Gestão/Admin pode reconstruir os indicadores.'});const result=await syncAccounts(db,actor,{force:true});return json(res,200,{ok:true,accounts:result})}if(action==='relatorio_categorias'){if(!['admin','gestao','secretaria'].includes(actor.perfil))return json(res,403,{ok:false,error:'Somente Gestão, Secretaria ou Admin pode gerar este relatório.'});const result=await relatorioCategorias(db,String(body.dataInicio||req.query?.dataInicio||''),String(body.dataFim||req.query?.dataFim||''));return json(res,200,result)}return json(res,400,{ok:false,error:'Ação inválida.'})}catch(e){console.error('resumo-operacional',e);return json(res,e.status||500,{ok:false,error:e.message||'Não foi possível atualizar os indicadores.'})}};
