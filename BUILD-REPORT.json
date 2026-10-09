@@ -1,11 +1,10 @@
 {
-  "version": "1.6.0-rc2.7.47",
-  "date": "2026-10-06",
-  "base": "1.6.0-rc2.7.46",
+  "version": "1.6.0-rc2.7.49",
+  "date": "2026-10-09",
+  "base": "1.6.0-rc2.7.48",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "resolve_sale_line_categories_against_the_school_own_catalogo_categorias_tree_instead_of_a_fixed_6_bucket_taxonomy",
-    "surface_specific_event_subcategories_like_gincana_and_passeio_as_distinct_categories_in_the_bookkeeping_report"
+    "include_manual_balance_regularization_and_manual_credit_entries_in_the_category_report_they_had_no_linked_sale_document_and_were_invisible_to_it"
   ],
   "checks": {
     "javascript_files_checked": 54,
