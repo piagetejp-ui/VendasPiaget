@@ -1,11 +1,13 @@
 {
-  "version": "1.6.0-rc2.7.56",
+  "version": "1.6.0-rc2.7.57",
   "date": "2026-10-27",
-  "base": "1.6.0-rc2.7.55",
+  "base": "1.6.0-rc2.7.56",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "credito_adicionado_is_a_balance_top_up_mechanism_not_a_catalog_product_so_it_no_longer_counts_toward_the_categorias_breakdown_in_relatorio_categorias_it_still_counts_normally_in_formaspagamento_since_the_cash_actually_came_in_a_new_creditosavulsoscentavos_field_reports_the_excluded_amount_separately_so_it_is_not_silently_dropped_from_the_report",
-    "lancar_pendencia_anterior_the_retroactive_manual_entry_used_when_a_sale_is_forgotten_and_needs_to_be_recorded_later_now_requires_picking_a_real_catalogo_itens_entry_instead_of_free_text_description_plus_a_generic_fixed_category_dropdown_the_selected_item_categoriaid_is_stored_on_the_entry_so_it_resolves_through_the_exact_same_catalog_based_category_resolution_as_a_live_sale_guaranteeing_every_peso_tracked_maps_to_something_sellable_in_the_catalog"
+    "lanches_tab_now_merges_scheduled_programacao_deliveries_with_ad_hoc_consumo_avulso_cantina_sales_into_one_chronological_list_with_date_and_time_item_names_and_value_shown_directly_instead_of_date_only_behind_no_detail_closing_the_blind_spot_that_hid_the_duplicate_registration_risk_from_this_view",
+    "pedidos_tab_gets_a_detalhar_button_reusing_the_existing_admin_order_detail_view_which_was_extended_to_also_handle_pedidos_operacionais_not_just_pedidos_and_pedidos_farda",
+    "movimentos_tab_reworked_into_bank_statement_style_day_blocks_each_block_shows_its_transactions_with_their_balance_impact_and_closes_with_that_day_s_ending_balance_saldo_do_dia_taken_from_the_most_recent_movement_in_the_block",
+    "pagamentos_tab_rows_now_cross_reference_the_matching_movimentos_conta_entry_by_ordernsu_when_found_detalhar_reuses_the_full_movement_detail_view_items_and_payment_method_composition_instead_of_only_showing_the_total_value"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -16,6 +18,6 @@
   "not_run": [
     "vercel_deploy",
     "browser_visual_smoke",
-    "live_category_report_and_lancar_pendencia_walkthrough_in_production"
+    "live_family_account_tab_walkthrough_in_production"
   ]
 }

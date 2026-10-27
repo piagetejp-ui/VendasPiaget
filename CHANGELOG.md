@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.57 — 27/10/2026
+
+Base: **RC2.7.56**.
+
+### Melhoria: abas do perfil da família com mais detalhe (B4-B7)
+
+- **Lanches**: a aba juntava só a programação de lanche (`ocorrencias_entrega`) e nunca mostrava o consumo avulso da cantina — era exatamente o ponto cego que escondia o risco de duplicidade que investigamos na auditoria da família do João Pedro. Agora os dois aparecem juntos, em ordem cronológica, com data **e hora**, o item e o valor — não só a data, como antes.
+- **Pedidos**: ganhou um botão "Detalhar" (reaproveitando a tela de detalhe que já existia, agora também funcionando para pedidos operacionais — mensalidade, evento, negociação —, que antes não tinham suporte).
+- **Movimentações**: reorganizada em blocos por dia, estilo extrato bancário — cada bloco mostra as transações daquele dia com o impacto de cada uma no saldo, e fecha com o "Saldo do dia" (o saldo da conta ao final daquele dia).
+- **Pagamentos**: quando o pagamento tem uma movimentação correspondente (mesmo NSU), o "Detalhar" agora reaproveita o mesmo detalhamento completo de Movimentações (itens comprados + composição da forma de pagamento), em vez de mostrar só o valor total.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.56.
+
 ## 1.6.0-rc2.7.56 — 27/10/2026
 
 Base: **RC2.7.55**.

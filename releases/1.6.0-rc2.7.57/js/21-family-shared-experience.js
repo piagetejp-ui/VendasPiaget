@@ -3,7 +3,7 @@
    filtros por aluno e acesso do Meu Piaget incorporado a Alunos e Contas. */
 (()=>{
 'use strict';
-const VERSION='1.6.0-rc2.7.56';
+const VERSION='1.6.0-rc2.7.57';
 const BASE_REVIEW=window.reviewParentOrderV150;
 const BASE_UNIFORM=window.openParentUniformV151;
 const BASE_RENDER_USERS=window.renderUsuariosAcessosV130;
@@ -219,6 +219,7 @@ window.openFamilyMovementDetailV172=async function(id){await window.openMovement
 window.setStaffFamilyFilterV172=function(id){state.v172StaffFamilyFilter=id;renderStaffFamilyTabV172()};
 window.setStaffFamilyTabV172=function(tab){state.v172StaffFamilyTab=tab;document.querySelectorAll('.v162-student-tabs button').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().startsWith(tab==='movimentos'?'movimenta':tab)));renderStaffFamilyTabV172()};
 function opStudentTag(row,d){const a=familyStudent(row.alunoId,d.students);return d.students.length>1?studentTag(a||{nome:row.alunoNome||'Aluno'}):''}
+function dayLabelV173(day){try{return new Date(`${day}T12:00:00`).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'})}catch(_){return String(day||'-')}}
 async function loadStaffFamilyTabV221(tab,{more=false}={}){
   const d=state.v172StaffFamily;if(!d)return;
   d._tabLoaded=d._tabLoaded||{};d._tabDone=d._tabDone||{};d._tabLoading=d._tabLoading||{};
@@ -226,9 +227,9 @@ async function loadStaffFamilyTabV221(tab,{more=false}={}){
   const task=(async()=>{
     if(typeof window.loadFamilyHistoryWindowV221!=='function'){
       if(tab==='resumo'){const [occ,ord,uni,op]=await Promise.all([queryByFamily('ocorrencias_entrega',d.students,{arrayField:null}),queryByFamily('pedidos',d.students),queryByFamily('pedidos_farda',d.students),queryByFamily('pedidos_operacionais',d.students)]);d.occurrences=occ;d.orders=ord;d.uniforms=uni;d.operational=op;d._tabDone[tab]=true}
-      else if(tab==='lanches'){d.occurrences=await queryByFamily('ocorrencias_entrega',d.students,{arrayField:null});d._tabDone[tab]=true}
+      else if(tab==='lanches'){const [occ,cons]=await Promise.all([queryByFamily('ocorrencias_entrega',d.students,{arrayField:null}),queryByFamily('movimentos_conta',d.students)]);d.occurrences=occ;d.consumosAvulsos=cons.filter(m=>String(m.subtipo||'')==='consumo_cantina');d._tabDone[tab]=true}
       else if(tab==='movimentos'){d.moves=await queryByFamily('movimentos_conta',d.students);d._tabDone[tab]=true}
-      else if(tab==='pagamentos'){[d.links,d.checkouts]=await Promise.all([queryByFamily('vendas_online_links',d.students),queryByFamily('pagamentos_checkout',d.students)]);d._tabDone[tab]=true}
+      else if(tab==='pagamentos'){[d.links,d.checkouts,d.moves]=await Promise.all([queryByFamily('vendas_online_links',d.students),queryByFamily('pagamentos_checkout',d.students),queryByFamily('movimentos_conta',d.students)]);d._tabDone[tab]=true}
       else{[d.orders,d.uniforms,d.operational]=await Promise.all([queryByFamily('pedidos',d.students),queryByFamily('pedidos_farda',d.students),queryByFamily('pedidos_operacionais',d.students)]);d._tabDone[tab]=true}
     }else if(tab==='resumo'){
       const compact=window.queryFamilyRecordsV221||queryByFamily;
@@ -236,14 +237,18 @@ async function loadStaffFamilyTabV221(tab,{more=false}={}){
         compact('ocorrencias_entrega',d.students,{arrayField:null,mode:'compact',limit:8}),compact('pedidos',d.students,{mode:'compact',limit:8}),compact('pedidos_farda',d.students,{mode:'compact',limit:8}),compact('pedidos_operacionais',d.students,{mode:'compact',limit:8})
       ]);d.occurrences=occ;d.orders=ord;d.uniforms=uni;d.operational=op;d._tabDone[tab]=true;
     }else if(tab==='lanches'){
-      const h=await window.loadFamilyHistoryWindowV221('staff_family_lanches','ocorrencias_entrega',d.students,{arrayField:null,orderField:'criadoEm',pageSize:30,reset:!more});d.occurrences=h.merged;d._tabDone[tab]=h.done;
+      const [h,hc]=await Promise.all([
+        window.loadFamilyHistoryWindowV221('staff_family_lanches','ocorrencias_entrega',d.students,{arrayField:null,orderField:'criadoEm',pageSize:30,reset:!more}),
+        window.loadFamilyHistoryWindowV221('staff_family_lanches_consumo','movimentos_conta',d.students,{orderField:'criadoEm',pageSize:30,reset:!more})
+      ]);d.occurrences=h.merged;d.consumosAvulsos=(hc.merged||[]).filter(m=>String(m.subtipo||'')==='consumo_cantina');d._tabDone[tab]=h.done&&hc.done;
     }else if(tab==='movimentos'){
       const h=await window.loadFamilyHistoryWindowV221('staff_family_movimentos','movimentos_conta',d.students,{orderField:'criadoEm',pageSize:30,reset:!more});d.moves=h.merged;d._tabDone[tab]=h.done;
     }else if(tab==='pagamentos'){
-      const [l,c]=await Promise.all([
+      const [l,c,m]=await Promise.all([
         window.loadFamilyHistoryWindowV221('staff_family_links','vendas_online_links',d.students,{orderField:'criadoEm',pageSize:30,reset:!more}),
-        window.loadFamilyHistoryWindowV221('staff_family_checkouts','pagamentos_checkout',d.students,{orderField:'criadoEm',pageSize:30,reset:!more})
-      ]);d.links=l.merged;d.checkouts=c.merged;d._tabDone[tab]=l.done&&c.done;
+        window.loadFamilyHistoryWindowV221('staff_family_checkouts','pagamentos_checkout',d.students,{orderField:'criadoEm',pageSize:30,reset:!more}),
+        window.loadFamilyHistoryWindowV221('staff_family_pagamentos_moves','movimentos_conta',d.students,{orderField:'criadoEm',pageSize:30,reset:!more})
+      ]);d.links=l.merged;d.checkouts=c.merged;d.moves=m.merged;d._tabDone[tab]=l.done&&c.done&&m.done;
     }else if(tab==='pedidos'){
       const [o,u,p]=await Promise.all([
         window.loadFamilyHistoryWindowV221('staff_family_orders','pedidos',d.students,{orderField:'criadoEm',pageSize:30,reset:!more}),
@@ -264,20 +269,41 @@ async function renderStaffFamilyTabV172({skipLoad=false}={}){
     h.innerHTML=`<div class="v162-balance-grid"><div><small>Saldo da família</small><strong class="${net>=0?'v162-positive':'v162-negative'}">${net>=0?'+':''}${fmt(net)}</strong></div><div><small>Crédito disponível</small><strong>${fmt(Math.max(0,net))}</strong></div><div><small>Saldo em aberto</small><strong>${fmt(Math.max(0,-net))}</strong></div><div><small>Limite compartilhado</small><strong>${fmt(d.account.limiteFiadoCentavos||0)}</strong></div></div><details class="v172-actions-menu"><summary class="btn btn-primary">Ações ▾</summary><div class="v172-actions-panel"><button class="btn btn-primary" onclick="openAccountPaymentV141('${js(d.primary.id)}','staff')">Gerar cobrança</button><button class="btn btn-green" onclick="registerManualPaymentV141('${js(d.primary.id)}')">Registrar pagamento</button><button class="btn btn-outline" onclick="toggleManualBlock('${js(d.primary.id)}',${!familyAccountBlockedV174(d.account)})">${familyAccountBlockedV174(d.account)?'Desbloquear conta':'Bloquear conta'}</button>${canAccess?`<button class="btn btn-orange" onclick="openManualOpenOperationV173('${js(d.primary.id)}')">Lançar pendência anterior</button><button class="btn btn-light" onclick="openEditResponsibleV223('${js(d.primary.id)}')">Editar responsável</button><button class="btn btn-light" onclick="openEditBuyerV227('${js(d.primary.id)}')">Editar comprador padrão</button><button class="btn btn-light" onclick="openResponsibleAccessManagerV130('${js(d.primary.id)}')">Acesso Meu Piaget</button><button class="btn btn-light" onclick="downloadFirstAccessCardV172('${js(d.primary.id)}')">Baixar primeiro acesso</button>`:''}</div></details>${canAccess?`<section style="margin-top:16px"><div class="card-title">Autorização de consumo por aluno</div><div class="muted" style="margin-bottom:8px">A escola pode manter uma autorização administrativa individual enquanto o responsável ainda não assumiu essa configuração. Quando ele alterar a autorização no Meu Piaget, a regra familiar passa a prevalecer.</div>${creditRows.map(r=>`<div class="v162-mini-card"><div><strong>${esc(r.a.nome||'Aluno')}</strong><span>${esc(r.source)} · ${r.authorized?'Liberado':'Bloqueado'}${r.authorized?` · limite ${fmt(r.limit)}`:''}</span></div><button class="btn btn-light" onclick="openStudentCreditV223('${js(r.a.id)}')">${r.parentOwns?'Ver regra':'Editar autorização'}</button></div>`).join('')||'<div class="empty-soft">Nenhum aluno vinculado.</div>'}</section>`:''}<div class="v162-overview-grid" style="margin-top:16px"><section><div class="card-title">Próximos lanches</div>${occ.filter(x=>String(x.dataChave||'')>=dateKey()).sort((a,b)=>String(a.dataChave||'').localeCompare(String(b.dataChave||''))).slice(0,5).map(x=>`<div class="v162-mini-card"><div>${opStudentTag(x,d)}<strong>${esc(x.dataChave||'-')}</strong><span>${(x.itens||[]).map(i=>`${i.quantidade||1}× ${esc(i.nome||'Item')}`).join(', ')}</span></div><span class="badge">${esc(statusLabelV151(x.status||'pendente'))}</span></div>`).join('')||'<div class="empty-soft">Nenhum lanche programado.</div>'}</section><section><div class="card-title">Pedidos recentes</div>${orders.slice(0,5).map(x=>`<div class="v162-mini-card"><div>${opStudentTag(x,d)}<strong>${esc(x.nome||x.produto||'Pedido')}</strong><span>${humanDate(x.criadoEm)} · ${fmt(x.totalCentavos||0)}</span></div></div>`).join('')||'<div class="empty-soft">Nenhum pedido.</div>'}</section></div>`;return
   }
 
-  if(tab==='lanches'){h.innerHTML=(occ.length?occ.sort((a,b)=>String(b.criadoEm||b.dataChave||'').localeCompare(String(a.criadoEm||a.dataChave||''))).map(x=>`<div class="v162-mini-card"><div>${opStudentTag(x,d)}<strong>${esc(x.dataChave||'-')}</strong><span>${(x.itens||[]).map(i=>`${i.quantidade||1}× ${esc(i.nome||'Item')}`).join(', ')||'Lanche programado'}</span></div><span class="badge">${esc(statusLabelV151(x.status||'-'))}</span></div>`).join(''):'<div class="empty">Nenhum lanche neste filtro.</div>')+moreHtml;return}
-  if(tab==='pedidos'){h.innerHTML=(orders.length?orders.map(x=>`<div class="v162-mini-card"><div>${opStudentTag(x,d)}<strong>${esc(x.nome||x.produto||(x.tipoPedido==='cantina'?'Pedido de cantina':'Pedido'))}</strong><span>${humanDate(x.criadoEm)} · ${fmt(x.totalCentavos||0)}</span></div><span class="badge">${esc(statusLabelV151(x.statusAtendimento||x.statusPedido||x.statusPagamento||'-'))}</span></div>`).join(''):'<div class="empty">Nenhum pedido neste filtro.</div>')+moreHtml;return}
+  if(tab==='lanches'){
+    /* Programação (ocorrencias_entrega) e consumo avulso de cantina são dois sistemas que
+       não se falam — juntos aqui, na mesma lista cronológica, com data+hora e valor de cada
+       item, é o que deixa visível (sem precisar clicar em nada) se o mesmo lanche está sendo
+       contado duas vezes. */
+    const avulsos=(d.consumosAvulsos||[]).filter(x=>rowBelongs(x,f)),combined=[...occ.map(x=>({...x,_origem:'Programação'})),...avulsos.map(x=>({...x,_origem:'Consumo avulso'}))].sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')));
+    h.innerHTML=(combined.length?combined.map(x=>{
+      const valor=x._origem==='Consumo avulso'?Math.abs(Number(x.valorCentavos||0)):Number(x.valorCentavos||(x.itens||[]).reduce((s,i)=>s+Number(i.totalCentavos||0),0));
+      return `<div class="v162-mini-card"><div>${opStudentTag(x,d)}<strong>${(x.itens||[]).map(i=>`${i.quantidade||1}× ${esc(i.nome||'Item')}`).join(', ')||'Lanche'}</strong><span>${humanDate(x.criadoEm)} · ${x._origem} · ${fmt(valor)}</span></div>${x._origem==='Programação'?`<span class="badge">${esc(statusLabelV151(x.status||'-'))}</span>`:''}</div>`;
+    }).join(''):'<div class="empty">Nenhum lanche neste filtro.</div>')+moreHtml;return
+  }
+  if(tab==='pedidos'){h.innerHTML=(orders.length?orders.map(x=>{const type=x.tipoPedido==='farda'?'farda':x.tipoPedido==='operacional'?'operacional':'cantina';return `<div class="v162-mini-card"><div>${opStudentTag(x,d)}<strong>${esc(x.nome||x.produto||(type==='cantina'?'Pedido de cantina':'Pedido'))}</strong><span>${humanDate(x.criadoEm)} · ${fmt(x.totalCentavos||0)}</span></div><span class="badge">${esc(statusLabelV151(x.statusAtendimento||x.statusPedido||x.statusPagamento||'-'))}</span><button class="btn btn-light" onclick="openAdminOrderDetailV162('${type}','${js(x.id)}')">Detalhar</button></div>`}).join(''):'<div class="empty">Nenhum pedido neste filtro.</div>')+moreHtml;return}
   if(tab==='movimentos'){
     /* Compra + pagamento da mesma venda viram uma linha só (uma operação econômica = um
        lançamento na tela), em vez de dois lançamentos crus desencontrados. Consolida sobre
        o conjunto completo antes de filtrar por aluno, para não quebrar o pareamento quando
-       a família tem mais de um aluno vinculado. */
-    const consolidated=window.consolidateFamilyMovementsV173(d.moves||[]).filter(x=>rowBelongs(x,f));
-    h.innerHTML=(consolidated.length?consolidated.sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||''))).map(x=>{
-      const composite=Boolean(x._composite),impact=composite?Number(x.impactoSaldoCentavos||0):movementAmountV151(x),title=composite?window.compositeTitleV173(x):movementLabelV151(x),desc=composite?window.compositeDescV173(x):'',detailId=composite?(x._purchase?.id||x.id):x.id;
-      return `<div class="v162-mini-card"><div>${opStudentTag(x,d)}<strong>${esc(title)}</strong><span>${humanDate(x.criadoEm)} · ${signedV151(impact)}</span>${desc?`<small class="muted">${esc(desc)}</small>`:''}</div><button class="btn btn-light" onclick="openFamilyMovementDetailV172('${js(detailId)}')">Detalhar</button></div>`;
+       a família tem mais de um aluno vinculado. Agrupado em blocos por dia, estilo extrato
+       bancário, com o saldo de fechamento de cada dia. */
+    const consolidated=window.consolidateFamilyMovementsV173(d.moves||[]).filter(x=>rowBelongs(x,f)).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')));
+    const dayGroups=[];for(const x of consolidated){const day=String(x.dataChave||String(x.criadoEm||'').slice(0,10)||'-'),last=dayGroups[dayGroups.length-1];if(last&&last.day===day)last.rows.push(x);else dayGroups.push({day,rows:[x]})}
+    h.innerHTML=(dayGroups.length?dayGroups.map(({day,rows})=>{
+      const closing=rows[0]?.saldoDepoisCentavos,rowsHtml=rows.map(x=>{
+        const composite=Boolean(x._composite),impact=composite?Number(x.impactoSaldoCentavos||0):movementAmountV151(x),title=composite?window.compositeTitleV173(x):movementLabelV151(x),desc=composite?window.compositeDescV173(x):'',detailId=composite?(x._purchase?.id||x.id):x.id;
+        return `<div class="v173-ledger-row"><div>${opStudentTag(x,d)}<strong>${esc(title)}</strong><span>${humanDate(x.criadoEm)}</span>${desc?`<small class="muted">${esc(desc)}</small>`:''}</div><div class="v173-ledger-value"><strong class="${impact>=0?'v162-positive':'v162-negative'}">${signedV151(impact)}</strong><button class="btn btn-light" onclick="openFamilyMovementDetailV172('${js(detailId)}')">Detalhar</button></div></div>`;
+      }).join('');
+      return `<div class="v173-day-block"><div class="v173-day-head"><strong>${esc(dayLabelV173(day))}</strong>${closing!==undefined&&closing!==null?`<span>Saldo do dia <strong class="${closing>=0?'v162-positive':'v162-negative'}">${signedV151(closing)}</strong></span>`:''}</div>${rowsHtml}</div>`;
     }).join(''):'<div class="empty">Nenhuma movimentação neste filtro.</div>')+moreHtml;return
   }
-  h.innerHTML=(payments.length?payments.map(x=>`<div class="v162-mini-card"><div>${opStudentTag(x,d)}<strong>${esc(x.descricao||x.operacao||x.tipo||'Pagamento')}</strong><span>${humanDate(x.pagoEm||x.criadoEm)} · ${fmt(x.pedidoTotalCentavos||x.totalCentavos||0)}</span></div><span class="badge">${esc(statusLabelV151(x.statusAplicacao==='aplicado'?'pago':x.status||'-'))}</span></div>`).join(''):'<div class="empty">Nenhum pagamento neste filtro.</div>')+moreHtml;
+  /* Pagamentos: quando o pagamento tem uma movimentação correspondente (mesmo orderNsu), o
+     "Detalhar" reaproveita o mesmo detalhamento completo de Movimentações (itens + formas de
+     pagamento) em vez de só mostrar o valor total como antes. */
+  h.innerHTML=(payments.length?payments.map(x=>{
+    const match=(d.moves||[]).find(m=>x.orderNsu&&m.orderNsu===x.orderNsu);
+    return `<div class="v162-mini-card"><div>${opStudentTag(x,d)}<strong>${esc(x.descricao||x.operacao||x.tipo||'Pagamento')}</strong><span>${humanDate(x.pagoEm||x.criadoEm)} · ${fmt(x.pedidoTotalCentavos||x.totalCentavos||0)}</span></div><span class="badge">${esc(statusLabelV151(x.statusAplicacao==='aplicado'?'pago':x.status||'-'))}</span>${match?`<button class="btn btn-light" onclick="openFamilyMovementDetailV172('${js(match.id)}')">Detalhar</button>`:''}</div>`;
+  }).join(''):'<div class="empty">Nenhum pagamento neste filtro.</div>')+moreHtml;
 }
 window.renderStaffFamilyTabV172=renderStaffFamilyTabV172;
 
