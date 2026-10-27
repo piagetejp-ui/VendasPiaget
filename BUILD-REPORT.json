@@ -1,12 +1,12 @@
 {
-  "version": "1.6.0-rc2.7.54",
+  "version": "1.6.0-rc2.7.55",
   "date": "2026-10-27",
-  "base": "1.6.0-rc2.7.53",
+  "base": "1.6.0-rc2.7.54",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "eliminate_the_two_competing_student_account_screen_implementations_v162_vs_v172_by_routing_every_entry_point_opensystementityv165_aluno_through_the_one_window_openstudentdetails_already_pointed_to_so_clicking_a_student_name_anywhere_in_the_app_always_shows_the_same_consolidated_family_view",
-    "fix_losing_the_family_account_context_when_closing_a_movimentacao_detail_opened_from_within_it_the_modal_close_x_now_dynamically_returns_to_the_family_view_instead_of_closing_everything",
-    "group_the_family_account_resumo_tab_s_scattered_action_buttons_gerar_cobranca_registrar_pagamento_bloquear_editar_responsavel_etc_under_a_single_acoes_disclosure_to_reduce_visual_clutter"
+    "fix_regression_introduced_by_rc2_7_54_s_acoes_menu_restructure_the_lancar_pendencia_anterior_button_relied_on_a_mutationobserver_finding_the_old_v162_student_actions_css_class_which_no_longer_existed_after_the_restructure_so_the_button_silently_stopped_appearing_moved_it_to_be_rendered_directly_in_the_acoes_panel_instead_of_injected_by_dom_observation",
+    "fold_the_compra_pagamento_consolidation_for_the_movimentos_tab_directly_into_its_renderer_instead_of_a_second_mutationobserver_pass_that_rewrote_the_tab_body_asynchronously_after_the_first_unconsolidated_render_a_likely_contributor_to_the_earlier_reported_flash_of_different_content_bug_and_it_bypassed_the_rc2_7_54_voltar_detalhar_fix_since_its_detalhar_buttons_called_openmovementdetailv162_directly",
+    "rework_agenda_da_cantina_from_a_cramped_flat_per_occurrence_list_into_cards_grouped_by_student_per_day_showing_item_name_price_and_a_day_total_and_add_a_persistent_visible_conflict_badge_ano_longer_only_an_on_click_confirm_when_a_student_has_both_a_scheduled_programacao_delivery_and_an_ad_hoc_consumo_avulso_sale_the_same_day_the_underlying_cross_check_data_fetch_from_rc2_7_53_is_unchanged_only_how_it_is_surfaced"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -17,9 +17,6 @@
   "not_run": [
     "vercel_deploy",
     "browser_visual_smoke",
-    "live_family_account_walkthrough_in_production"
-  ],
-  "known_scope_deferred": [
-    "the_family_account_view_still_renders_as_a_modal_not_a_true_fixed_page_in_the_sidebar_routing_system_only_the_specific_lost_context_bug_on_detalhar_was_fixed_a_full_page_based_rewrite_is_a_larger_follow_up"
+    "live_cantina_agenda_and_lancar_pendencia_walkthrough_in_production"
   ]
 }

@@ -712,3 +712,15 @@ input,select,textarea{max-width:100%}
 .v172-actions-menu>summary::-webkit-details-marker{display:none}
 .v172-actions-panel{position:absolute;left:0;top:calc(100% + 6px);z-index:30;background:#fff;border:1px solid var(--borda);border-radius:12px;box-shadow:0 16px 36px rgba(16,20,51,.16);padding:10px;display:flex;flex-direction:column;gap:7px;min-width:240px}
 .v172-actions-panel .btn{width:100%;justify-content:flex-start}
+.v150-student-day-card{border:1px solid var(--borda);border-radius:14px;padding:14px;background:#fff;margin-top:10px}
+.v150-student-day-card:first-child{margin-top:0}
+.v150-student-day-card.v150-conflict{border-color:#f3b94a;background:#fffaf0}
+.v150-student-day-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.v150-student-day-head>div{display:flex;flex-direction:column;gap:2px}
+.v150-student-day-head span{font-size:12px;color:var(--muted)}
+.v150-day-total{font-size:17px;color:var(--azul)}
+.v150-conflict-note{background:#fff3da;border:1px solid #f3d08a;color:#865600;border-radius:10px;padding:8px 10px;font-size:12px;margin-top:9px;line-height:1.4}
+.v150-item-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--borda);padding:10px 0;flex-wrap:wrap}
+.v150-item-row>div{min-width:0}
+.v150-item-row strong{display:block;font-size:14px}
+.v150-item-origin{font-size:12px;color:var(--muted);display:block;margin-top:2px}
