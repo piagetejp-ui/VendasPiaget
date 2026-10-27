@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.59 — 27/10/2026
+
+Base: **RC2.7.58**.
+
+### Correção crítica: loop infinito de "atualização disponível" (tela piscando, URL mudando sozinha)
+
+- **Causa raiz**: todo release bump precisa atualizar duas coisas em paralelo — o `version.json` publicado (que o navegador consulta para saber se há versão nova) e a constante `APP_VERSION_CLEAN`, embutida dentro do próprio `11-bootstrap.js` que é servido dentro da pasta daquele release (é com ela que o navegador compara o que já está rodando). Na RC2.7.58 eu atualizei o `version.json` para `1.6.0-rc2.7.58`, mas esqueci de atualizar a constante dentro dos arquivos JS da própria pasta `releases/1.6.0-rc2.7.58/js/`, que continuaram declarando `1.6.0-rc2.7.57`.
+- Resultado: toda vez que a tela carregava, o sistema comparava `1.6.0-rc2.7.58` (do `version.json`) com `1.6.0-rc2.7.57` (hardcoded no próprio bootstrap que acabou de carregar) — viam como diferentes, concluíam que havia uma versão nova disponível e chamavam `location.replace(...)` para recarregar a página com um novo parâmetro `_atualizado` na URL. Só que a página recarregada era a mesma versão quebrada, com a mesma constante desatualizada — então o ciclo se repetia infinitamente. Isso é exatamente o loop relatado: a tela fica carregando, a URL muda sozinha várias vezes (o parâmetro `_atualizado` muda a cada volta) e a tela pisca a cada recarregamento.
+- Corrigido atualizando `APP_VERSION_CLEAN` e todas as demais constantes de versão por módulo dentro da pasta do release para `1.6.0-rc2.7.59`, e **adicionado um item de verificação ao processo de release** para nunca mais deixar esse valor desalinhado do `version.json`.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.58.
+- Nenhuma mudança funcional além da correção do loop — o conteúdo da RC2.7.58 (comprador, telefone, discriminação do checkout) permanece igual.
+
 ## 1.6.0-rc2.7.58 — 27/10/2026
 
 Base: **RC2.7.57**.
