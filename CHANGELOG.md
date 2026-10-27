@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.53 — 27/10/2026
+
+Base: **RC2.7.52**.
+
+### Melhoria: alerta cruzado entre consumo avulso e programação de lanche
+
+- **Causa raiz**: "Consumo na cantina" (venda avulsa no balcão) e "Programação de lanche" (pedido agendado, confirmado na Agenda da cantina) são dois sistemas que nunca se falam. Isso abre espaço para o mesmo lanche real ser registrado duas vezes — ex.: o aluno já consumiu algo avulso de manhã, e mais tarde o operador vê o nome dele pendente na Agenda e marca "Entregue" pensando que já serviu, quando na real pode ser a mesma refeição sendo contada de novo.
+- Agora, antes de marcar uma entrega programada como Entregue/Ausente/Não entregue, o sistema verifica se o aluno já tem consumo avulso lançado no mesmo dia e, se tiver, mostra um aviso com o que já foi consumido (itens e valor) antes de deixar confirmar. O mesmo vale no sentido inverso: ao lançar um consumo avulso na cantina, se o aluno já tem uma entrega programada pendente ou entregue no dia, o operador é avisado antes de finalizar.
+- O aviso **não bloqueia** a operação — é uma confirmação explícita, porque às vezes são mesmo dois itens diferentes no mesmo dia. O objetivo é dar ao operador a informação que falta para decidir, não travar o atendimento.
+- Esse alerta, por si só, já ataca a causa da contagem duplicada de estoque de salgados (um salgado físico sendo descontado duas vezes do "disponíveis hoje" por ter sido lançado nos dois sistemas) — ao evitar o lançamento duplicado na origem, não é mais necessário reconciliar os números depois.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.52.
+
 ## 1.6.0-rc2.7.52 — 27/10/2026
 
 Base: **RC2.7.51**.

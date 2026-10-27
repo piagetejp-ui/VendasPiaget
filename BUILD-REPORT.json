@@ -1,11 +1,10 @@
 {
-  "version": "1.6.0-rc2.7.52",
+  "version": "1.6.0-rc2.7.53",
   "date": "2026-10-27",
-  "base": "1.6.0-rc2.7.51",
+  "base": "1.6.0-rc2.7.52",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "give_gestao_and_admin_profiles_a_sidebar_link_to_the_cantina_delivery_agenda_entregas_page_they_already_had_the_underlying_permission_but_no_menu_button_reached_it",
-    "replace_the_dead_end_correction_request_queue_solicitacoes_correcao_pedido_nobody_ever_reviewed_with_a_direct_self_service_correction_for_an_already_finalized_delivery_occurrence_mandatory_justification_immediate_financial_and_stock_delta_applied_full_audit_trail_no_approval_queue"
+    "cross_check_warning_between_ad_hoc_cantina_consumo_and_scheduled_lanche_programacao_delivery_for_the_same_student_same_day_shown_before_marking_a_delivery_final_or_before_ringing_up_a_walkup_consumo_prevents_the_same_real_world_snack_from_silently_being_recorded_twice_across_two_systems_that_do_not_talk_to_each_other"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -16,6 +15,6 @@
   "not_run": [
     "vercel_deploy",
     "browser_visual_smoke",
-    "live_correction_against_production_delivery_data"
+    "live_cross_check_against_production_cantina_data"
   ]
 }
