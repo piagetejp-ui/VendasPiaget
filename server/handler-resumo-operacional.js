@@ -214,7 +214,11 @@ async function relatorioCategorias(db,dataInicio,dataFim){
   if(missingAlunoIds.length){const students=await Promise.all(missingAlunoIds.map(id=>getStudent(db,id).catch(()=>null)));students.forEach((s,i)=>{if(s)alunoNomeMap.set(missingAlunoIds[i],s.nome)})}
   for(const m of manualMoves){
     const label=MANUAL_MOVEMENT_LABELS[m.subtipo],total=n(m.valorCentavos);
-    const breakdown=[{nome:label,categoria:label,valorCentavos:total}];
+    // Crédito adicionado não é produto — é mecanismo de movimentação de saldo, não uma
+    // categoria de venda. Fica fora da soma de "o que foi vendido" (categorias), mas
+    // continua contando normalmente em "formas de pagamento" (o que bate com o banco).
+    const isCredit=m.subtipo==='credito_secretaria';
+    const breakdown=[{nome:label,categoria:label,valorCentavos:total,semCategoria:isCredit}];
     if(m.subtipo==='regularizacao_saldo_secretaria'){
       const placeholder=breakdown[0];
       composicaoPendente.push({breakdown,placeholder,alunoId:m.alunoId,cutoffIso:m.criadoEm||m.dataChave,valorAlvoCentavos:total});
@@ -230,10 +234,13 @@ async function relatorioCategorias(db,dataInicio,dataFim){
       resolveRegularizationPlaceholder(req.breakdown,req.placeholder,items,req.valorAlvoCentavos);
     }));
   }
-  const categorias={};
-  for(const row of vendas){for(const b of row.itens){const cat=b.categoria||'Outros';if(!categorias[cat])categorias[cat]={quantidade:0,valorCentavos:0,label:cat};categorias[cat].quantidade+=1;categorias[cat].valorCentavos+=n(b.valorCentavos)}}
+  const categorias={};let creditosAvulsosCentavos=0;
+  for(const row of vendas){for(const b of row.itens){
+    if(b.semCategoria){creditosAvulsosCentavos+=n(b.valorCentavos);continue}
+    const cat=b.categoria||'Outros';if(!categorias[cat])categorias[cat]={quantidade:0,valorCentavos:0,label:cat};categorias[cat].quantidade+=1;categorias[cat].valorCentavos+=n(b.valorCentavos)
+  }}
   const totalCentavos=Object.values(categorias).reduce((s,c)=>s+c.valorCentavos,0);
-  return {ok:true,dataInicio,dataFim,totalCentavos,quantidadeVendas:vendas.length,categorias,formasPagamento,vendas,_reads:docs.length+manualDocs.length+categoryMap.size+missingAlunoIds.length+composicaoReads};
+  return {ok:true,dataInicio,dataFim,totalCentavos,creditosAvulsosCentavos,quantidadeVendas:vendas.length,categorias,formasPagamento,vendas,_reads:docs.length+manualDocs.length+categoryMap.size+missingAlunoIds.length+composicaoReads};
 }
 function fmtCentavos(c){return `R$ ${(n(c)/100).toFixed(2).replace('.',',')}`}
 function prettifyFallback(s){return s?String(s).replaceAll('_',' '):null}
