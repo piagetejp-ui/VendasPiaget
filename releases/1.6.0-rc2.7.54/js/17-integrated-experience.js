@@ -2,7 +2,7 @@
    Experiência integrada: navegação contextual, notificações e gestão auditável do caixa. */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.53';
+const VERSION='1.6.0-rc2.7.54';
 const SESSIONS='sessoes_caixa',PERIODS='periodos_responsabilidade_caixa',MOVES='movimentos_caixa',DIVERGENCES='divergencias_caixa';
 const baseRenderCashManagement=window.renderCashManagementV164;
 const baseRenderCaixa=window.renderCaixa;
@@ -121,7 +121,7 @@ async function openNotificationOrderV165(id){const [a,b,c]=await Promise.all([db
 async function openOccurrenceDetailV165(id){const s=await db.collection('ocorrencias_entrega').doc(id).get().catch(()=>null);if(!s?.exists)return appMessage('Entrega não encontrada.');const o={id:s.id,...s.data()};openModal('Detalhes do lanche programado',`<div class="v162-detail-hero"><div><small>${esc(o.turma||'-')}</small><strong>${esc(o.alunoNome||'Aluno')}</strong><span>${v165DatePt(o.dataChave)}</span></div><span class="badge b-blue">${esc(String(o.status||'').replaceAll('_',' '))}</span></div><div class="card-title" style="margin:14px 0 8px">Composição</div>${(o.itens||[]).map(x=>`<div class="v162-mini-card"><div><strong>${Number(x.quantidade||1)}× ${esc(x.nome||'Produto')}</strong></div><strong>${fmt(Number(x.totalCentavos||x.valorCentavos||0))}</strong></div>`).join('')||'<div class="empty-soft">Sem itens detalhados.</div>'}${o.pedidoId?`<button class="btn btn-light" style="margin-top:12px" onclick="openSystemEntityV165('pedido','${esc(o.pedidoId)}')">Ver pedido completo</button>`:''}`)}
 async function openSystemEntityV165(kind,id){
   if(!id)return;const parent=Boolean(state.parentStudent&&!state.user);
-  if(kind==='aluno'){if(parent)return;return window.openStudentDetailsV162?.(id)}
+  if(kind==='aluno'){if(parent)return;return window.openStudentDetails?.(id)}
   if(kind==='pedido'){if(parent)return window.openParentOrdersV151?.(id);return openNotificationOrderV165(id)}
   if(kind==='venda'){if(parent)return window.openParentOrdersV151?.();return window.openUnifiedSaleDetailV162?.(id)}
   if(kind==='movimentacao'){if(parent)return window.openParentMovementsV151?.();return window.openMovementDetailV162?.(id,'staff')}

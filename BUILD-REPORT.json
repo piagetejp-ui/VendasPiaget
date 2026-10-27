@@ -1,10 +1,12 @@
 {
-  "version": "1.6.0-rc2.7.53",
+  "version": "1.6.0-rc2.7.54",
   "date": "2026-10-27",
-  "base": "1.6.0-rc2.7.52",
+  "base": "1.6.0-rc2.7.53",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "cross_check_warning_between_ad_hoc_cantina_consumo_and_scheduled_lanche_programacao_delivery_for_the_same_student_same_day_shown_before_marking_a_delivery_final_or_before_ringing_up_a_walkup_consumo_prevents_the_same_real_world_snack_from_silently_being_recorded_twice_across_two_systems_that_do_not_talk_to_each_other"
+    "eliminate_the_two_competing_student_account_screen_implementations_v162_vs_v172_by_routing_every_entry_point_opensystementityv165_aluno_through_the_one_window_openstudentdetails_already_pointed_to_so_clicking_a_student_name_anywhere_in_the_app_always_shows_the_same_consolidated_family_view",
+    "fix_losing_the_family_account_context_when_closing_a_movimentacao_detail_opened_from_within_it_the_modal_close_x_now_dynamically_returns_to_the_family_view_instead_of_closing_everything",
+    "group_the_family_account_resumo_tab_s_scattered_action_buttons_gerar_cobranca_registrar_pagamento_bloquear_editar_responsavel_etc_under_a_single_acoes_disclosure_to_reduce_visual_clutter"
   ],
   "checks": {
     "javascript_files_checked": 55,
@@ -15,6 +17,9 @@
   "not_run": [
     "vercel_deploy",
     "browser_visual_smoke",
-    "live_cross_check_against_production_cantina_data"
+    "live_family_account_walkthrough_in_production"
+  ],
+  "known_scope_deferred": [
+    "the_family_account_view_still_renders_as_a_modal_not_a_true_fixed_page_in_the_sidebar_routing_system_only_the_specific_lost_context_bug_on_detalhar_was_fixed_a_full_page_based_rewrite_is_a_larger_follow_up"
   ]
 }
