@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.60 — 27/10/2026
+
+Base: **RC2.7.59**.
+
+### Correção: telefone pré-preenchido, mas travado como inválido, no link de venda online (`pagamento.html`)
+
+- **Este é o bug de telefone que o Lucas relatou originalmente** — só que ele vive numa página diferente das que eu tinha corrigido até aqui. `pagamento.html` é a tela aberta pela família quando a secretaria gera um **link de venda online** (lanche, fardamento, crédito, regularização) e manda pra família — separada do fluxo de "conta familiar" (`openAccountPaymentV141`/`checkoutBuyerStepV157`) que foi corrigido na RC2.7.58/59.
+- **Causa raiz**: essa página busca o comprador salvo (`dados_pagamento_responsavel`) e preenche o campo de telefone **direto com o valor salvo no formato canônico `+55DDDNÚMERO`** (12-13 dígitos). Só que a validação própria dessa página (`buyerIssues`) só aceita telefone no formato local — DDD + número, 10 ou 11 dígitos, sem o `+55`. Resultado: toda família que já tinha um comprador salvo via o campo de telefone **pré-preenchido, mas marcado em vermelho como inválido** ("Informe um telefone com DDD"), e precisava apagar e redigitar o número do zero pra conseguir continuar — mesmo o dado já estando certo.
+- Corrigido retirando o "+55" do valor antes de mostrar no resumo e no campo editável (mesma lógica de desambiguação por tamanho total já usada em `12-portal-finalization.js`), então agora o campo aparece pré-preenchido no formato que a validação espera e passa direto, sem precisar reditar nada.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.59.
+
 ## 1.6.0-rc2.7.59 — 27/10/2026
 
 Base: **RC2.7.58**.
