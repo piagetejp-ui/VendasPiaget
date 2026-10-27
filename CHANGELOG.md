@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.56 — 27/10/2026
+
+Base: **RC2.7.55**.
+
+### Princípio: categoria sempre vem do catálogo; crédito e regularização são mecanismo, não produto
+
+- **Crédito adicionado deixou de contar como categoria de venda** no Relatório por categoria. Ele é uma forma de entrada de saldo, não um produto do catálogo — continua contando normalmente em "Por forma de pagamento" (onde o dinheiro realmente entrou e bate com o extrato do banco), mas não soma mais como se "Crédito" fosse algo vendido. O valor excluído aparece como um aviso separado no relatório ("Crédito adicionado sem produto vinculado no período"), para não desaparecer da visão geral.
+- **Regularização de saldo já seguia esse princípio** desde a RC2.7.51 (sempre decomposta nas categorias reais do catálogo que causaram o saldo) — nenhuma mudança necessária aí.
+- **"Lançar pendência anterior" agora exige escolher um item real do catálogo**, em vez de descrição livre + um dropdown genérico de tipo (Cantina/Fardamento/Mensalidade/Evento/Serviço/Negociação/Outro). Isso garante que todo lançamento retroativo — usado quando um lançamento da cantina é esquecido e precisa ser registrado depois — carregue a categoria real do catálogo, exatamente como uma venda ao vivo. O relatório passa a enxergar os dois de forma idêntica, sem nenhum tratamento especial para lançamento manual.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.55.
+
 ## 1.6.0-rc2.7.55 — 27/10/2026
 
 Base: **RC2.7.54**.
