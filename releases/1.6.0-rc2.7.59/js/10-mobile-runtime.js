@@ -1,8 +1,8 @@
-/* Escola Piaget — V1.6.0-rc2.7.57
+/* Escola Piaget — V1.6.0-rc2.7.59
    Runtime único de viewport, navegação mobile e apresentação responsiva. */
 (function(){
   'use strict';
-  const VERSION='1.6.0-rc2.7.57';
+  const VERSION='1.6.0-rc2.7.59';
 
   function setViewportHeight(){
     const height=Math.round(window.visualViewport?.height||window.innerHeight||document.documentElement.clientHeight||0);
