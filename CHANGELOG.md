@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.61 — 27/10/2026
+
+Base: **RC2.7.60**.
+
+### Melhoria: discriminação do que está sendo cobrado no link de venda online (`pagamento.html`)
+
+- A RC2.7.58 já tinha corrigido a discriminação **dentro do link da InfinitePay** (o checkout em si lista a compra e a regularização como itens separados). Mas a tela **antes** disso — `pagamento.html`, "Confira a cobrança", que a família vê primeiro ao abrir o link da secretaria — continuava mostrando só "Valor da compra" e "Pagamento estimado" como dois números diferentes, sem explicar por que eles não batem. Era exatamente o ponto do pedido original: "ele não mostra o que ele acrescentou".
+- Agora, quando o link embute saldo em aberto (o pagamento estimado é maior que a compra), aparece uma linha **"Regularização de saldo em aberto"** com a diferença. Quando usa crédito da conta (o pagamento estimado é menor), aparece **"Crédito utilizado"**. Operações puras de crédito/regularização (sem compra junto) continuam com o rótulo único que já tinham, sem mudança.
+- Calculado só com os dois totais que a API já retornava — nenhuma mudança no servidor foi necessária.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.60.
+
 ## 1.6.0-rc2.7.60 — 27/10/2026
 
 Base: **RC2.7.59**.
