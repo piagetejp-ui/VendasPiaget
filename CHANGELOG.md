@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.58 — 27/10/2026
+
+Base: **RC2.7.57**.
+
+### Melhoria: experiência do link de pagamento (comprador, telefone, discriminação do checkout)
+
+- **Modal de pagamento da conta familiar com campos mortos removidos**: `openAccountPaymentV141` (a versão que realmente carrega na tela, em `21-family-shared-experience.js`) tinha campos de nome/telefone/e-mail do comprador e um checkbox "Salvar dados" que pareciam funcionar, mas o botão de confirmação de verdade nunca lia esses campos — quem preenchia ali preenchia em vão. Os dados do comprador já são tratados depois, numa etapa dedicada (`checkoutBuyerStepV157`), que é a que realmente salva e pré-preenche. Removidos os campos mortos; o botão "Gerar pagamento InfinitePay" virou "Continuar" (igual à versão sem family-awareness), e recebeu de volta o `id="v157AccountContinue"` que tinha se perdido nessa versão — sem ele, o botão não mostrava o estado de carregando/desabilitado durante a geração do link.
+- **Corrigido um bug real de normalização de telefone**: `normalizePhone` (servidor) decidia se um número já tinha o "+55" olhando só se ele começava com "55" — só que DDD 55 é uma área real (região de Santa Maria/RS), então um número local de 11 dígitos começando em 55 virava um número truncado e errado. Agora a decisão é pelo tamanho total do número (12 ou 13 dígitos = já tem código do país; 10 ou 11 = não tem), não pelo prefixo.
+- A edição administrativa do comprador padrão da família (`editar_comprador_padrao`) salvava o telefone exatamente como digitado, sem normalizar — agora usa a mesma `normalizePhone` corrigida, mantendo o mesmo formato canônico em todo lugar que grava `dados_pagamento_responsavel`.
+- **Checkout agora discrimina o que está sendo cobrado**: quando um link de pagamento (lanche, fardamento ou venda do catálogo pela secretaria) embute também um saldo em aberto antigo, o link gerado na InfinitePay deixava de informar: o pai via só um valor total, sem saber que uma parte era uma dívida antiga. Agora o link lista dois itens separados — a compra atual e a "Regularização de saldo em aberto" — em vez de um valor único sem explicação.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.57.
+
 ## 1.6.0-rc2.7.57 — 27/10/2026
 
 Base: **RC2.7.56**.

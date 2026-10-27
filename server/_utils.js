@@ -47,7 +47,10 @@ function makeOrderNsu(tipo='CONTA'){
 function normalizePhone(input){
   const digits=String(input||'').replace(/\D/g,'');
   if(!digits) return '';
-  if(digits.startsWith('55')) return `+${digits}`;
+  // DDD 55 é uma área real (região de Santa Maria/RS) — "começa com 55" não basta para saber
+  // se já tem o código do país. Só decide pelo tamanho: com +55, um número vira 12 (fixo) ou
+  // 13 (celular) dígitos; sem, é 10 ou 11. Fora disso, assume que falta o código do país.
+  if((digits.length===12||digits.length===13)&&digits.startsWith('55'))return `+${digits}`;
   return `+55${digits}`;
 }
 function normalizeEmail(input){ return String(input||'').trim().toLowerCase(); }
@@ -712,6 +715,11 @@ async function buildCheckoutOperation(db, body){
     const reservation=await reserveCantinaOrder(db,body,actor,aluno,customer,cfg);
     const order=reservation.normalized;
     const descricao=checkoutDescriptionText(`Lanche - ${aluno.nome}`);
+    const cantinaRequired=Math.max(0,order.totalCentavos-reservation.creditUsed+reservation.debtRequired),cantinaExtra=Math.max(0,reservation.checkoutTotal-cantinaRequired);
+    const itensCheckout=reservation.checkoutTotal<=0?[]:reservation.debtRequired>0?[
+      {quantity:1,price:order.totalCentavos+cantinaExtra,description:descricao},
+      {quantity:1,price:reservation.debtRequired,description:checkoutDescriptionText(`Regularização de saldo em aberto - ${aluno.nome}`)}
+    ]:[{quantity:1,price:reservation.checkoutTotal,description:descricao}];
     return {
       tipo,
       actor,
@@ -731,7 +739,7 @@ async function buildCheckoutOperation(db, body){
       pedidoId:reservation.pedidoId,
       reservaExpiraEm:reservation.expiresAt,
       reservaMinutos:reservation.minutes,
-      itensCheckout:reservation.checkoutTotal>0?[{quantity:1,price:reservation.checkoutTotal,description:descricao}]:[],
+      itensCheckout,
       customer,
       payload:{
         pedidoId:reservation.pedidoId,
@@ -748,10 +756,14 @@ async function buildCheckoutOperation(db, body){
   if(tipo==='pedido_farda'){
     const reservation=await reserveUniformOrder(db,body,actor,aluno,customer);
     const descricao=checkoutDescriptionText(`Fardamento - ${aluno.nome}`);
+    const itensCheckoutFarda=reservation.checkoutTotal<=0?[]:reservation.debtRequired>0?[
+      {quantity:1,price:reservation.totalCentavos,description:descricao},
+      {quantity:1,price:reservation.debtRequired,description:checkoutDescriptionText(`Regularização de saldo em aberto - ${aluno.nome}`)}
+    ]:[{quantity:1,price:reservation.checkoutTotal,description:descricao}];
     return {tipo,actor,operationKey,totalCentavos:reservation.checkoutTotal,pedidoTotalCentavos:reservation.totalCentavos,minimoCentavos:reservation.checkoutTotal>0?reservation.checkoutTotal:0,descricao,
       alunoId:aluno.id,alunoNome:aluno.nome,turma:aluno.turma||null,turno:aluno.turno||null,matricula:aluno.matricula||null,responsavelFinanceiro:aluno.responsavelFinanceiro||null,responsavelFinanceiroId:aluno.responsavelFinanceiroId||null,
       saldoNoMomentoCentavos:reservation.saldoAtual,saldoEmAbertoNoMomentoCentavos:Math.max(0,-reservation.saldoAtual),pedidoId:reservation.pedidoId,
-      itensCheckout:reservation.checkoutTotal>0?[{quantity:1,price:reservation.checkoutTotal,description:descricao}]:[],customer,
+      itensCheckout:itensCheckoutFarda,customer,
       payload:{pedidoId:reservation.pedidoId,pedidoTotalCentavos:reservation.totalCentavos,tamanho:reservation.size,modelo:reservation.gender,quantidade:reservation.qty},criadoEm:now};
   }
   if(tipo==='venda_online_secretaria'){
@@ -759,7 +771,8 @@ async function buildCheckoutOperation(db, body){
     if(!raw.length)throw Object.assign(new Error('Adicione ao menos um item à venda.'),{status:400});
     const validationChannel=actor.perfil==='responsavel'?'portal':'online',cfg=await getConfig(db),normalized=await normalizeFamilySecretaryMixedSale(db,raw,validationChannel,aluno,cfg),total=normalized.total,lines=normalized.lines,expanded=normalized.expanded,catalogStock=normalized.catalogStock,uniformStock=normalized.uniformStock||[],programacoes=normalized.programacoes,alunosIds=normalized.alunosIds||[aluno.id];
     const acc=await getAccount(db,aluno.id),saldoAtual=accountNet(acc),usarSaldo=body.usarSaldo===true,creditoUsado=usarSaldo?Math.min(Math.max(0,saldoAtual),total):0,regularizacao=Math.max(0,-saldoAtual),checkoutTotal=Math.max(0,total-creditoUsado+regularizacao),subject=alunosIds.length>1?await familyCheckoutSubject(db,aluno,{forceFamily:true,alunosIds}):aluno.nome,descricao=familySaleDescription(lines,subject);
-    return {tipo,actor,operationKey,totalCentavos:checkoutTotal,pedidoTotalCentavos:total,minimoCentavos:checkoutTotal>0?checkoutTotal:0,descricao,alunoId:aluno.id,alunoNome:aluno.nome,turma:aluno.turma||null,turno:aluno.turno||null,matricula:aluno.matricula||null,responsavelFinanceiro:aluno.responsavelFinanceiro||null,responsavelFinanceiroId:aluno.responsavelFinanceiroId||null,alunosIds,saldoNoMomentoCentavos:saldoAtual,saldoEmAbertoNoMomentoCentavos:regularizacao,vendaOnlineId:String(body.vendaOnlineId||''),itensCheckout:checkoutTotal>0?[{quantity:1,price:checkoutTotal,description:descricao}]:[],customer,payload:{vendaOnlineId:String(body.vendaOnlineId||''),itens:lines,componentes:[...expanded.values()],estoquesCatalogo:catalogStock,estoquesFarda:uniformStock,programacoes,alunosIds,usarSaldo,creditoUsadoCentavos:creditoUsado,regularizacaoCentavos:regularizacao,pedidoTotalCentavos:total,saldoNoMomentoCentavos:saldoAtual},criadoEm:now};
+    const itensCheckout=checkoutTotal<=0?[]:regularizacao>0?[{quantity:1,price:total,description:descricao},{quantity:1,price:regularizacao,description:checkoutDescriptionText(`Regularização de saldo em aberto - ${subject}`)}]:[{quantity:1,price:checkoutTotal,description:descricao}];
+    return {tipo,actor,operationKey,totalCentavos:checkoutTotal,pedidoTotalCentavos:total,minimoCentavos:checkoutTotal>0?checkoutTotal:0,descricao,alunoId:aluno.id,alunoNome:aluno.nome,turma:aluno.turma||null,turno:aluno.turno||null,matricula:aluno.matricula||null,responsavelFinanceiro:aluno.responsavelFinanceiro||null,responsavelFinanceiroId:aluno.responsavelFinanceiroId||null,alunosIds,saldoNoMomentoCentavos:saldoAtual,saldoEmAbertoNoMomentoCentavos:regularizacao,vendaOnlineId:String(body.vendaOnlineId||''),itensCheckout,customer,payload:{vendaOnlineId:String(body.vendaOnlineId||''),itens:lines,componentes:[...expanded.values()],estoquesCatalogo:catalogStock,estoquesFarda:uniformStock,programacoes,alunosIds,usarSaldo,creditoUsadoCentavos:creditoUsado,regularizacaoCentavos:regularizacao,pedidoTotalCentavos:total,saldoNoMomentoCentavos:saldoAtual},criadoEm:now};
   }
   if(tipo !== 'entrada_conta_aluno') throw Object.assign(new Error('Tipo de operação não suportado nesta versão.'),{status:400});
   const acc=await getAccount(db, aluno.id);
@@ -1639,6 +1652,7 @@ module.exports = {
   json,
   parseBody,
   nowIso,
+  normalizePhone,
   buildCheckoutOperation,
   createCheckoutLink,
   checkoutOperationKey,
