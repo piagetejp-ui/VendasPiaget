@@ -1,21 +1,21 @@
 {
-  "version": "1.6.0-rc2.7.51",
-  "date": "2026-10-09",
-  "base": "1.6.0-rc2.7.50",
+  "version": "1.6.0-rc2.7.52",
+  "date": "2026-10-27",
+  "base": "1.6.0-rc2.7.51",
   "status": "local_static_and_mock_validation_passed",
   "scope": [
-    "trace_what_originally_caused_a_negative_balance_mensalidade_cantina_passeio_etc_and_break_a_regularizacao_de_saldo_line_down_into_those_original_categories_in_the_category_report_instead_of_a_single_generic_bucket"
+    "give_gestao_and_admin_profiles_a_sidebar_link_to_the_cantina_delivery_agenda_entregas_page_they_already_had_the_underlying_permission_but_no_menu_button_reached_it",
+    "replace_the_dead_end_correction_request_queue_solicitacoes_correcao_pedido_nobody_ever_reviewed_with_a_direct_self_service_correction_for_an_already_finalized_delivery_occurrence_mandatory_justification_immediate_financial_and_stock_delta_applied_full_audit_trail_no_approval_queue"
   ],
   "checks": {
     "javascript_files_checked": 55,
     "javascript_syntax_errors": 0,
     "physical_api_functions": 10,
-    "firestore_rules_changed": false,
-    "standalone_mock_validation_of_debt_composition_walk_algorithm": "passed_2_scenarios_partial_payment_attribution_and_prior_cycle_boundary"
+    "firestore_rules_changed": false
   },
   "not_run": [
     "vercel_deploy",
     "browser_visual_smoke",
-    "live_report_against_production_sales_data"
+    "live_correction_against_production_delivery_data"
   ]
 }

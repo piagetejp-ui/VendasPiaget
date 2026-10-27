@@ -1,5 +1,23 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.52 — 27/10/2026
+
+Base: **RC2.7.51**.
+
+### Melhoria: Gestão/Admin ganham acesso à Agenda da cantina
+
+- A permissão técnica já existia, mas não havia botão no menu de Gestão/Admin para a página "Agenda da cantina" (entregar, marcar ausência, estornar). Agora ela aparece no menu desses dois perfis, junto de "Cantina".
+
+### Melhoria: correção direta de entrega já finalizada, sem fila de aprovação
+
+- **Antes**: quando uma entrega programada já tinha recebido uma situação final (Entregue/Ausente/Não entregue) e precisava ser corrigida, o único caminho era "Solicitar correção" — que apenas gravava um pedido numa coleção (`solicitacoes_correcao_pedido`) que **nenhuma tela do sistema jamais exibia**. Na prática, a correção nunca acontecia.
+- **Agora**: qualquer perfil que já acesse a Agenda da cantina (inclusive o próprio operador da cantina, mesmo quando é ele quem cometeu o erro) pode corrigir a entrega na hora, trocando a situação final para outra (ex.: de "Entregue" para "Não entregue", ou vice-versa). A justificativa é **obrigatória** (mínimo de detalhe exigido) e fica gravada tanto no próprio registro da entrega quanto na Auditoria, com quem corrigiu, quando e o motivo.
+- A correção recalcula o efeito financeiro e de estoque pela diferença entre a situação antiga e a nova (ex.: se estava "Entregue" — sem efeito financeiro — e vira "Não entregue", credita o valor de volta e libera o salgado reservado; se for o caminho inverso, estorna o crédito e reserva o salgado de novo), em vez de assumir sempre que não havia nenhum efeito anterior.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.51 — o acesso de equipe já é liberado por `staffActive()`, então nenhuma regra precisou mudar para habilitar a correção direta.
+
 ## 1.6.0-rc2.7.51 — 09/10/2026
 
 Base: **RC2.7.50**.
