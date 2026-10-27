@@ -1,5 +1,27 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.54 — 27/10/2026
+
+Base: **RC2.7.53**.
+
+### Correção: duas telas diferentes para a conta do aluno (causa do "abre de um jeito, abre de outro")
+
+- **Causa raiz confirmada**: o sistema tinha **duas implementações inteiras e concorrentes** da tela de conta do aluno — uma mais antiga (V162, cartões simples) e uma mais nova (V172, "Conta familiar", que junta compra+pagamento numa linha, mostra regularização embutida e tem o botão "Emitir PDF"). A maioria dos botões do sistema já apontava para a versão nova, mas um ponto específico — `openSystemEntityV165('aluno', id)`, usado sempre que você clica no **nome de um aluno** em qualquer lugar do sistema (inclusive nos próprios cartõezinhos de nome dentro da tela nova) — ainda chamava a versão antiga, pelo nome fixo. Agora esse ponto aponta para a mesma função que todo o resto do sistema já usa, então não existe mais "a outra tela" para cair.
+- A implementação antiga (V162) não foi apagada nesta versão — ficou órfã (nada mais a chama), mas o código continua no repositório. A remoção definitiva fica para uma limpeza futura, depois de confirmar que nada mais depende dela.
+
+### Correção: "Detalhar" de uma movimentação tirava você do perfil da família
+
+- Antes, abrir o detalhe de uma movimentação de dentro da conta familiar e depois fechar aquele detalhe fechava a tela inteira — porque é tecnicamente a mesma janela reaproveitada, sem nenhuma forma de "voltar". Agora o botão de fechar (×), quando você abre um detalhe de dentro da conta familiar, vira "voltar para a conta familiar" em vez de fechar tudo.
+- **Importante**: a tela da conta da família continua sendo uma janela flutuante (modal), não uma tela fixa dentro do menu como foi pedido — essa é uma mudança maior, de arquitetura de navegação, que fica para uma etapa seguinte. O que foi resolvido agora é especificamente a perda de contexto ao fechar um detalhe.
+
+### Melhoria: ações da conta familiar agrupadas
+
+- Os botões "Gerar cobrança", "Registrar pagamento", "Bloquear conta", "Editar responsável" etc. estavam todos soltos, lado a lado, poluindo a tela. Agora ficam agrupados sob um único botão "Ações ▾".
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.53.
+
 ## 1.6.0-rc2.7.53 — 27/10/2026
 
 Base: **RC2.7.52**.

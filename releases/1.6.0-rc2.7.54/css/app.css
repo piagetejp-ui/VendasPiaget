@@ -707,3 +707,8 @@ input,select,textarea{max-width:100%}
 .v226-delivery-row input{margin-top:3px;transform:scale(1.15)}
 .v226-danger-soft{background:#fff3f3;color:#912d2d;border:1px solid #e7bcbc}
 .v226-danger-soft:hover{background:#ffeaea;border-color:#d99e9e}
+.v172-actions-menu{position:relative;margin:12px 0;display:inline-block}
+.v172-actions-menu>summary{list-style:none;cursor:pointer;user-select:none}
+.v172-actions-menu>summary::-webkit-details-marker{display:none}
+.v172-actions-panel{position:absolute;left:0;top:calc(100% + 6px);z-index:30;background:#fff;border:1px solid var(--borda);border-radius:12px;box-shadow:0 16px 36px rgba(16,20,51,.16);padding:10px;display:flex;flex-direction:column;gap:7px;min-width:240px}
+.v172-actions-panel .btn{width:100%;justify-content:flex-start}
