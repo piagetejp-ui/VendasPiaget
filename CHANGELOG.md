@@ -1,5 +1,25 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.55 — 27/10/2026
+
+Base: **RC2.7.54**.
+
+### Correção: "Lançar pendência anterior" sumiu depois da reforma de ações (regressão da RC2.7.54)
+
+- **Causa raiz**: a RC2.7.54 reorganizou os botões de ação da conta familiar para dentro de um menu "Ações", removendo a classe CSS `.v162-student-actions` do HTML. Só que o botão "Lançar pendência anterior" — usado quando um lançamento da cantina é esquecido e precisa ser registrado depois — não vivia nessa tela: ele era **injetado por um observador de mutações do DOM** que procurava essa classe específica. Quando a classe sumiu, o observador parou de encontrar onde injetar, e o botão desapareceu silenciosamente — sem erro, sem aviso.
+- Corrigido colocando o botão diretamente no menu "Ações" (junto com "Gerar cobrança", "Registrar pagamento" etc.), em vez de depender de um observador externo adivinhar onde encaixá-lo. Esse botão abre o lançamento retroativo já com categoria (Lanche/Cantina, Fardamento, Mensalidade, Evento, Serviço, Negociação, Outro), fica como "aguardando pagamento" e pode gerar link de cobrança depois pela tela de Cobranças.
+- O mesmo observador também reescrevia a aba Movimentações de forma assíncrona (consolidando compra+pagamento numa segunda passada, depois da primeira renderização já ter aparecido crua) — um forte candidato para o bug de "a tela mostra um formato, depois mostra outro" relatado na auditoria da família do João Pedro. Essa consolidação agora é feita direto na primeira renderização da aba, sem segunda passada.
+
+### Melhoria: Agenda da cantina reorganizada por aluno, com o aviso de duplicidade sempre visível
+
+- A lista anterior mostrava um card por lançamento, com colunas apertadas e o valor num texto pequeno e apagado — difícil de ler rapidamente.
+- Agora a agenda agrupa tudo por aluno: um card por aluno no dia, com cada item e seu valor, mais o total do dia para aquele aluno.
+- O aviso de consumo em duplicidade (RC2.7.53) deixou de depender só da confirmação ao clicar — agora, quando um aluno tem programação de lanche **e** consumo avulso no mesmo dia, isso aparece como um aviso visível direto no card, sem precisar clicar em nada.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.54.
+
 ## 1.6.0-rc2.7.54 — 27/10/2026
 
 Base: **RC2.7.53**.

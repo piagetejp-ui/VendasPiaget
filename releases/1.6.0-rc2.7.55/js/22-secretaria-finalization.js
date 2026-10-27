@@ -1,4 +1,4 @@
-/* Escola Piaget — 1.6.0-rc2.7.54
+/* Escola Piaget — 1.6.0-rc2.7.55
    Fechamento da etapa Secretaria:
    - login interno centralizado;
    - referência de aluno padronizada;
@@ -9,7 +9,7 @@
 */
 (()=>{
 'use strict';
-const VERSION='1.6.0-rc2.7.54';
+const VERSION='1.6.0-rc2.7.55';
 async function familyPagedDocsV221(query,pageSize=100){const out=[];let cursor=null;while(true){let q=query.limit(pageSize);if(cursor)q=q.startAfter(cursor);const snap=await q.get();out.push(...snap.docs);if(snap.size<pageSize)break;cursor=snap.docs[snap.docs.length-1]}return out}
 const FIELD=firebase.firestore.FieldValue;
 const FINAL_ORDER=new Set(['entregue','concluido','cancelado','concluido_com_devolucao','utilizado','nao_entregue','aluno_ausente']);
@@ -105,6 +105,7 @@ window.consolidateFamilyMovementsV173=function(rows=[]){
 };
 function compositeTitle(m){return String(m._purchase?.subtipo||m._purchase?.tipo||'').includes('online')?'Compra online — Secretaria':'Compra — Secretaria'}
 function compositeDesc(m){const total=n(m.valorCompraCentavos),external=n(m.valorPagoExternoCentavos),used=Math.max(0,total-external),regularized=Math.max(0,external-total),parts=[`Compra ${fmt(total)}`];if(external)parts.push(`pagamento externo ${fmt(external)}`);if(used)parts.push(`saldo da família ${fmt(used)}`);if(regularized)parts.push(`regularização anterior ${fmt(regularized)}`);return parts.join(' · ')}
+window.compositeTitleV173=compositeTitle;window.compositeDescV173=compositeDesc;
 async function familyQuery(collection,students){if(typeof window.queryFamilyRecordsV221==='function')return window.queryFamilyRecordsV221(collection,students,{arrayField:'alunosIds',mode:'compact'});const seen=new Map(),jobs=[];for(const a of students){jobs.push(db.collection(collection).where('alunoId','==',a.id).limit(150).get().catch(()=>({docs:[]})));jobs.push(db.collection(collection).where('alunosIds','array-contains',a.id).limit(150).get().catch(()=>({docs:[]})))}for(const s of await Promise.all(jobs))for(const d of s.docs)seen.set(d.id,{id:d.id,...d.data()});return [...seen.values()]}
 window.openParentMovementsV151=async function(initialFilter='todos'){
   const students=currentFamilyStudents();openModal(students.length>1?'Movimentações da família':'Movimentações da conta','<div class="v151-inline-loader">Carregando...</div>');
@@ -219,11 +220,14 @@ window.renderPedidosV166=async function(opts={}){await BASE_RENDER_ORDERS(opts);
 
 /* ===============================
    AÇÕES NA CONTA FAMILIAR
-   - injeta lançamento manual na ficha já existente.
-   - consolida duplicidades na aba Movimentações da ficha.
+   O lançamento manual retroativo e a consolidação de duplicidades na aba Movimentações
+   agora são renderizados diretamente em 21-family-shared-experience.js (botão no menu
+   "Ações" e no próprio render da aba) em vez de injetados aqui por MutationObserver —
+   aquele padrão dependia do nome exato de uma classe CSS da tela antiga e quebrava
+   silenciosamente sempre que o layout mudava, além de reescrever a aba de forma
+   assíncrona e gerar uma piscada de conteúdo diferente.
    =============================== */
-function injectManualAction(){const modal=document.getElementById('modalBody');if(!modal||!state.v172StaffFamily||document.getElementById('v173ManualAction'))return;const actions=modal.querySelector('.v162-student-actions');if(actions&&['secretaria','gestao','admin'].includes(state.user?.perfil)){const b=document.createElement('button');b.id='v173ManualAction';b.className='btn btn-orange';b.textContent='Lançar pendência anterior';b.onclick=()=>openManualOpenOperationV173(state.v172StaffFamily.primary.id);actions.appendChild(b)}}
-const modalObserver=new MutationObserver(()=>{injectManualAction();decorateStudentRows();const body=document.getElementById('v172StaffFamilyBody');if(body&&state.v172StaffFamilyTab==='movimentos'&&!body.dataset.v173Consolidated){const cards=[...body.querySelectorAll('.v162-mini-card')];const raw=state.v172StaffFamily?.moves||[],consolidated=window.consolidateFamilyMovementsV173(raw);if(consolidated.length<raw.length){body.dataset.v173Consolidated='1';body.innerHTML=consolidated.map(m=>{const composite=m._composite,impact=composite?n(m.impactoSaldoCentavos):signedImpact(m),detailId=m._purchase?.id||m.id;return `<div class="v162-mini-card"><div>${movementStudentRefsV173(m)}<strong>${esc(composite?compositeTitle(m):movementLabelV151(m))}</strong><span>${humanDate(m.criadoEm)} · ${composite?fmt(m.valorCompraCentavos):(impact>=0?'+':'')+fmt(impact)}</span>${composite?`<small class="muted">${esc(compositeDesc(m))}</small>`:''}</div><button class="btn btn-light" onclick="openMovementDetailV162('${safeJs(detailId)}','staff')">Detalhar</button></div>`}).join('')||'<div class="empty">Nenhuma movimentação.</div>'}}});if(document.documentElement)modalObserver.observe(document.documentElement,{subtree:true,childList:true});
+const modalObserver=new MutationObserver(()=>{decorateStudentRows()});if(document.documentElement)modalObserver.observe(document.documentElement,{subtree:true,childList:true});
 
 /* Exposição e versão visual limpa. */
 function cleanVersionVisual(){document.querySelectorAll('.system-version-clean,#appVersionPill').forEach(el=>{el.textContent=VERSION})}
