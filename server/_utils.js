@@ -310,6 +310,20 @@ function mergeCustomer(saved={}, provided=null, student=null){
   if(phone)customer.phone_number=phone;
   return Object.keys(customer).length?customer:null;
 }
+async function upsertPagadorFamilia(db, responsavelId, customer, actor){
+  if(!responsavelId || !customer || !customer.phone_number) return;
+  const digits=String(customer.phone_number).replace(/\D/g,'');
+  if(!digits) return;
+  const col=db.collection('pagadores_familia').doc(responsavelId).collection('pagadores'),now=nowIso();
+  const snap=await col.get();
+  const match=snap.docs.find(d=>String(d.data()?.telefone||'').replace(/\D/g,'')===digits);
+  if(match){
+    await match.ref.set({nome:customer.name||match.data()?.nome||'',email:customer.email||match.data()?.email||'',telefone:customer.phone_number,usosCount:admin.firestore.FieldValue.increment(1),ultimoUsoEm:now,atualizadoEm:now},{merge:true});
+  }else{
+    const ref=col.doc();
+    await ref.set({id:ref.id,nome:customer.name||'',telefone:customer.phone_number,email:customer.email||'',criadoEm:now,atualizadoEm:now,criadoPorId:actor?.id||'sistema',criadoPorNome:actor?.nome||'Sistema',criadoPorPerfil:actor?.perfil||'sistema',usosCount:1,ultimoUsoEm:now});
+  }
+}
 function uniformStockId(modelId,size,gender=''){
   const clean=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'')||'unico';
   return `farda__${clean(modelId)}__${clean(size)}__${clean(gender||'unico')}`;
@@ -709,6 +723,10 @@ async function buildCheckoutOperation(db, body){
       atualizadoPorNome: actor.nome,
       atualizadoPorPerfil: actor.perfil
     });
+  }
+  const responsavelIdParaPagadores=String(aluno.responsavelFinanceiroId||aluno.contaFinanceiraId||'');
+  if(responsavelIdParaPagadores && customer){
+    await upsertPagadorFamilia(db, responsavelIdParaPagadores, customer, actor).catch(()=>{});
   }
   if(tipo==='pedido_cantina'){
     const cfg=await getConfig(db);
