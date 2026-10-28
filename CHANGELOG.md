@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.62 — 28/10/2026
+
+Base: **RC2.7.61**.
+
+### Novo: pagadores salvos por família (conclui o item C do pedido de melhoria do checkout)
+
+- **Lista de pagadores por família, não por aluno** (conforme confirmado): cada vez que um pagamento é feito — lanche, fardamento, crédito, regularização, venda da secretaria — o comprador é automaticamente adicionado (ou tem o contador de uso atualizado) na lista de pagadores da família, identificado pelo telefone. Não exige nenhuma ação extra da família ou da secretaria; a lista vai se formando sozinha a partir dos pagamentos reais, como pedido.
+- **No link de venda online (`pagamento.html`)**: antes de preencher os dados do comprador, a família agora vê "Quem vai efetuar o pagamento?" com os pagadores já salvos daquela família (nome + telefone) para escolher — e uma opção "+ Outro pagador" para cadastrar alguém novo. Quando o comprador padrão já salvo bate com um dos pagadores da lista (pelo telefone), ele já vem pré-selecionado.
+- **Gestão da lista pela secretaria**: novo botão "Pagadores salvos" no menu Ações da conta familiar, ao lado de "Editar comprador padrão". Abre a lista completa de pagadores da família, com quantas vezes cada um pagou e quando foi a última vez, e permite **editar** ou **remover** qualquer registro (conforme confirmado: secretaria/gestão podem editar e remover).
+- Nova subcoleção `pagadores_familia/{responsavelId}/pagadores`, acessada só pelo servidor (Admin SDK) — nenhuma mudança no `firestore.rules` foi necessária.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.61.
+
 ## 1.6.0-rc2.7.61 — 27/10/2026
 
 Base: **RC2.7.60**.

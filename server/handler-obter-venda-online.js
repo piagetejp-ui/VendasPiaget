@@ -19,6 +19,11 @@ module.exports=async function handler(req,res){
     }
     if(['cancelado','substituido'].includes(d.status))return json(res,410,{ok:false,error:'Este link não está mais ativo.'});
     const buyer=await db.collection('dados_pagamento_responsavel').doc(d.alunoId).get(),customer=buyer.exists?(buyer.data().customer||{}):{};
+    let pagadores=[];
+    if(d.responsavelFinanceiroId){
+      const pagSnap=await db.collection('pagadores_familia').doc(String(d.responsavelFinanceiroId)).collection('pagadores').get();
+      pagadores=pagSnap.docs.map(x=>{const v=x.data()||{};return{id:x.id,nome:v.nome||'',telefone:v.telefone||'',email:v.email||'',usosCount:Number(v.usosCount||0),ultimoUsoEm:v.ultimoUsoEm||null}}).sort((a,b)=>b.usosCount-a.usosCount||String(b.ultimoUsoEm||'').localeCompare(String(a.ultimoUsoEm||'')));
+    }
     let effectiveStatus=d.status;
     if(d.status==='link_gerado'){
       effectiveStatus='link_aberto';
@@ -26,6 +31,6 @@ module.exports=async function handler(req,res){
       await ref.set({status:'link_aberto',abertoEm:openedAt,atualizadoEm:openedAt},{merge:true});
       await audit(db,'venda_online_link_aberto',{alunoId:d.alunoId,alunoNome:d.alunoNome,responsavelFinanceiroId:d.responsavelFinanceiroId||null,vendaId:d.vendaId||null,pagamentoId:d.orderNsu||null,entidades:[{tipo:'venda_online_link',id}],criadoPorId:'responsavel_link',criadoPorNome:'Responsável',criadoPorPerfil:'responsavel',descricaoHumana:`O responsável abriu o link de venda online de ${d.alunoNome||'um aluno'}.`});
     }
-    return json(res,200,{ok:true,venda:{id:d.id,status:effectiveStatus,alunoNome:d.alunoNome,matricula:d.matricula,turma:d.turma,alunosIds:Array.isArray(d.alunosIds)?d.alunosIds:[],operacao:d.operacao,itens:d.itens||[],pedido:d.pedido||null,totalCentavos:d.totalCentavos,valorExternoEstimadoCentavos:d.valorExternoEstimadoCentavos,usarSaldo:d.usarSaldo,expiraEm:d.expiraEm,orderNsu:d.orderNsu||null},customer});
+    return json(res,200,{ok:true,venda:{id:d.id,status:effectiveStatus,alunoNome:d.alunoNome,matricula:d.matricula,turma:d.turma,alunosIds:Array.isArray(d.alunosIds)?d.alunosIds:[],operacao:d.operacao,itens:d.itens||[],pedido:d.pedido||null,totalCentavos:d.totalCentavos,valorExternoEstimadoCentavos:d.valorExternoEstimadoCentavos,usarSaldo:d.usarSaldo,expiraEm:d.expiraEm,orderNsu:d.orderNsu||null},customer,pagadores});
   }catch(e){console.error('obter-venda-online',e);return json(res,500,{ok:false,error:'Não foi possível abrir o link.'})}
 };
