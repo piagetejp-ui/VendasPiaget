@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.63 — 28/10/2026
+
+Base: **RC2.7.62**.
+
+### Reforma: Pagamentos e Movimentações viram um extrato único na conta familiar
+
+- **Causa do "ainda tá errado"**: a aba Pagamentos da conta familiar (tela da equipe) buscava em `vendas_online_links` e `pagamentos_checkout` — ou seja, **links gerados e tentativas de checkout**, não dinheiro que de fato entrou. Isso misturava link vencido, tentativa com erro e pagamento nunca concluído junto com pagamentos reais, como se fosse um histórico de recebimentos. O rastro completo de todo dinheiro recebido de verdade — tanto confirmado pela InfinitePay quanto registrado presencialmente pela secretaria (com a composição exata: dinheiro, pix, cartão, taxa de maquininha, NSU) — já vive nos próprios documentos de `movimentos_conta` desde o lançamento original; a aba só não olhava pro lugar certo.
+- **A aba Pagamentos foi removida.** Movimentações passa a ser o extrato único da conta familiar.
+- Cada linha do extrato agora mostra, sem precisar clicar em "Detalhar": **quanto foi a transação** (já existia), **o que foi pago** (nome dos itens, quando é uma compra) e **como se deu** (InfinitePay, dinheiro, pix, cartão, saldo da conta — mesma tradução já usada no extrato da família no Meu Piaget, agora também na tela da equipe). "Detalhar" continua disponível para o comprovante e a composição completa quando o pagamento foi mesclado entre várias formas.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.62.
+- Nenhuma mudança na "Pagamentos pendentes" (links ainda não pagos) — continua no lugar de sempre, separada do extrato de dinheiro já recebido.
+
 ## 1.6.0-rc2.7.62 — 28/10/2026
 
 Base: **RC2.7.61**.
