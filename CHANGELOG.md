@@ -1,5 +1,22 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.64 — 28/10/2026
+
+Base: **RC2.7.63**.
+
+### Novo: Exportar Financeiro — fonte estruturada para a Base Mestre externa
+
+- Novo botão **"Exportar Financeiro"** em Cobranças e saldos (Gestão/Admin), ao lado de "Relatório por categoria". Escolhe data inicial, data final e, opcionalmente, status e meio de pagamento, e baixa um `financeiro_AAAA-MM-DD_AAAA-MM-DD.zip` com `financeiro.json` (canônico), `vendas.csv`, `itens.csv`, `pagamentos.csv` e `estornos.csv` (quando há estornos no período).
+- O Sistema de Vendas **registra o fato comercial** (o que foi vendido, para quem, quando, por quanto, por qual meio, em qual evento) — não decide DRE, grupo contábil ou classificação administrativa/operacional/pedagógica. Essa decisão fica para a Base Mestre externa.
+- Cobre as quatro formas pelas quais dinheiro entra hoje no sistema: venda da secretaria (presencial ou link), crédito/regularização lançado direto na conta, e pedido de lanche/fardamento comprado direto pela família sem passar pela secretaria — todas viram "venda" no export, sem duplicar.
+- Nenhum dado é inventado: quando o histórico não tem a informação (desconto, taxa de pagamento via link, NSU/código de autorização de pagamentos antigos, bandeira do cartão, data de liquidação), o campo sai `null` — nunca `0` nem `"Outros"`.
+- A exportação valida, por venda: soma dos itens = valor líquido da venda; soma dos pagamentos = valor pago. Divergências não bloqueiam a exportação — entram como aviso no próprio `financeiro.json`.
+
+### Preservado
+- **10 funções serverless**; a exportação entrou como uma nova ação dentro do roteador já existente `api/operacoes.js`, não como função nova.
+- Firestore Rules byte a byte iguais à RC2.7.63 — a exportação só lê dados, sempre pelo servidor (Admin SDK).
+- Nenhum fluxo de venda, checkout ou pagamento existente foi alterado.
+
 ## 1.6.0-rc2.7.63 — 28/10/2026
 
 Base: **RC2.7.62**.
