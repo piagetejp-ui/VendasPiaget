@@ -1705,5 +1705,9 @@ module.exports = {
   registerInPersonOperation,
   cancelInPersonSale,
   confirmCantinaOrderWithoutCheckout,
-  confirmUniformOrderWithoutCheckout
+  confirmUniformOrderWithoutCheckout,
+  loadCatalogItemMap,
+  loadCatalogCategoryMap,
+  loadProductMap,
+  catalogRootId
 };
