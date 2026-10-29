@@ -1,5 +1,25 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.66 — 29/10/2026
+
+Base: **RC2.7.65**.
+
+### Correção: conta familiar, adquirente real, valores do pagamento e itens históricos (Exportar Financeiro)
+
+- **Nunca mais confia no campo armazenado para decidir se uma pendência foi paga.** `lancamentos_manuais` sempre nasce `a_receber` (ou `cancelada`) na exportação; só vira `concluida` quando esta exportação encontra, de fato, pagamento(s) alocado(s) cobrindo o valor. Isso corrige vendas sem pagamento que apareciam como `concluida`.
+- A simulação de quitação (FIFO) agora trata **"Adicionar crédito" presencial igual a "Regularizar débito"** — a secretaria usa as duas ações para quitar uma pendência específica na prática, e as duas agora tentam primeiro consumir pendência em aberto antes de virar crédito avulso. Uma pendência **cancelada** também deixou de poder "consumir" um pagamento posterior por engano.
+- **Crédito em conta nunca é mais venda.** O valor de um pagamento que sobra sem nenhuma pendência para explicar (ou que nunca teve pendência) agora vira um registro em `movimentacoes_conta.csv`/`financeiro.json` (`tipo: "credito"`, ligado ao `pagamento_id` real) — "Crédito via link InfinitePay" e "Crédito adicionado" deixaram de existir como venda sintética.
+- **Pagamentos deixam de ser duplicados por venda.** `pagamentos.csv` agora tem uma linha por evento de pagamento real; quando um pagamento quita mais de uma pendência, a ligação vira uma linha em `alocacoes.csv` (`pagamento_id, venda_id, valor_alocado`) por venda quitada, em vez de duplicar o pagamento.
+- **Adquirente real corrigido.** Um link InfinitePay gerado mas nunca confirmado (abandonado) deixou de poder aparecer como o pagamento de uma venda/pendência — corrige o caso de uma mensalidade paga presencialmente na Rede que saía exportada como InfinitePay.
+- **Valores do pagamento separados**: `valor_venda` (valor da venda aplicado), `valor_cobrado_cliente` (total cobrado, incluindo parcelamento), `acrescimo_financeiro` (acréscimo de parcelamento pago pelo cliente — nunca tratado como receita do produto), `taxa_provedor` (sempre `null`: o sistema não captura o que o adquirente retém) e `valor_liquido_recebido`.
+- **Itens históricos de cantina** sem item de catálogo agora também resolvem `produto_id` pelo `produtoId` legado quando há correspondência objetiva no catálogo atual; sem essa correspondência, `categoria` e `produto_id` saem `null` — o padrão fixo "Lanche / Cantina" para qualquer item sem correspondência foi removido por ser uma suposição, não um dado real.
+- `estornos.csv` continua sempre no ZIP (cabeçalho mesmo vazio); `movimentacoes_conta.csv` é novo e também sempre sai, mesmo vazio.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.65.
+- Adquirente continua saindo como `"Rede"` para pagamentos via Rede/Laranjinha.
+
 ## 1.6.0-rc2.7.65 — 29/10/2026
 
 Base: **RC2.7.64**.

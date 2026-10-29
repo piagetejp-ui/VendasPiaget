@@ -39,7 +39,6 @@ const ITENS_COLS = [
 ];
 const PAGAMENTOS_COLS = [
   { key: 'pagamento_id', header: 'pagamento_id' },
-  { key: 'venda_id', header: 'venda_id' },
   { key: 'data_hora_pagamento', header: 'data_hora_pagamento' },
   { key: 'status_pagamento', header: 'status_pagamento' },
   { key: 'meio_pagamento', header: 'meio_pagamento' },
@@ -50,11 +49,36 @@ const PAGAMENTOS_COLS = [
   { key: 'codigo_autorizacao', header: 'codigo_autorizacao' },
   { key: 'bandeira', header: 'bandeira' },
   { key: 'parcelas', header: 'parcelas' },
-  { key: 'valor_bruto', header: 'valor_bruto' },
-  { key: 'taxa', header: 'taxa' },
-  { key: 'valor_liquido', header: 'valor_liquido' },
+  { key: 'valor_venda', header: 'valor_venda' },
+  { key: 'valor_cobrado_cliente', header: 'valor_cobrado_cliente' },
+  { key: 'acrescimo_financeiro', header: 'acrescimo_financeiro' },
+  { key: 'taxa_provedor', header: 'taxa_provedor' },
+  { key: 'valor_liquido_recebido', header: 'valor_liquido_recebido' },
   { key: 'data_prevista_liquidacao', header: 'data_prevista_liquidacao' },
   { key: 'data_liquidacao', header: 'data_liquidacao' },
+  { key: 'aluno_id', header: 'aluno_id' },
+  { key: 'aluno_nome', header: 'aluno_nome' },
+  { key: 'observacao', header: 'observacao' }
+];
+const ALOCACOES_COLS = [
+  { key: 'pagamento_id', header: 'pagamento_id' },
+  { key: 'venda_id', header: 'venda_id' },
+  { key: 'valor_alocado', header: 'valor_alocado' }
+];
+const MOVIMENTACOES_CONTA_COLS = [
+  { key: 'movimentacao_id', header: 'movimentacao_id' },
+  { key: 'data_hora', header: 'data_hora' },
+  { key: 'tipo', header: 'tipo' },
+  { key: 'aluno_id', header: 'aluno_id' },
+  { key: 'aluno_nome', header: 'aluno_nome' },
+  { key: 'turma', header: 'turma' },
+  { key: 'responsavel_id', header: 'responsavel_id' },
+  { key: 'responsavel_nome', header: 'responsavel_nome' },
+  { key: 'valor', header: 'valor' },
+  { key: 'pagamento_id', header: 'pagamento_id' },
+  { key: 'operador_id', header: 'operador_id' },
+  { key: 'operador_nome', header: 'operador_nome' },
+  { key: 'origem', header: 'origem' },
   { key: 'observacao', header: 'observacao' }
 ];
 const ESTORNOS_COLS = [
@@ -82,17 +106,14 @@ module.exports = async function handler(req, res) {
 
     const result = await buildFinancialExport(db, { dataInicio, dataFim, status, meioPagamento });
 
-    const vendasRows = result.vendas.map(v => ({ ...v }));
-    const itensRows = result.vendas.flatMap(v => v.itens);
-    const pagamentosRows = result.vendas.flatMap(v => v.pagamentos);
-    const estornosRows = result.vendas.flatMap(v => v.estornos);
-
     const files = [
       { name: 'financeiro.json', content: JSON.stringify(result, null, 2) },
-      { name: 'vendas.csv', content: toCsv(vendasRows, VENDAS_COLS) },
-      { name: 'itens.csv', content: toCsv(itensRows, ITENS_COLS) },
-      { name: 'pagamentos.csv', content: toCsv(pagamentosRows, PAGAMENTOS_COLS) },
-      { name: 'estornos.csv', content: toCsv(estornosRows, ESTORNOS_COLS) }
+      { name: 'vendas.csv', content: toCsv(result.vendas, VENDAS_COLS) },
+      { name: 'itens.csv', content: toCsv(result.itens, ITENS_COLS) },
+      { name: 'pagamentos.csv', content: toCsv(result.pagamentos, PAGAMENTOS_COLS) },
+      { name: 'alocacoes.csv', content: toCsv(result.alocacoes, ALOCACOES_COLS) },
+      { name: 'movimentacoes_conta.csv', content: toCsv(result.movimentacoes_conta, MOVIMENTACOES_CONTA_COLS) },
+      { name: 'estornos.csv', content: toCsv(result.estornos, ESTORNOS_COLS) }
     ];
 
     const zipBuffer = buildZip(files);
