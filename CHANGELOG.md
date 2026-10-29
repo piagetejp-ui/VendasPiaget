@@ -1,5 +1,24 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.65 — 29/10/2026
+
+Base: **RC2.7.64**.
+
+### Correção: pendências "a receber" e alocação de pagamento contra venda original (Exportar Financeiro)
+
+- **Pendência lançada na conta do aluno ("Lançar pendência anterior") agora exporta como a própria venda**, com `status_venda = "a_receber"` enquanto não for paga, `"concluida"` quando for quitada, `"cancelada"` se o lançamento foi cancelado. Antes, isso não existia como venda na exportação.
+- **Pagamento que quita uma pendência (link InfinitePay via "Gerar cobrança", ou regularização presencial) agora é alocado contra a venda original** — não cria mais uma venda sintética ("Crédito via link InfinitePay"). Quando um único pagamento quita mais de uma pendência, ele vira várias linhas em `pagamentos.csv` (uma por venda), todas com o mesmo `transacao_id`/`referencia_provedor`, cada uma com o valor realmente aplicado àquela venda.
+- Data da venda (quando a pendência realmente aconteceu) e data do pagamento (quando foi de fato pago, possivelmente dias ou meses depois) continuam preservadas separadamente — uma pendência antiga, fora do período exportado, aparece no arquivo quando um pagamento do período a quitar.
+- Crédito presencial puro (sem nenhuma pendência em aberto) continua virando sua própria venda "Crédito adicionado", como antes — é uma decisão explícita do operador de só adicionar saldo, não quitar uma dívida específica.
+- Categoria e valores de item de vendas antigas ganharam mais uma camada de aproveitamento do que já está gravado (campo `categoria` em texto livre, `valorCentavos` genérico) antes de sair `null` — histórico sem nenhum dado confiável continua `null`, nunca inventado.
+- `estornos.csv` agora sempre sai no ZIP, mesmo sem nenhum estorno no período (só o cabeçalho).
+- Validação não aponta mais "pagamento não bate" para venda `a_receber` — só venda `concluida` precisa fechar o valor em pagamentos.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova foi criada.
+- Firestore Rules byte a byte iguais à RC2.7.64.
+- Adquirente continua saindo como `"Rede"` para pagamentos via Rede/Laranjinha.
+
 ## 1.6.0-rc2.7.64 — 28/10/2026
 
 Base: **RC2.7.63**.
