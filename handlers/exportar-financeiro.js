@@ -91,9 +91,9 @@ module.exports = async function handler(req, res) {
       { name: 'financeiro.json', content: JSON.stringify(result, null, 2) },
       { name: 'vendas.csv', content: toCsv(vendasRows, VENDAS_COLS) },
       { name: 'itens.csv', content: toCsv(itensRows, ITENS_COLS) },
-      { name: 'pagamentos.csv', content: toCsv(pagamentosRows, PAGAMENTOS_COLS) }
+      { name: 'pagamentos.csv', content: toCsv(pagamentosRows, PAGAMENTOS_COLS) },
+      { name: 'estornos.csv', content: toCsv(estornosRows, ESTORNOS_COLS) }
     ];
-    if (estornosRows.length) files.push({ name: 'estornos.csv', content: toCsv(estornosRows, ESTORNOS_COLS) });
 
     const zipBuffer = buildZip(files);
     const filename = `financeiro_${dataInicio}_${dataFim}.zip`;
