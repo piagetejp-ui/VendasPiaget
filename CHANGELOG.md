@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.68 — 03/11/2026
+
+Base: **RC2.7.67**.
+
+### Correção: trocar o "Tipo operacional" no editor de item do catálogo não fazia nada
+
+- Bug **anterior à funcionalidade de eventos** (já existia na RC2.7.65 e antes, não foi introduzido agora): no editor "Novo item"/"Editar item", trocar o campo **Tipo operacional** (ex: de "Serviço" para "Evento", "Fardamento" ou "Combo") não atualizava a tela — ficava tudo igual, sem nenhum aviso de erro visível. A causa: o campo chamava uma função interna do sistema a partir de um atributo `onchange` do HTML, que roda fora do alcance dessa função, gerando um erro silencioso no console do navegador que travava a atualização da tela antes dela acontecer.
+- Corrigido expondo essa função corretamente. Confirmado (simulando o clique num navegador automatizado) que agora, ao trocar o tipo para **Evento**, aparecem os campos de data, vagas e a tabela de preço por família; e que o mesmo problema também afetava trocar para **Fardamento** e **Combo**, também corrigido.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.67.
+- Nenhum outro comportamento do catálogo, vendas ou checkout foi alterado — é uma correção de uma linha.
+
 ## 1.6.0-rc2.7.67 — 03/11/2026
 
 Base: **RC2.7.66**.
