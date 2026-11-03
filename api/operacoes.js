@@ -1,8 +1,10 @@
 const handlers = {
   'cancelar-venda-presencial': require('../handlers/cancelar-venda-presencial'),
   'configuracao-operacional': require('../handlers/configuracao-operacional'),
+  'evento-publico': require('../handlers/evento-publico'),
   'exportar-financeiro': require('../handlers/exportar-financeiro'),
   'gerenciar-programacao-lanche': require('../handlers/gerenciar-programacao-lanche'),
+  'painel-evento': require('../handlers/painel-evento'),
   'registrar-operacao-presencial': require('../handlers/registrar-operacao-presencial'),
   'resumo-operacional': require('../handlers/resumo-operacional')
 };

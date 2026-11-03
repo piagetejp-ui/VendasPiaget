@@ -530,7 +530,14 @@ async function normalizeSecretarySaleItems(db,raw=[],channel='presencial'){
 function catalogRootId(categoryId,categoryMap){let id=String(categoryId||''),guard=0;while(id&&guard++<12){const c=categoryMap.get(id);if(!c||!c.parentId)return id;id=String(c.parentId)}return id}
 async function normalizeSecretaryMixedSale(db,raw=[],channel='presencial',student=null,cfg=null){
   const scheduleRaw=(raw||[]).filter(x=>x&&((x.tipo==='programacao_lanche')||(x.tipoOperacional==='programacao_lanche'))),normalRaw=(raw||[]).filter(x=>!scheduleRaw.includes(x));
-  if(channel==='portal'&&normalRaw.length)throw Object.assign(new Error('Neste fluxo do Meu Piaget, somente programações de lanche são aceitas no carrinho familiar.'),{status:400});
+  // Inscrição em evento (tipoOperacional='evento') é a única exceção liberada no carrinho
+  // familiar do Meu Piaget além de programação de lanche - qualquer outro item de catálogo
+  // (produto, fardamento, serviço) continua bloqueado nesse canal.
+  if(channel==='portal'&&normalRaw.length){
+    const catalogMap=await loadCatalogItemMap(db);
+    const blocked=normalRaw.some(x=>{const cat=x?.catalogoItemId?catalogMap.get(String(x.catalogoItemId)):null;return !(cat&&cat.tipoOperacional==='evento')});
+    if(blocked)throw Object.assign(new Error('Neste fluxo do Meu Piaget, somente programações de lanche e inscrições de evento são aceitas no carrinho familiar.'),{status:400});
+  }
   const normal=normalRaw.length?await normalizeSecretarySaleItems(db,normalRaw,channel):{total:0,lines:[],expanded:new Map(),catalogStock:[],uniformStock:[]};
   const categoryMap=await loadCatalogCategoryMap(db);
   for(const line of normal.lines){if(line.tipo==='produto'||catalogRootId(line.categoriaId,categoryMap)==='cat_cantina')throw Object.assign(new Error('Na Secretaria, itens da Cantina devem ser adicionados pela programação de lanches.'),{status:400});}
@@ -1709,5 +1716,6 @@ module.exports = {
   loadCatalogItemMap,
   loadCatalogCategoryMap,
   loadProductMap,
-  catalogRootId
+  catalogRootId,
+  catalogSaleWindowAllowed
 };
