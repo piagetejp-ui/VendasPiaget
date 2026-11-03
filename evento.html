@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123a7a">
+<meta http-equiv="Cache-Control" content="no-store, max-age=0, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="application-version" content="1.6.0-rc2.7.67">
+<title>Confirmação de evento — Escola Piaget V1.6.0-rc2.7.67</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--azul:#123a7a;--laranja:#f58220;--bg:#f4f7fb;--txt:#172033;--muted:#64748b;--ok:#15803d;--warn:#b45309;--err:#b91c1c;--line:#dbe3ef}
+*{box-sizing:border-box}html{min-height:100%;background:#123a7a;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:Barlow,Arial,sans-serif;background:linear-gradient(135deg,#123a7a 0%,#1d4f9a 45%,#f58220 100%);min-height:100svh;display:grid;place-items:center;color:var(--txt);padding:max(22px,env(safe-area-inset-top)) max(22px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(22px,env(safe-area-inset-left));-webkit-font-smoothing:antialiased}
+.card{width:min(640px,100%);background:#fff;border-radius:26px;box-shadow:0 28px 80px rgba(15,23,42,.28);overflow:hidden}
+.top{padding:26px 28px;background:#f8fafc;border-bottom:1px solid var(--line)}
+.bar{width:56px;height:6px;background:var(--laranja);border-radius:99px;margin-bottom:12px}
+h1{margin:0;color:var(--azul);font-size:1.7rem}
+.body{padding:24px 28px}
+.muted{color:var(--muted)}
+.fg{margin-bottom:14px}
+label{display:block;font-weight:700;margin-bottom:6px;font-size:.92rem}
+input[type=text],input[type=email],input[type=tel]{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;font-size:16px;font-family:inherit}
+.btn{border:0;border-radius:14px;padding:13px 18px;font-weight:800;cursor:pointer;font-family:inherit;font-size:1rem;width:100%}
+.primary{background:var(--azul);color:#fff}
+.orange{background:var(--laranja);color:#fff}
+.light{background:#eef2f7;color:var(--azul)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.status{border-radius:16px;padding:14px 16px;border:1px solid var(--line);background:#f8fafc;margin-bottom:16px}
+.status.err{background:#fef2f2;border-color:#fecaca;color:var(--err)}
+.status.ok{background:#f0fdf4;border-color:#bbf7d0;color:var(--ok)}
+.hide{display:none!important}
+.aluno-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+.aluno-row.confirmado{background:#f0fdf4;border-color:#bbf7d0}
+.aluno-row input[type=checkbox]{width:20px;height:20px}
+.aluno-info strong{display:block}
+.aluno-info span{color:var(--muted);font-size:.85rem}
+.tag{font-size:.74rem;font-weight:800;color:var(--ok);background:#dcfce7;padding:3px 8px;border-radius:999px;margin-left:auto}
+.valor-box{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#eef2f7;border-radius:12px;margin:14px 0}
+.valor-box strong{color:var(--azul);font-size:1.3rem}
+.actions-row{display:flex;gap:10px;flex-wrap:wrap}
+.actions-row .btn{flex:1;min-width:140px}
+.step{margin-top:8px}
+@media(max-width:560px){body{display:block}.card{width:100%;border-radius:20px}.body,.top{padding:20px 17px}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top"><div class="bar"></div><h1 id="eventoNome">Carregando evento...</h1><p class="muted" id="eventoMeta"></p></div>
+  <div class="body">
+    <div id="globalStatus" class="status hide"></div>
+
+    <div id="stepBusca" class="step hide">
+      <p class="muted">Digite a <strong>matrícula</strong> de um dos seus filhos para confirmar a participação no evento.</p>
+      <div class="fg"><label for="matriculaInput">Matrícula do aluno</label><input type="text" id="matriculaInput" inputmode="numeric" placeholder="Número da matrícula"></div>
+      <button class="btn primary" id="btnBuscar" onclick="buscarFamilia()">Buscar</button>
+    </div>
+
+    <div id="stepFamilia" class="step hide">
+      <p class="muted">É a família de <strong id="familiaNome"></strong>? Marque quem vai participar do evento.</p>
+      <div id="listaAlunos"></div>
+      <div class="valor-box"><span>Valor total</span><strong id="valorTotal">R$ 0,00</strong></div>
+      <div class="fg"><label>Seu nome</label><input type="text" id="compradorNome"></div>
+      <div class="fg"><label>E-mail</label><input type="email" id="compradorEmail"></div>
+      <div class="fg"><label>Telefone (com DDD)</label><input type="tel" id="compradorTelefone" placeholder="(11) 90000-0000"></div>
+      <div class="actions-row">
+        <button class="btn orange" id="btnPagarOnline" onclick="gerarCobranca()">Pagar agora online</button>
+        <button class="btn light" onclick="mostrarPagarSecretaria()">Vou pagar na secretaria</button>
+      </div>
+    </div>
+
+    <div id="stepSecretaria" class="step hide">
+      <div class="status ok"><strong>Combinado.</strong><br>Vá até a secretaria da escola e informe o nome do(s) aluno(s) selecionado(s). A confirmação da participação é feita lá, no momento do pagamento.</div>
+      <button class="btn light" onclick="voltarParaFamilia()">Voltar</button>
+    </div>
+
+    <p class="muted" style="font-size:.8rem;margin-top:18px">Seus dados de identificação não são exibidos para outras famílias. Esta página só mostra o nome dos alunos vinculados à matrícula informada.</p>
+  </div>
+</div>
+<script>
+const API_URL='/api/operacoes?modulo=evento-publico';
+function qs(name){return new URL(location.href).searchParams.get(name)||''}
+const EVENTO_ID=qs('id');
+let evento=null, familia=null;
+
+function brl(centavos){return (Number(centavos||0)/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function showStatus(msg,kind){const el=document.getElementById('globalStatus');el.textContent=msg;el.className='status '+(kind||'err');el.classList.remove('hide')}
+function hideStatus(){document.getElementById('globalStatus').classList.add('hide')}
+async function api(acao,payload){
+  const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({acao,...payload})});
+  const data=await res.json().catch(()=>({ok:false,error:'Resposta inválida do servidor.'}));
+  if(!res.ok||!data.ok)throw new Error(data.error||'Não foi possível concluir a operação.');
+  return data;
+}
+function precoFamilia(qtd){
+  if(!evento)return 0;
+  const tabela=evento.tabelaFamilia||{};
+  const chave=qtd>5?5:qtd;
+  if(tabela[chave]!=null)return Number(tabela[chave]);
+  return Number(evento.precoBaseCentavos||0)*qtd;
+}
+function recalcularValor(){
+  const marcados=[...document.querySelectorAll('.aluno-check:checked')];
+  document.getElementById('valorTotal').textContent=brl(precoFamilia(marcados.length));
+  document.getElementById('btnPagarOnline').disabled=marcados.length===0;
+}
+async function init(){
+  if(!EVENTO_ID){showStatus('Link de evento inválido.');return}
+  try{
+    const data=await api('consultar_evento',{eventoId:EVENTO_ID});
+    evento=data.evento;
+    document.getElementById('eventoNome').textContent=evento.nome;
+    document.getElementById('eventoMeta').textContent=evento.dataEvento?('Data do evento: '+evento.dataEvento.split('-').reverse().join('/')):'';
+    if(!evento.vendasAbertas){showStatus('As confirmações deste evento não estão abertas no momento.','err');return}
+    document.getElementById('stepBusca').classList.remove('hide');
+  }catch(e){showStatus(e.message)}
+}
+async function buscarFamilia(){
+  hideStatus();
+  const matricula=document.getElementById('matriculaInput').value.trim();
+  if(!matricula){showStatus('Informe a matrícula.');return}
+  const btn=document.getElementById('btnBuscar');btn.disabled=true;btn.textContent='Buscando...';
+  try{
+    const data=await api('buscar_familia',{eventoId:EVENTO_ID,matricula});
+    familia=data;
+    document.getElementById('familiaNome').textContent=data.responsavelNome||'Responsável';
+    const lista=document.getElementById('listaAlunos');
+    lista.innerHTML=data.alunos.map(a=>`
+      <label class="aluno-row ${a.confirmado?'confirmado':''}">
+        <input type="checkbox" class="aluno-check" value="${a.id}" onchange="recalcularValor()" ${a.confirmado?'checked disabled':''}>
+        <span class="aluno-info"><strong>${a.nome}</strong><span>${a.turma||''}</span></span>
+        ${a.confirmado?'<span class="tag">Confirmado</span>':''}
+      </label>`).join('');
+    document.getElementById('stepBusca').classList.add('hide');
+    document.getElementById('stepFamilia').classList.remove('hide');
+    recalcularValor();
+  }catch(e){showStatus(e.message)}
+  finally{btn.disabled=false;btn.textContent='Buscar'}
+}
+function mostrarPagarSecretaria(){
+  document.getElementById('stepFamilia').classList.add('hide');
+  document.getElementById('stepSecretaria').classList.remove('hide');
+}
+function voltarParaFamilia(){
+  document.getElementById('stepSecretaria').classList.add('hide');
+  document.getElementById('stepFamilia').classList.remove('hide');
+}
+async function gerarCobranca(){
+  hideStatus();
+  const alunoIds=[...document.querySelectorAll('.aluno-check:checked')].map(x=>x.value);
+  if(!alunoIds.length){showStatus('Selecione ao menos um aluno.');return}
+  const customer={name:document.getElementById('compradorNome').value.trim(),email:document.getElementById('compradorEmail').value.trim(),phone_number:document.getElementById('compradorTelefone').value.trim()};
+  if(customer.name.length<3||!customer.email||!customer.phone_number){showStatus('Preencha nome, e-mail e telefone para gerar o pagamento.');return}
+  const btn=document.getElementById('btnPagarOnline');btn.disabled=true;btn.textContent='Gerando...';
+  try{
+    const data=await api('gerar_cobranca',{eventoId:EVENTO_ID,tokenId:familia.tokenId,token:familia.token,alunoIds,customer});
+    location.href=data.checkoutUrl;
+  }catch(e){showStatus(e.message);btn.disabled=false;btn.textContent='Pagar agora online'}
+}
+init();
+</script>
+</body>
+</html>

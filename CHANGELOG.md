@@ -1,5 +1,22 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.67 — 03/11/2026
+
+Base: **RC2.7.66**.
+
+### Novo: confirmação pública de eventos (com desconto de família) e painel para a secretaria
+
+- Nova página pública **`evento.html`** — o responsável confirma a participação do(s) filho(s) em um evento da escola e paga, **sem precisar logar no Meu Piaget**. Identificação é só pela **matrícula** (difícil de adivinhar, ao contrário de nome/turma); o servidor devolve apenas nome e turma dos irmãos vinculados àquela matrícula — nada de CPF, saldo ou outro dado sensível — e gera um **token assinado, de uso único e curta duração**, que autoriza cobrar exatamente aqueles alunos naquele evento. Isso evita que alguém gere cobrança para um aluno que não é da sua família.
+- **Não existe "inscrição" como estado próprio**: confirmado = existe uma venda real do item do evento para aquele aluno. Os três caminhos de pagamento — a página pública, uma venda presencial na secretaria, ou um link direcionado que a secretaria envie — alimentam exatamente o mesmo painel, sem nenhum registro paralelo para manter sincronizado. Escolher "vou pagar na secretaria" na página é só informativo: nada é gravado até existir, de fato, uma venda.
+- **Desconto de família**: tabela de preço por quantidade de pessoas (1 a 5 ou mais), configurável por evento no cadastro do catálogo. Faixa não configurada = preço avulso multiplicado pela quantidade, sem desconto inventado. O valor da família é dividido entre os alunos selecionados no checkout, preservando o detalhamento por aluno na exportação financeira.
+- **Painel do evento** (novo botão "Painel" no card do item, para admin/gestão/secretaria): total de confirmados, total arrecadado e a lista com nome, turma, valor e canal — além do link público para divulgar. A leitura é limitada à janela de vendas do próprio evento (não é um raio-x da escola inteira), então o evento precisa ter início e fim de vendas configurados.
+- O carrinho familiar do Meu Piaget, que antes só aceitava programação de lanche, passou a aceitar também **itens de catálogo do tipo evento** — qualquer outro tipo (produto, fardamento, serviço) continua bloqueado nesse canal, exatamente como antes.
+
+### Preservado
+- **10 funções serverless**; os dois novos endpoints entraram como ações dentro do roteador já existente `api/operacoes.js`, não como funções novas.
+- Firestore Rules byte a byte iguais à RC2.7.66 — a nova coleção de tokens de confirmação é só de servidor (Admin SDK), como outras já existentes (`ativacoes_meu_piaget`, `seguranca_rate_limit`).
+- Nenhum fluxo existente de venda, checkout, catálogo ou exportação financeira foi alterado.
+
 ## 1.6.0-rc2.7.66 — 29/10/2026
 
 Base: **RC2.7.65**.
