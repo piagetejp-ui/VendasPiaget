@@ -1,5 +1,21 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.69 — 03/11/2026
+
+Base: **RC2.7.68**.
+
+### Novo: cadastro rápido de aluno novo (para registrar venda em dinheiro antes da base oficial atualizar)
+
+- Botão **"+ Novo aluno"** na tela "Alunos e contas" (admin/gestão/secretaria). Cadastra o aluno de verdade na hora — nome, matrícula, turma, turno, ano letivo — com o que já se sabe hoje, sem precisar esperar a base oficial (ActiveSoft) sincronizar.
+- Matrícula duplicada é bloqueada na hora, com aviso claro.
+- Dados do responsável são opcionais nesse cadastro rápido. Se o CPF for informado, o sistema procura um responsável já existente com esse CPF e **reaproveita** (agrupando irmãos na mesma família corretamente) em vez de criar um duplicado; só cria um responsável novo quando nenhum bate.
+- Depois de cadastrado, o aluno já aparece na busca normal e a **venda em dinheiro (ou qualquer outra) é a venda presencial de sempre** — nenhum fluxo de venda novo foi criado. Quando a base oficial trouxer os dados completos depois, o mesmo cadastro é só atualizado (nunca duplicado), e o histórico de vendas já registrado continua ligado ao mesmo aluno.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.68.
+- Nenhum fluxo de venda, checkout ou catálogo foi alterado.
+
 ## 1.6.0-rc2.7.68 — 03/11/2026
 
 Base: **RC2.7.67**.

@@ -1,4 +1,5 @@
 const handlers = {
+  'cadastrar-aluno': require('../handlers/cadastrar-aluno'),
   'cancelar-venda-presencial': require('../handlers/cancelar-venda-presencial'),
   'configuracao-operacional': require('../handlers/configuracao-operacional'),
   'evento-publico': require('../handlers/evento-publico'),
