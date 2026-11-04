@@ -1,5 +1,26 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.72 — 04/11/2026
+
+Base: **RC2.7.71**.
+
+### Correção: desconto de família ainda não aparecia na venda da secretaria
+
+- Achado o motivo real: mesmo com a correção do servidor na RC2.7.71, **a tela de venda da secretaria calculava o total do carrinho somando cada linha pelo preço cheio** — sem nenhuma noção da tabela de família. Ou seja, a secretaria via (e podia até cobrar em dinheiro) o valor errado, enquanto o servidor aplicava o desconto por baixo dos panos. Corrigido: o carrinho agora calcula o total com a mesma regra de família do servidor, mostrando o valor certo **antes** de confirmar a venda.
+
+### Correção: "É a família de" ainda mostrava o nome errado
+
+- A correção da RC2.7.71 tinha mudado o texto errado — ajustou a descrição do checkout da InfinitePay, mas não o texto que aparece **na própria página**, logo depois de digitar a matrícula ("É a família de [nome]?"). Agora sim: mostra o nome do **aluno** da matrícula digitada.
+
+### Correção: telefone pré-preenchido aparecia com "+55"
+
+- O número pré-preenchido mostrava o formato bruto salvo (ex: `+5511999999999`). Agora aparece formatado para leitura humana (`(11) 99999-9999`) no campo — o que é enviado para a InfinitePay continua no formato correto, isso foi só a exibição.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.71.
+- As correções de preço só afetam itens de catálogo do tipo evento com tabela de família configurada.
+
 ## 1.6.0-rc2.7.71 — 04/11/2026
 
 Base: **RC2.7.70**.

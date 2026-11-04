@@ -121,7 +121,7 @@ module.exports = async function handler(req, res) {
         alunoIds: alunos.map(a => a.id), tokenHash: tokenHash(token),
         usado: false, criadoEm: nowIso(), expiraEm
       });
-      return json(res, 200, { ok: true, tokenId: tokenRef.id, token, expiraEm, responsavelNome, alunos, compradorSugerido });
+      return json(res, 200, { ok: true, tokenId: tokenRef.id, token, expiraEm, responsavelNome, alunoBuscadoNome: aluno.nome || null, alunos, compradorSugerido });
     }
 
     if (acao === 'gerar_cobranca') {
