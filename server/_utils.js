@@ -471,6 +471,15 @@ function catalogSaleWindowAllowed(item){
   if(item.vendaFim&&today>String(item.vendaFim))return false;
   return true;
 }
+/* Lista de turmas vazia/ausente = evento aberto para toda a escola (comportamento de sempre,
+   nunca quebra um evento já cadastrado). Só restringe quando a secretaria marcou turmas
+   específicas no cadastro do evento. */
+function catalogTurmaAllowed(item,turma){
+  if(item?.tipoOperacional!=='evento')return true;
+  const lista=item.turmasElegiveis;
+  if(!Array.isArray(lista)||!lista.length)return true;
+  return lista.includes(String(turma||''));
+}
 function normalizeCatalogMetadata(item,raw){
   const meta=raw.metadados&&typeof raw.metadados==='object'?raw.metadados:{};
   if(item.exigirCompetencia&&!String(meta.competencia||'').trim())throw Object.assign(new Error(`Informe a competência de ${item.nome}.`),{status:400});
@@ -533,14 +542,18 @@ async function normalizeSecretaryMixedSale(db,raw=[],channel='presencial',studen
   // Inscrição em evento (tipoOperacional='evento') é a única exceção liberada no carrinho
   // familiar do Meu Piaget além de programação de lanche - qualquer outro item de catálogo
   // (produto, fardamento, serviço) continua bloqueado nesse canal.
+  const catalogMap=normalRaw.length?await loadCatalogItemMap(db):null;
   if(channel==='portal'&&normalRaw.length){
-    const catalogMap=await loadCatalogItemMap(db);
     const blocked=normalRaw.some(x=>{const cat=x?.catalogoItemId?catalogMap.get(String(x.catalogoItemId)):null;return !(cat&&cat.tipoOperacional==='evento')});
     if(blocked)throw Object.assign(new Error('Neste fluxo do Meu Piaget, somente programações de lanche e inscrições de evento são aceitas no carrinho familiar.'),{status:400});
   }
   const normal=normalRaw.length?await normalizeSecretarySaleItems(db,normalRaw,channel):{total:0,lines:[],expanded:new Map(),catalogStock:[],uniformStock:[]};
   const categoryMap=await loadCatalogCategoryMap(db);
-  for(const line of normal.lines){if(line.tipo==='produto'||catalogRootId(line.categoriaId,categoryMap)==='cat_cantina')throw Object.assign(new Error('Na Secretaria, itens da Cantina devem ser adicionados pela programação de lanches.'),{status:400});}
+  for(const line of normal.lines){
+    if(line.tipo==='produto'||catalogRootId(line.categoriaId,categoryMap)==='cat_cantina')throw Object.assign(new Error('Na Secretaria, itens da Cantina devem ser adicionados pela programação de lanches.'),{status:400});
+    const cat=line.catalogoItemId?catalogMap?.get(String(line.catalogoItemId)):null;
+    if(cat&&student&&!catalogTurmaAllowed(cat,student.turma))throw Object.assign(new Error(`A turma de ${student.nome||'este aluno'} não está entre as turmas participantes de ${cat.nome}.`),{status:403});
+  }
   if(scheduleRaw.length&&!student)throw Object.assign(new Error('Aluno não identificado para programar lanches.'),{status:400});
   const config=cfg||await getConfig(db),productMap=scheduleRaw.length?await loadProductMap(db):new Map(),programacoes=[],lines=[...normal.lines];let total=normal.total;
   for(let i=0;i<scheduleRaw.length;i++){
@@ -1738,5 +1751,6 @@ module.exports = {
   loadCatalogCategoryMap,
   loadProductMap,
   catalogRootId,
-  catalogSaleWindowAllowed
+  catalogSaleWindowAllowed,
+  catalogTurmaAllowed
 };
