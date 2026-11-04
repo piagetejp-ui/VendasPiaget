@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.70 — 04/11/2026
+
+Base: **RC2.7.69**.
+
+### Melhoria: identidade visual e abas de informação na página pública do evento
+
+- A página pública (`evento.html`) agora mostra o **símbolo e o nome "Escola Piaget"** no topo, seguindo o mesmo padrão visual já usado no sistema da equipe e no Meu Piaget.
+- A página ganhou duas abas simples: **"Confirmação do evento"** (o fluxo de sempre — matrícula, seleção dos alunos, pagamento) e **"Informações do evento"** (nova — mostra a descrição cadastrada do evento e a lista de valores: 1 pessoa, 2 pessoas, etc., quando configurados).
+- Nenhuma mudança no servidor: os dados exibidos na nova aba (descrição, preços) já eram enviados pela API desde a RC2.7.67, só não apareciam na tela.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.69.
+- O fluxo de confirmação/pagamento não mudou — continua sendo a aba padrão ao abrir o link.
+
 ## 1.6.0-rc2.7.69 — 03/11/2026
 
 Base: **RC2.7.68**.
