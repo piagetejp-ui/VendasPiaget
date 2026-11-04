@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.73 — 04/11/2026
+
+Base: **RC2.7.72**.
+
+### Novo: evento direcionado por turma
+
+- No cadastro do evento no catálogo, agora dá para marcar **quais turmas participam** (ex: a Formatura do ABC só para o Infantil 5, ou um evento geral do qual só o Infantil 5 não participa). Nenhuma turma marcada = evento aberto para a escola toda, como sempre foi — eventos já existentes não mudam.
+- A regra vale nos **três caminhos** igual: na página pública, o aluno de turma não participante aparece com a marcação "Turma não participa" e não pode ser selecionado; mesmo que alguém tente contornar isso, o servidor também recusa. Na venda presencial ou no link gerado pela secretaria, vender esse evento para um aluno fora das turmas participantes agora é bloqueado com uma mensagem clara.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.72.
+- Eventos sem turmas marcadas continuam funcionando exatamente como antes.
+
 ## 1.6.0-rc2.7.72 — 04/11/2026
 
 Base: **RC2.7.71**.

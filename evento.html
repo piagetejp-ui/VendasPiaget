@@ -7,8 +7,8 @@
 <meta http-equiv="Cache-Control" content="no-store, max-age=0, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="application-version" content="1.6.0-rc2.7.72">
-<title>Confirmação de evento — Escola Piaget V1.6.0-rc2.7.72</title>
+<meta name="application-version" content="1.6.0-rc2.7.73">
+<title>Confirmação de evento — Escola Piaget V1.6.0-rc2.7.73</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -35,7 +35,9 @@ input[type=text],input[type=email],input[type=tel]{width:100%;padding:12px 14px;
 .hide{display:none!important}
 .aluno-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
 .aluno-row.confirmado{background:#f0fdf4;border-color:#bbf7d0}
+.aluno-row.indisponivel{opacity:.6;background:#f8fafc}
 .aluno-row input[type=checkbox]{width:20px;height:20px}
+.tag-off{color:var(--muted);background:#e2e8f0}
 .aluno-info strong{display:block}
 .aluno-info span{color:var(--muted);font-size:.85rem}
 .tag{font-size:.74rem;font-weight:800;color:var(--ok);background:#dcfce7;padding:3px 8px;border-radius:999px;margin-left:auto}
@@ -180,10 +182,10 @@ async function buscarFamilia(){
     }
     const lista=document.getElementById('listaAlunos');
     lista.innerHTML=data.alunos.map(a=>`
-      <label class="aluno-row ${a.confirmado?'confirmado':''}">
-        <input type="checkbox" class="aluno-check" value="${a.id}" onchange="recalcularValor()" ${a.confirmado?'checked disabled':''}>
+      <label class="aluno-row ${a.confirmado?'confirmado':''} ${a.elegivel===false?'indisponivel':''}">
+        <input type="checkbox" class="aluno-check" value="${a.id}" onchange="recalcularValor()" ${a.confirmado||a.elegivel===false?'disabled':''} ${a.confirmado?'checked':''}>
         <span class="aluno-info"><strong>${a.nome}</strong><span>${a.turma||''}</span></span>
-        ${a.confirmado?'<span class="tag">Confirmado</span>':''}
+        ${a.confirmado?'<span class="tag">Confirmado</span>':a.elegivel===false?'<span class="tag tag-off">Turma não participa</span>':''}
       </label>`).join('');
     document.getElementById('stepBusca').classList.add('hide');
     document.getElementById('stepFamilia').classList.remove('hide');

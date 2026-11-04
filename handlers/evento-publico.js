@@ -7,7 +7,7 @@
    Não existe "inscrição" como estado próprio: confirmado = existe uma venda do item de
    catálogo deste evento para aquele aluno (gerada aqui, por venda presencial da secretaria,
    ou por link avulso que a secretaria mandar) - os três caminhos alimentam o mesmo painel. */
-const { initFirebase, json, parseBody, nowIso, buildCheckoutOperation, createCheckoutLink, catalogSaleWindowAllowed, audit } = require('../server/_utils');
+const { initFirebase, json, parseBody, nowIso, buildCheckoutOperation, createCheckoutLink, catalogSaleWindowAllowed, catalogTurmaAllowed, audit } = require('../server/_utils');
 const { normalizeMatricula, studentsForResponsible, enforceAccessRateLimit, randomToken, tokenHash } = require('../server/_family-utils');
 
 const TOKEN_TTL_MINUTOS = 20;
@@ -98,6 +98,7 @@ module.exports = async function handler(req, res) {
       }
       const alunos = await Promise.all(irmaos.map(async a => ({
         id: a.id, nome: a.nome || 'Aluno', turma: a.turma || '',
+        elegivel: catalogTurmaAllowed(item, a.turma),
         confirmado: await alunoJaConfirmado(db, a.id, eventoId)
       })));
       let responsavelNome = aluno.responsavelFinanceiro || 'Responsável';
@@ -118,7 +119,7 @@ module.exports = async function handler(req, res) {
       await tokenRef.set({
         id: tokenRef.id, eventoId, responsavelId: responsavelId || null,
         alunoBuscadoNome: aluno.nome || null,
-        alunoIds: alunos.map(a => a.id), tokenHash: tokenHash(token),
+        alunoIds: alunos.filter(a => a.elegivel).map(a => a.id), tokenHash: tokenHash(token),
         usado: false, criadoEm: nowIso(), expiraEm
       });
       return json(res, 200, { ok: true, tokenId: tokenRef.id, token, expiraEm, responsavelNome, alunoBuscadoNome: aluno.nome || null, alunos, compradorSugerido });
