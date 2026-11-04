@@ -104,14 +104,24 @@ module.exports = async function handler(req, res) {
       if (responsavelId) {
         try { const rs = await db.collection('responsaveis_financeiros').doc(responsavelId).get(); if (rs.exists && rs.data()?.nome) responsavelNome = rs.data().nome; } catch (_) { /* mantém o nome do aluno */ }
       }
+      // Sugere os dados do comprador já salvos (de uma compra anterior qualquer da família),
+      // igual às outras telas de pagamento - o responsável só confirma, não digita tudo de novo.
+      let compradorSugerido = null;
+      for (const a of alunos) {
+        try {
+          const dp = await db.collection('dados_pagamento_responsavel').doc(a.id).get();
+          if (dp.exists && dp.data()?.customer?.name) { compradorSugerido = dp.data().customer; break; }
+        } catch (_) { /* segue sem sugestão */ }
+      }
       const token = randomToken(24), tokenRef = db.collection('confirmacoes_evento_tokens').doc();
       const expiraEm = new Date(Date.now() + TOKEN_TTL_MINUTOS * 60000).toISOString();
       await tokenRef.set({
         id: tokenRef.id, eventoId, responsavelId: responsavelId || null,
+        alunoBuscadoNome: aluno.nome || null,
         alunoIds: alunos.map(a => a.id), tokenHash: tokenHash(token),
         usado: false, criadoEm: nowIso(), expiraEm
       });
-      return json(res, 200, { ok: true, tokenId: tokenRef.id, token, expiraEm, responsavelNome, alunos });
+      return json(res, 200, { ok: true, tokenId: tokenRef.id, token, expiraEm, responsavelNome, alunos, compradorSugerido });
     }
 
     if (acao === 'gerar_cobranca') {
@@ -144,6 +154,7 @@ module.exports = async function handler(req, res) {
         alunoId: aCobrar[0],
         itens,
         customer: body.customer || {},
+        subjectOverride: t.alunoBuscadoNome ? `Família de ${t.alunoBuscadoNome}` : undefined,
         criadoPorId: 'evento_publico', criadoPorNome: 'Página pública do evento', criadoPorPerfil: 'responsavel'
       });
       const resultado = await createCheckoutLink(db, req, op, {});

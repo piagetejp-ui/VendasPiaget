@@ -1,5 +1,26 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.71 — 04/11/2026
+
+Base: **RC2.7.70**.
+
+### Correção: desconto de família não aparecia na venda pela secretaria
+
+- Quando a secretaria vende um evento presencialmente (ou gera cobrança) para **mais de um irmão**, o desconto por tamanho de família agora é aplicado **automaticamente**, igual já acontecia na página pública. Antes, cada aluno era cobrado pelo preço avulso cheio.
+- A causa raiz tinha duas partes: (1) o motor de preços do sistema calcula cada aluno separadamente, sem saber quantos irmãos estão comprando o mesmo evento juntos — corrigido agrupando por evento depois de calcular, e aplicando a faixa certa da tabela quando existir; (2) deixar o evento sempre com "preço editável" (RC2.7.67) fazia a venda **travar** se ninguém digitasse um valor manual — corrigido para usar o preço sugerido do catálogo quando nenhum valor é informado.
+
+### Ajustes na página pública do evento, a pedido
+
+- **Dados do comprador pré-preenchidos**: se a família já tem dados salvos de uma compra anterior, nome/e-mail/telefone já vêm preenchidos (editável), igual às outras telas de pagamento do sistema.
+- **Descrição do checkout InfinitePay**: passa a mostrar "Família de [nome do aluno]" em vez de "Família de [nome do responsável]".
+- **Aba "Informações do evento"**: não mostra mais o rótulo "Valores" nem a lista de descontos por quantidade — só o valor padrão (de 1 pessoa).
+- **Descrição do evento** agora aceita **HTML de verdade** (negrito, título, centralizado, emojis, etc.) em vez de texto puro — cole o HTML pronto no campo "Descrição" do evento no catálogo.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.70.
+- As correções de preço só afetam itens de catálogo do tipo evento com tabela de família configurada — nenhum outro fluxo de venda muda.
+
 ## 1.6.0-rc2.7.70 — 04/11/2026
 
 Base: **RC2.7.69**.
