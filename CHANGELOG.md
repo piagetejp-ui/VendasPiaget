@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.74 — 04/11/2026
+
+Base: **RC2.7.73**.
+
+### Correção: turmas homônimas de anos letivos diferentes
+
+- Na checklist de turmas participantes do evento (criada na RC2.7.73), duas turmas com o mesmo nome mas de anos letivos diferentes (ex: o "4º ano" deste ano e o "4º ano" já matriculado para o ano letivo seguinte) apareciam como uma única entrada duplicada, porque a lista só olhava o nome da turma. Agora a checklist mostra cada uma separada, com o ano letivo ao lado (ex: "4º ano (2026)" e "4º ano (2027)"), permitindo direcionar um evento só para a turma de um ano letivo específico quando for o caso.
+- Eventos já cadastrados **não mudam**: a marcação de turma salva antes desta versão continua valendo pra qualquer ano letivo com aquele nome, exatamente como funcionava na RC2.7.73. A distinção por ano letivo só se aplica a partir de uma nova marcação feita na checklist atualizada.
+- No cadastro rápido de "Novo aluno", o campo de turma agora sugere (autocompletar) os nomes de turma já existentes, para reduzir o risco de alguém digitar um nome de turma ligeiramente diferente do padrão — que foi a causa provável da duplicidade notada.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.73.
+- Nenhum evento existente perde ou ganha turmas participantes nesta atualização.
+
 ## 1.6.0-rc2.7.73 — 04/11/2026
 
 Base: **RC2.7.72**.
