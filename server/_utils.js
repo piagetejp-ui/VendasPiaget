@@ -473,12 +473,19 @@ function catalogSaleWindowAllowed(item){
 }
 /* Lista de turmas vazia/ausente = evento aberto para toda a escola (comportamento de sempre,
    nunca quebra um evento já cadastrado). Só restringe quando a secretaria marcou turmas
-   específicas no cadastro do evento. */
-function catalogTurmaAllowed(item,turma){
+   específicas no cadastro do evento. Cada entrada pode ser "turma" (legado, vale para
+   qualquer ano letivo com esse nome de turma) ou "turma||anoLetivo" (distingue turmas
+   homônimas de anos letivos diferentes, ex.: "4º ano" de 2026 x "4º ano" de 2027). */
+function catalogTurmaAllowed(item,turma,anoLetivo){
   if(item?.tipoOperacional!=='evento')return true;
   const lista=item.turmasElegiveis;
   if(!Array.isArray(lista)||!lista.length)return true;
-  return lista.includes(String(turma||''));
+  const turmaStr=String(turma||''),anoStr=anoLetivo!=null?String(anoLetivo):'';
+  return lista.some(entry=>{
+    const s=String(entry||''),idx=s.indexOf('||');
+    if(idx===-1)return s===turmaStr;
+    return s.slice(0,idx)===turmaStr&&s.slice(idx+2)===anoStr;
+  });
 }
 function normalizeCatalogMetadata(item,raw){
   const meta=raw.metadados&&typeof raw.metadados==='object'?raw.metadados:{};
@@ -552,7 +559,7 @@ async function normalizeSecretaryMixedSale(db,raw=[],channel='presencial',studen
   for(const line of normal.lines){
     if(line.tipo==='produto'||catalogRootId(line.categoriaId,categoryMap)==='cat_cantina')throw Object.assign(new Error('Na Secretaria, itens da Cantina devem ser adicionados pela programação de lanches.'),{status:400});
     const cat=line.catalogoItemId?catalogMap?.get(String(line.catalogoItemId)):null;
-    if(cat&&student&&!catalogTurmaAllowed(cat,student.turma))throw Object.assign(new Error(`A turma de ${student.nome||'este aluno'} não está entre as turmas participantes de ${cat.nome}.`),{status:403});
+    if(cat&&student&&!catalogTurmaAllowed(cat,student.turma,student.anoLetivo))throw Object.assign(new Error(`A turma de ${student.nome||'este aluno'} não está entre as turmas participantes de ${cat.nome}.`),{status:403});
   }
   if(scheduleRaw.length&&!student)throw Object.assign(new Error('Aluno não identificado para programar lanches.'),{status:400});
   const config=cfg||await getConfig(db),productMap=scheduleRaw.length?await loadProductMap(db):new Map(),programacoes=[],lines=[...normal.lines];let total=normal.total;
