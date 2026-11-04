@@ -1,5 +1,18 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.75 — 04/11/2026
+
+Base: **RC2.7.74**.
+
+### Correção: venda da secretaria podia usar dados desatualizados do catálogo por até 1 minuto
+
+- Encontrada a causa de a venda presencial (e o link gerado pela secretaria) ainda permitir vender um evento para uma turma que acabou de ser desmarcada como participante, mesmo a página pública de confirmação já bloqueando corretamente: havia um cache interno do catálogo que guardava os itens por até 60 segundos e podia ser reaproveitado entre requisições diferentes. Assim que a secretaria salvava uma restrição de turma (ou qualquer outra alteração do item: preço, canal, ativo/inativo), uma venda feita nos segundos seguintes podia ainda enxergar a versão antiga do item.
+- Esse cache foi removido. Agora toda venda (presencial, link da secretaria, página pública) sempre lê a versão mais recente do catálogo salva no Firestore, sem nenhuma janela de atraso.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.74.
+
 ## 1.6.0-rc2.7.74 — 04/11/2026
 
 Base: **RC2.7.73**.
