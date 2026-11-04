@@ -841,9 +841,29 @@ async function buildCheckoutOperation(db, body){
     const raw=Array.isArray(body.itens)?body.itens:[];
     if(!raw.length)throw Object.assign(new Error('Adicione ao menos um item à venda.'),{status:400});
     const validationChannel=actor.perfil==='responsavel'?'portal':'online',cfg=await getConfig(db),normalized=await normalizeFamilySecretaryMixedSale(db,raw,validationChannel,aluno,cfg),total=normalized.total,lines=normalized.lines,expanded=normalized.expanded,catalogStock=normalized.catalogStock,uniformStock=normalized.uniformStock||[],programacoes=normalized.programacoes,alunosIds=normalized.alunosIds||[aluno.id];
-    const acc=await getAccount(db,aluno.id),saldoAtual=accountNet(acc),usarSaldo=body.usarSaldo===true,creditoUsado=usarSaldo?Math.min(Math.max(0,saldoAtual),total):0,regularizacao=Math.max(0,-saldoAtual),checkoutTotal=Math.max(0,total-creditoUsado+regularizacao),subject=String(body.subjectOverride||'').trim()||(alunosIds.length>1?await familyCheckoutSubject(db,aluno,{forceFamily:true,alunosIds}):aluno.nome),descricao=familySaleDescription(lines,subject);
+    /* forcarRegularizacao nunca vem direto de body: um responsável não pode forjar esse campo
+       na própria requisição para escapar da regularização. Quando o pagamento é de um link
+       gerado pela secretaria (vendaOnlineId presente), a escolha foi travada por quem tem
+       permissão de staff no momento em que o link foi criado (api/criar-venda-online.js,
+       atrás de verifyStaff) e fica salva no próprio documento do link. Só é aceita se o link
+       ainda estiver válido (não vencido, não já pago) e se o aluno sendo cobrado agora for
+       o mesmo (ou da mesma família) para quem o link foi gerado - isso impede alguém de
+       reaproveitar o id de um link antigo/de outra família numa chamada direta à API pra
+       escapar da regularização de uma cobrança diferente. Sem vendaOnlineId (venda direta ao
+       responsável, sem link gerado pela secretaria - portal, evento público), a regularização
+       é sempre obrigatória. */
+    const vendaOnlineId=String(body.vendaOnlineId||'');
+    let forcarRegularizacao=true;
+    if(vendaOnlineId){
+      const linkSnap=await db.collection('vendas_online_links').doc(vendaOnlineId).get();
+      const link=linkSnap.exists?linkSnap.data():null;
+      const linkAindaValido=link&&!['pago','pago_revisao','concluido_saldo','cancelado','substituido'].includes(link.status)&&new Date(link.expiraEm||0).getTime()>Date.now();
+      const linkParaEsteAluno=link&&(String(link.alunoId||'')===aluno.id||(Array.isArray(link.alunosIds)&&link.alunosIds.map(String).includes(aluno.id)));
+      if(linkAindaValido&&linkParaEsteAluno&&link.forcarRegularizacao===false)forcarRegularizacao=false;
+    }
+    const acc=await getAccount(db,aluno.id),saldoAtual=accountNet(acc),usarSaldo=body.usarSaldo===true,creditoUsado=usarSaldo?Math.min(Math.max(0,saldoAtual),total):0,regularizacao=forcarRegularizacao?Math.max(0,-saldoAtual):0,checkoutTotal=Math.max(0,total-creditoUsado+regularizacao),subject=String(body.subjectOverride||'').trim()||(alunosIds.length>1?await familyCheckoutSubject(db,aluno,{forceFamily:true,alunosIds}):aluno.nome),descricao=familySaleDescription(lines,subject);
     const itensCheckout=checkoutTotal<=0?[]:regularizacao>0?[{quantity:1,price:total,description:descricao},{quantity:1,price:regularizacao,description:checkoutDescriptionText(`Regularização de saldo em aberto - ${subject}`)}]:[{quantity:1,price:checkoutTotal,description:descricao}];
-    return {tipo,actor,operationKey,totalCentavos:checkoutTotal,pedidoTotalCentavos:total,minimoCentavos:checkoutTotal>0?checkoutTotal:0,descricao,alunoId:aluno.id,alunoNome:aluno.nome,turma:aluno.turma||null,turno:aluno.turno||null,matricula:aluno.matricula||null,responsavelFinanceiro:aluno.responsavelFinanceiro||null,responsavelFinanceiroId:aluno.responsavelFinanceiroId||null,alunosIds,saldoNoMomentoCentavos:saldoAtual,saldoEmAbertoNoMomentoCentavos:regularizacao,vendaOnlineId:String(body.vendaOnlineId||''),itensCheckout,customer,payload:{vendaOnlineId:String(body.vendaOnlineId||''),itens:lines,componentes:[...expanded.values()],estoquesCatalogo:catalogStock,estoquesFarda:uniformStock,programacoes,alunosIds,usarSaldo,creditoUsadoCentavos:creditoUsado,regularizacaoCentavos:regularizacao,pedidoTotalCentavos:total,saldoNoMomentoCentavos:saldoAtual},criadoEm:now};
+    return {tipo,actor,operationKey,totalCentavos:checkoutTotal,pedidoTotalCentavos:total,minimoCentavos:checkoutTotal>0?checkoutTotal:0,descricao,alunoId:aluno.id,alunoNome:aluno.nome,turma:aluno.turma||null,turno:aluno.turno||null,matricula:aluno.matricula||null,responsavelFinanceiro:aluno.responsavelFinanceiro||null,responsavelFinanceiroId:aluno.responsavelFinanceiroId||null,alunosIds,saldoNoMomentoCentavos:saldoAtual,saldoEmAbertoNoMomentoCentavos:regularizacao,vendaOnlineId,itensCheckout,customer,payload:{vendaOnlineId,itens:lines,componentes:[...expanded.values()],estoquesCatalogo:catalogStock,estoquesFarda:uniformStock,programacoes,alunosIds,usarSaldo,creditoUsadoCentavos:creditoUsado,regularizacaoCentavos:regularizacao,pedidoTotalCentavos:total,saldoNoMomentoCentavos:saldoAtual},criadoEm:now};
   }
   if(tipo !== 'entrada_conta_aluno') throw Object.assign(new Error('Tipo de operação não suportado nesta versão.'),{status:400});
   const acc=await getAccount(db, aluno.id);
@@ -1586,7 +1606,8 @@ async function registerInPersonOperation(db,body={}){
   }
   const isAccountOnly=['adicionar_credito','regularizar_debito'].includes(operation),cfg=await getConfig(db);if(!raw.length&&!isAccountOnly)throw Object.assign(new Error('Adicione ao menos um item.'),{status:400});
   const normalized=isAccountOnly?{total:0,lines:[],expanded:new Map(),catalogStock:[],uniformStock:[],programacoes:[],alunosIds:[student.id]}:await normalizeFamilySecretaryMixedSale(db,raw,'presencial',student,cfg),total=normalized.total,lines=normalized.lines,expanded=normalized.expanded,catalogStock=normalized.catalogStock,uniformStock=normalized.uniformStock||[],programacoes=normalized.programacoes||[],alunosIds=normalized.alunosIds||[student.id];
-  const accRef=await accountRefForStudent(db,student.id,student),acc=await getAccount(db,student.id),before=accountNet(acc),useBalance=body.usarSaldo===true,creditUsed=isAccountOnly?0:(useBalance?Math.min(Math.max(0,before),total):0),debtRequired=isAccountOnly?0:Math.max(0,-before),operationAmount=operation==='adicionar_credito'?cents(body.valorCentavos||body.valorRecebidoCentavos):operation==='regularizar_debito'?Math.max(0,-before):0,required=isAccountOnly?operationAmount:Math.max(0,total-creditUsed+debtRequired);
+  const forcarRegularizacao=body.forcarRegularizacao!==false;
+  const accRef=await accountRefForStudent(db,student.id,student),acc=await getAccount(db,student.id),before=accountNet(acc),useBalance=body.usarSaldo===true,creditUsed=isAccountOnly?0:(useBalance?Math.min(Math.max(0,before),total):0),debtRequired=isAccountOnly||!forcarRegularizacao?0:Math.max(0,-before),operationAmount=operation==='adicionar_credito'?cents(body.valorCentavos||body.valorRecebidoCentavos):operation==='regularizar_debito'?Math.max(0,-before):0,required=isAccountOnly?operationAmount:Math.max(0,total-creditUsed+debtRequired);
   if(operation==='regularizar_debito'&&required<=0)throw Object.assign(new Error('O aluno não possui saldo em aberto.'),{status:409});if(operation==='adicionar_credito'&&required<=0)throw Object.assign(new Error('Informe o valor do crédito.'),{status:400});
   const split=normalizeSplitPayments(body,required),payments=split.payments,applied=split.totalApplied,afterPayment=before+applied,after=isAccountOnly?afterPayment:afterPayment-total,method=payments.length===0?'saldo_conta':payments.length===1?payments[0].metodo:'pagamento_combinado';
   const cashPayments=payments.filter(p=>p.metodo==='dinheiro'),cashTendered=cashPayments.reduce((n,p)=>n+cents(p.valorRecebidoCentavos||p.valorAplicadoCentavos),0),cashChange=cashPayments.reduce((n,p)=>n+cents(p.trocoCentavos),0),cashNet=cashTendered-cashChange,cardFee=payments.filter(p=>p.metodo==='cartao').reduce((n,p)=>n+cents(p.taxaCentavos),0),netSettlement=payments.reduce((n,p)=>n+(p.metodo==='cartao'?cents(p.valorLiquidoCentavos):cents(p.valorAplicadoCentavos)),0);
