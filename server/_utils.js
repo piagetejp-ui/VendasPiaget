@@ -474,18 +474,22 @@ function catalogSaleWindowAllowed(item){
 }
 /* Lista de turmas vazia/ausente = evento aberto para toda a escola (comportamento de sempre,
    nunca quebra um evento já cadastrado). Só restringe quando a secretaria marcou turmas
-   específicas no cadastro do evento. Cada entrada pode ser "turma" (legado, vale para
-   qualquer ano letivo com esse nome de turma) ou "turma||anoLetivo" (distingue turmas
-   homônimas de anos letivos diferentes, ex.: "4º ano" de 2026 x "4º ano" de 2027). */
-function catalogTurmaAllowed(item,turma,anoLetivo){
+   específicas no cadastro do evento. RC2.7.74 tentou distinguir turmas homônimas por ano
+   letivo (entrada "turma||anoLetivo"), mas isso se mostrou perigoso: como o campo anoLetivo
+   não é preenchido de forma consistente em todos os alunos, a mesma turma podia aparecer
+   dividida em mais de uma linha na checklist do editor, e a secretaria podia desmarcar só a
+   linha que via primeiro achando que excluiu a turma inteira - deixando outros alunos da
+   mesma turma (com anoLetivo diferente) ainda elegíveis sem perceber. RC2.7.76 volta a
+   comparar só pelo nome da turma, ignorando um eventual "||anoLetivo" no fim da entrada
+   (compatível com o que já estava salvo antes e durante a RC2.7.74/75). */
+function catalogTurmaAllowed(item,turma){
   if(item?.tipoOperacional!=='evento')return true;
   const lista=item.turmasElegiveis;
   if(!Array.isArray(lista)||!lista.length)return true;
-  const turmaStr=String(turma||''),anoStr=anoLetivo!=null?String(anoLetivo):'';
+  const turmaStr=String(turma||'');
   return lista.some(entry=>{
     const s=String(entry||''),idx=s.indexOf('||');
-    if(idx===-1)return s===turmaStr;
-    return s.slice(0,idx)===turmaStr&&s.slice(idx+2)===anoStr;
+    return (idx===-1?s:s.slice(0,idx))===turmaStr;
   });
 }
 function normalizeCatalogMetadata(item,raw){
@@ -560,7 +564,7 @@ async function normalizeSecretaryMixedSale(db,raw=[],channel='presencial',studen
   for(const line of normal.lines){
     if(line.tipo==='produto'||catalogRootId(line.categoriaId,categoryMap)==='cat_cantina')throw Object.assign(new Error('Na Secretaria, itens da Cantina devem ser adicionados pela programação de lanches.'),{status:400});
     const cat=line.catalogoItemId?catalogMap?.get(String(line.catalogoItemId)):null;
-    if(cat&&student&&!catalogTurmaAllowed(cat,student.turma,student.anoLetivo))throw Object.assign(new Error(`A turma de ${student.nome||'este aluno'} não está entre as turmas participantes de ${cat.nome}.`),{status:403});
+    if(cat&&student&&!catalogTurmaAllowed(cat,student.turma))throw Object.assign(new Error(`A turma de ${student.nome||'este aluno'} não está entre as turmas participantes de ${cat.nome}.`),{status:403});
   }
   if(scheduleRaw.length&&!student)throw Object.assign(new Error('Aluno não identificado para programar lanches.'),{status:400});
   const config=cfg||await getConfig(db),productMap=scheduleRaw.length?await loadProductMap(db):new Map(),programacoes=[],lines=[...normal.lines];let total=normal.total;

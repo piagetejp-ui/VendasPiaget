@@ -1,5 +1,25 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.76 — 04/11/2026
+
+Base: **RC2.7.75**.
+
+### Correção importante: exclusão de turma por ano letivo podia falhar silenciosamente
+
+- A divisão da checklist de turmas por ano letivo (RC2.7.74) se mostrou perigosa na prática: como nem todo aluno tem o campo "ano letivo" preenchido, a mesma turma podia aparecer em mais de uma linha na checklist sem a secretaria perceber. Resultado real: um evento configurado para excluir o Infantil 5 (marcando todas as outras turmas) ainda deixava um aluno do Infantil 5 completar a compra pela secretaria, porque havia uma segunda linha "Infantil 5" escondida (de um aluno com ano letivo diferente) que continuou marcada.
+- **Revertido**: a checklist e a validação voltam a comparar turma só pelo nome, como era na RC2.7.73 — sem dividir por ano letivo. Isso fecha a brecha.
+- **Autocorreção**: qualquer evento configurado durante a janela da RC2.7.74/75 pode ter ficado com um resíduo técnico da divisão por ano. Ao reabrir o editor desse evento, a turma em questão aparece **marcada** (sinalizando que ainda está parcialmente liberada) — basta desmarcar e salvar de novo para limpar o resíduo. **Eventos com restrição de turma configurada nesse período (ex: Projeto Literário 26) precisam ser reabertos e salvos uma vez** para garantir que a exclusão valha de verdade.
+
+### Correção: link do evento feio ao compartilhar
+
+- O título da página de confirmação de evento (e da página de pagamento) estava mostrando o número da versão do sistema (ex: "...Escola Piaget V1.6.0-rc2.7.75"), o que aparecia feio ao colar o link no WhatsApp. Removido.
+- Adicionadas tags de pré-visualização (Open Graph) com título, descrição e o símbolo da escola, para o link aparecer com um cartão de prévia decente ao ser compartilhado.
+- O link público gerado na tela "Painel" do evento estava usando o domínio que a secretaria tinha aberto no navegador no momento (podendo ser o endereço de pré-visualização da Vercel) em vez do domínio oficial. Agora sempre usa **meupiaget.com.br**.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.75.
+
 ## 1.6.0-rc2.7.75 — 04/11/2026
 
 Base: **RC2.7.74**.

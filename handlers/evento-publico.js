@@ -98,7 +98,7 @@ module.exports = async function handler(req, res) {
       }
       const alunos = await Promise.all(irmaos.map(async a => ({
         id: a.id, nome: a.nome || 'Aluno', turma: a.turma || '',
-        elegivel: catalogTurmaAllowed(item, a.turma, a.anoLetivo),
+        elegivel: catalogTurmaAllowed(item, a.turma),
         confirmado: await alunoJaConfirmado(db, a.id, eventoId)
       })));
       let responsavelNome = aluno.responsavelFinanceiro || 'Responsável';
