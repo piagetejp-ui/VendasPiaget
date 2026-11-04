@@ -1,6 +1,6 @@
 /* Escola Piaget — Catálogo de vendas e motor unificado RC2.1 */
 (function(){
-const VERSION='1.6.0-rc2.7.71';
+const VERSION='1.6.0-rc2.7.72';
 const BASE_LOAD=window.loadCore;
 const BASE_RENDER_VENDAS=window.renderVendas;
 const BASE_START_SALE=window.startSecretarySaleV151;
@@ -86,7 +86,24 @@ async function syncLegacyItemV160(i){const now=nowIso(),effectiveActive=i.ativo!
 
 function saleStudentSummaryV160(st){const net=netV151(st.account||{}),all=saleFamilyStudentsV172(st);return `<div class="v151-student-summary"><div class="big">${all.length>1?'Conta familiar':esc(st.student.nome)}</div><div>${all.length>1?`${all.length} alunos vinculados · ${all.map(a=>esc(a.nome)).join(' · ')}`:`${esc(st.student.turma||'')} · Matrícula ${esc(st.student.matricula||'-')}`}</div><div style="margin-top:7px">Saldo ${all.length>1?'da família':'da conta'}: <strong>${signedV151(net)}</strong></div></div>`}
 function isSnackScheduleV163(x){return x?.tipo==='programacao_lanche'||x?.tipoOperacional==='programacao_lanche'}
-function saleTotalV160(st=state.v160Sale){if(['adicionar_credito','regularizar_debito'].includes(st.operation))return Number(st.amount||0);return(st.cart||[]).reduce((sum,x)=>sum+Number(x.totalCentavos??(Number(x.precoUnitarioCentavos||0)*Number(x.quantidade||1))),0)}
+function lineTotalV160(x){return Number(x.totalCentavos??(Number(x.precoUnitarioCentavos||0)*Number(x.quantidade||1)))}
+/* Mesma regra de preço por tamanho de família aplicada no servidor (normalizeFamilySecretaryMixedSale) -
+   refeita aqui só para o carrinho mostrar o valor certo ANTES de confirmar, nunca um total maior
+   do que o que vai de fato ser cobrado (senão a secretaria recebe em dinheiro mais do que precisa). */
+function saleTotalV160(st=state.v160Sale){
+  if(['adicionar_credito','regularizar_debito'].includes(st.operation))return Number(st.amount||0);
+  const cart=st.cart||[],porEvento=new Map();let total=0;
+  for(const line of cart){
+    const cat=line.catalogoItemId?itemByIdV160(line.catalogoItemId):null;
+    if(cat&&cat.tipoOperacional==='evento'&&cat.precoPorQuantidadeFamilia){const bucket=porEvento.get(line.catalogoItemId)||[];bucket.push(line);porEvento.set(line.catalogoItemId,bucket);continue}
+    total+=lineTotalV160(line);
+  }
+  for(const [catalogoItemId,grupo] of porEvento){
+    const cat=itemByIdV160(catalogoItemId),tabela=cat.precoPorQuantidadeFamilia||{},qtd=grupo.length,chave=qtd>5?5:qtd;
+    total+=tabela[chave]!=null?Number(tabela[chave]):grupo.reduce((s,l)=>s+lineTotalV160(l),0);
+  }
+  return total;
+}
 function saleCalcV160(st=state.v160Sale){const total=saleTotalV160(st),before=netV151(st.account||{}),accountOnly=['adicionar_credito','regularizar_debito'].includes(st.operation),credit=accountOnly?0:(st.usarSaldo?Math.min(Math.max(0,before),total):0),debt=accountOnly?0:Math.max(0,-before),external=st.operation==='regularizar_debito'?Math.max(0,-before):(st.operation==='adicionar_credito'?total:Math.max(0,total-credit+debt)),after=st.operation==='adicionar_credito'?before+external:st.operation==='regularizar_debito'?before+external:before+external-total;return{total,before,credit,debt,external,after}}
 function paymentTotalV163(st=state.v160Sale){return(st.payments||[]).reduce((sum,p)=>sum+Number(p.valorAplicadoCentavos||0),0)}
 function paymentMethodLabelV163(p){if(p.metodo==='dinheiro')return'Dinheiro';if(p.metodo==='pix')return`Pix${p.origemPix?` · ${String(p.origemPix).replaceAll('_',' ')}`:''}`;if(p.metodo==='cartao')return`Cartão · ${String(p.adquirente||'maquininha').replaceAll('_',' ')} · ${p.modalidadeCartao==='credito'?`Crédito ${p.parcelas||1}x`:'Débito'}`;return String(p.metodo||'Pagamento').replaceAll('_',' ')}
