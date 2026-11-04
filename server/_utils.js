@@ -413,8 +413,6 @@ function expandProduct(product, qty, map, target=new Map(), seen=new Set()){
   }
   return target;
 }
-let _catalogCacheV218={at:0,products:null,items:null,categories:null};
-const CATALOG_CACHE_TTL_V218=60*1000;
 async function allDocsById(db,collection,pageSize=250){
   const out=[];let cursor=null;
   while(true){
@@ -437,20 +435,23 @@ async function allDocsByEquality(db,collection,field,value,pageSize=100){
   }
   return out;
 }
+/* RC2.7.75: removido o cache entre requisições (até 60s) que existia aqui. Numa instância
+   serverless "quente", esse cache podia responder com uma versão desatualizada do catálogo
+   para uma requisição completamente diferente da que o preencheu - inclusive logo depois da
+   secretaria salvar uma restrição de turma, preço ou canal, deixando uma janela em que a venda
+   presencial ou o link gerado ainda valiam a regra antiga. Preço, elegibilidade e disponibilidade
+   de canal sempre precisam refletir o que foi salvo por último. */
 async function loadProductMap(db){
-  if(_catalogCacheV218.products&&Date.now()-_catalogCacheV218.at<CATALOG_CACHE_TTL_V218)return _catalogCacheV218.products;
   const docs=await allDocsById(db,'produtos');
-  const map=new Map(docs.map(d=>[d.id,{id:d.id,...d.data()}]));_catalogCacheV218={..._catalogCacheV218,at:Date.now(),products:map};return map;
+  return new Map(docs.map(d=>[d.id,{id:d.id,...d.data()}]));
 }
 async function loadCatalogItemMap(db){
-  if(_catalogCacheV218.items&&Date.now()-_catalogCacheV218.at<CATALOG_CACHE_TTL_V218)return _catalogCacheV218.items;
   const docs=await allDocsById(db,'catalogo_itens');
-  const map=new Map(docs.map(d=>[d.id,{id:d.id,...d.data()}]));_catalogCacheV218={..._catalogCacheV218,at:Date.now(),items:map};return map;
+  return new Map(docs.map(d=>[d.id,{id:d.id,...d.data()}]));
 }
 async function loadCatalogCategoryMap(db){
-  if(_catalogCacheV218.categories&&Date.now()-_catalogCacheV218.at<CATALOG_CACHE_TTL_V218)return _catalogCacheV218.categories;
   const docs=await allDocsById(db,'catalogo_categorias');
-  const map=new Map(docs.map(d=>[d.id,{id:d.id,...d.data()}]));_catalogCacheV218={..._catalogCacheV218,at:Date.now(),categories:map};return map;
+  return new Map(docs.map(d=>[d.id,{id:d.id,...d.data()}]));
 }
 function catalogChannelAllowed(item,channel){
   const c=item?.canais||{};
