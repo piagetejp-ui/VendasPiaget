@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.77 — 04/11/2026
+
+Base: **RC2.7.76**.
+
+### Novo: regularização de saldo opcional na venda da secretaria
+
+- Até agora, qualquer venda para um aluno com saldo em aberto forçava automaticamente a cobrança junto da dívida antiga. Agora a secretaria pode decidir: no passo de revisão da venda (presencial ou ao gerar link para o responsável), quando o aluno tem saldo negativo, aparece a opção **"Cobrar junto a regularização do saldo em aberto"**, marcada por padrão (preserva o comportamento de sempre). Desmarcando, a venda nova é cobrada sozinha e a dívida antiga fica como estava, disponível para ser regularizada depois.
+- O link enviado **diretamente ao responsável** (pela página do Meu Piaget ou pela confirmação pública de evento) continua **sempre forçando** a regularização, sem exceção — essa opção só existe nos dois fluxos que passam pela secretaria: venda presencial e link gerado pela secretaria.
+- Segurança: a escolha da secretaria não pode ser forjada pelo responsável. Numa venda presencial ou na geração do link, só é aceita porque esses dois endpoints exigem login de equipe. No momento em que o responsável paga um link já gerado, a escolha é lida do próprio link salvo no banco (não de algo que o navegador do responsável envie) e só vale se o link ainda estiver válido (não vencido, não já pago/cancelado) e for realmente do aluno que está sendo cobrado — fechando qualquer brecha de reaproveitar um link antigo ou de outra família.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.76.
+
 ## 1.6.0-rc2.7.76 — 04/11/2026
 
 Base: **RC2.7.75**.
