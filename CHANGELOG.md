@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.78 — 05/11/2026
+
+Base: **RC2.7.77**.
+
+### Correção: Painel do evento agora mostra o histórico retroativo
+
+- O Painel do evento (botão "Painel" no item do catálogo) exigia que a janela de vendas (início/fim) estivesse configurada e só mostrava confirmações dentro dela. Um evento que nunca teve essa janela preenchida dava erro pedindo para configurar antes. E mesmo com a janela configurada, uma venda feita antes dela ser preenchida, ou de um evento já encerrado há tempos, ficava de fora sem aparecer no painel.
+- Agora o painel mostra o **histórico completo de vendas daquele item**, desde a data em que ele foi criado no catálogo até hoje — sem precisar configurar nada e sem deixar nenhuma venda antiga de fora. Funciona automaticamente pra eventos novos, antigos, já encerrados, ou que nunca tiveram janela de vendas definida.
+- A janela de início/fim continua controlando só quando **novas** vendas são permitidas (isso não mudou).
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.77.
+
 ## 1.6.0-rc2.7.77 — 04/11/2026
 
 Base: **RC2.7.76**.
