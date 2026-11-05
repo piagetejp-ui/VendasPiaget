@@ -10,10 +10,7 @@ const { verifyStaff } = require('../server/_family-utils');
 function cents(v) { const n = Number(v || 0); return Number.isFinite(n) ? Math.round(n) : 0; }
 function reais(v) { return Math.round(cents(v)) / 100; }
 
-async function loadVendasDoEvento(db, eventoId, vendaInicio, vendaFim) {
-  const inicioUtc = `${vendaInicio}T00:00:00.000Z`;
-  const fimDate = new Date(`${vendaFim}T00:00:00.000Z`); fimDate.setUTCDate(fimDate.getUTCDate() + 2);
-  const fimUtc = fimDate.toISOString();
+async function loadVendasDoEvento(db, eventoId, inicioUtc, fimUtc) {
   const out = []; let cursor = null;
   while (true) {
     let q = db.collection('vendas').where('criadoEm', '>=', inicioUtc).where('criadoEm', '<=', fimUtc).orderBy('criadoEm').limit(500);
@@ -50,10 +47,16 @@ module.exports = async function handler(req, res) {
     const snap = await db.collection('catalogo_itens').doc(eventoId).get();
     if (!snap.exists || snap.data()?.tipoOperacional !== 'evento') return json(res, 404, { ok: false, error: 'Evento não encontrado.' });
     const item = { id: snap.id, ...snap.data() };
-    if (!item.vendaInicio || !item.vendaFim) {
-      return json(res, 409, { ok: false, error: 'Configure a data de início e fim das vendas deste evento no catálogo para habilitar o painel.' });
-    }
-    const confirmacoes = await loadVendasDoEvento(db, eventoId, item.vendaInicio, item.vendaFim);
+    /* RC2.7.78: o painel não depende mais de vendaInicio/vendaFim estarem configurados - esses
+       campos controlam quando a venda do evento fica aberta para NOVAS compras, não até onde
+       o painel consegue enxergar. Para o painel, a busca de vendas é limitada a partir da
+       criação do próprio item no catálogo (nenhuma venda pode existir antes disso) até agora -
+       assim eventos já encerrados, ou que nunca tiveram a janela de vendas preenchida,
+       mostram seu histórico completo de confirmações automaticamente, sem precisar configurar
+       nada retroativamente. */
+    const inicioUtc = item.criadoEm ? new Date(item.criadoEm).toISOString() : '1970-01-01T00:00:00.000Z';
+    const fimDate = new Date(); fimDate.setUTCDate(fimDate.getUTCDate() + 1);
+    const confirmacoes = await loadVendasDoEvento(db, eventoId, inicioUtc, fimDate.toISOString());
     confirmacoes.sort((a, b) => String(a.dataHora || '').localeCompare(String(b.dataHora || '')));
     const totalArrecadadoCentavos = confirmacoes.reduce((s, c) => s + c.valorCentavos, 0);
     return json(res, 200, {
