@@ -1,5 +1,25 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.79 — 06/11/2026
+
+Base: **RC2.7.78**.
+
+### Correção: pedido de redefinição de senha não notificava a equipe
+
+- Encontrada a causa: quando o responsável pedia "esqueci minha senha" pelo Meu Piaget, o sistema registrava o pedido normalmente, mas só gravava no histórico de auditoria — nunca criava a notificação que aparece no sininho da equipe. A lógica para mostrar essa notificação (com o botão "Gerar link") já existia no sistema, mas só rodava quando era a própria equipe que fazia uma ação pelo navegador; como o pedido do responsável acontece inteiramente no servidor, esse caminho nunca era executado.
+- Corrigido: o pedido do responsável agora também cria a notificação direto no servidor, com o mesmo título, mensagem e botão "Gerar link" de sempre.
+
+### Novo: atalho de um clique pra enviar o link de redefinição
+
+- Na "Conta familiar" de qualquer aluno, no menu **Ações ▾**, tem um novo botão **"Enviar link de redefinição de senha"** que já abre a tela de acesso e gera o link pronto pra copiar — sem precisar passar pela notificação primeiro. (O caminho antigo, "Acesso Meu Piaget" → "Gerar link de redefinição", continua funcionando igual.)
+
+### Avaliado, não implementado nesta versão
+- A ideia de mandar o link automaticamente por e-mail pro responsável (quando tiver e-mail cadastrado) foi considerada, mas o sistema hoje não tem nenhuma integração de envio de e-mail configurada — isso exigiria escolher e configurar um provedor (com credenciais), então fica como uma frente separada pra decidir com calma.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.78.
+
 ## 1.6.0-rc2.7.78 — 05/11/2026
 
 Base: **RC2.7.77**.
