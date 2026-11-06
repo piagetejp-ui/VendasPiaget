@@ -2,7 +2,7 @@
    Caixa único da Secretaria, responsabilidade por operador e hierarquia gerencial. */
 (function(){
 'use strict';
-const VERSION='1.6.0-rc2.7.78';
+const VERSION='1.6.0-rc2.7.79';
 const SESSIONS='sessoes_caixa';
 const PERIODS='periodos_responsabilidade_caixa';
 const DIVERGENCES='divergencias_caixa';

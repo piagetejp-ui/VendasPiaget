@@ -1,4 +1,4 @@
-const {initFirebase,json,parseBody,nowIso,audit}=require('./_utils');
+const {initFirebase,json,parseBody,nowIso,audit,notify}=require('./_utils');
 const {normalizeCpf,normalizeMatricula,tokenHash,randomToken,makePassword,verifyPassword,findResponsibleByCpf,familyPayload,createFamilySession,validateFamilySession,revokeFamilySessions,familySessionTokenFromReq,familyCookieHeader,familyFirebaseToken,deactivateFamilyAuthMirror,enforceAccessRateLimit}=require('./_family-utils');
 
 function familyBaseUrl(req){const raw=String(process.env.PUBLIC_FAMILY_BASE_URL||'https://meupiaget.com.br');try{return new URL(raw).origin}catch(_){return 'https://meupiaget.com.br'}}
@@ -39,7 +39,17 @@ module.exports=async(req,res)=>{
     }
     if(acao==='solicitar_reset'){
       await enforceAccessRateLimit(db,req,'solicitar_reset',{limit:10,windowMinutes:15});
-      const cpf=normalizeCpf(b.cpf);if(cpf.length!==11)return json(res,400,{error:'Informe o CPF.'});const resp=await findResponsibleByCpf(db,cpf);if(resp){const family=await familyPayload(db,resp),ref=db.collection('solicitacoes_reset_responsavel').doc();const first=family.alunos[0]||{};await ref.set({id:ref.id,responsavelId:resp.id,responsavelNome:resp.nome||'Responsável',alunoId:first.id||null,alunoNome:first.nome||'Família',matricula:first.matricula||'',turma:first.turma||'',alunos:family.alunos.map(a=>({id:a.id,nome:a.nome,matricula:a.matricula,turma:a.turma})),status:'aberto',origem:'meu_piaget',criadoEm:nowIso()});await audit(db,'solicitacao_reset_responsavel',{responsavelId:resp.id,alunoId:first.id||null,alunoNome:first.nome||'Família',requestId:ref.id,usuarioId:`responsavel:${resp.id}`,usuarioNome:resp.nome||'Responsável',usuarioPerfil:'responsavel',descricaoHumana:'O responsável solicitou redefinição de senha pelo Meu Piaget.'}).catch(()=>{});}return json(res,200,{ok:true,mensagem:'Solicitação registrada. Entre em contato com a Secretaria para receber o link de redefinição.'});
+      const cpf=normalizeCpf(b.cpf);if(cpf.length!==11)return json(res,400,{error:'Informe o CPF.'});const resp=await findResponsibleByCpf(db,cpf);if(resp){const family=await familyPayload(db,resp),ref=db.collection('solicitacoes_reset_responsavel').doc();const first=family.alunos[0]||{};await ref.set({id:ref.id,responsavelId:resp.id,responsavelNome:resp.nome||'Responsável',alunoId:first.id||null,alunoNome:first.nome||'Família',matricula:first.matricula||'',turma:first.turma||'',alunos:family.alunos.map(a=>({id:a.id,nome:a.nome,matricula:a.matricula,turma:a.turma})),status:'aberto',origem:'meu_piaget',criadoEm:nowIso()});await audit(db,'solicitacao_reset_responsavel',{responsavelId:resp.id,alunoId:first.id||null,alunoNome:first.nome||'Família',requestId:ref.id,usuarioId:`responsavel:${resp.id}`,usuarioNome:resp.nome||'Responsável',usuarioPerfil:'responsavel',descricaoHumana:'O responsável solicitou redefinição de senha pelo Meu Piaget.'}).catch(()=>{});
+        /* RC2.7.79: audit() só grava a trilha/histórico - nunca criou notificação nenhuma.
+           A política de notificação para 'responsavel_reset_solicitado' já existia em
+           notificationPolicyV165 e o front-end já sabia renderizar essa notificação com botão
+           "Gerar link", mas como essa ação acontece inteiramente no servidor (o responsável
+           preenche o CPF no Meu Piaget, sem nenhuma sessão da equipe envolvida), o código
+           cliente que cria notificações a partir de audit() nunca era executado - a secretaria
+           nunca via o pedido chegar. Agora o pedido do responsável também gera a notificação
+           direto no servidor. */
+        await notify(db,{tipo:'responsavel_reset_solicitado',titulo:'Responsável solicitou novo acesso',mensagem:`${first.nome||'Família'} · matrícula ${first.matricula||'-'}. A secretaria/gestão deve confirmar e gerar link temporário.`,prioridade:'alta',alunoId:first.id||null,alunoNome:first.nome||'Família',matricula:first.matricula||null,turma:first.turma||null,acaoPrincipal:'gerar_link_reset',acaoLabel:'Gerar link',origem:'meu_piaget',criadoPorPerfil:'responsavel'}).catch(()=>{});
+      }return json(res,200,{ok:true,mensagem:'Solicitação registrada. Entre em contato com a Secretaria para receber o link de redefinição.'});
     }
     if(acao==='redefinir_senha'){
       await enforceAccessRateLimit(db,req,'redefinir_senha',{limit:15,windowMinutes:15});
