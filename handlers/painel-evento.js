@@ -34,9 +34,14 @@ async function loadVendasDoEvento(db, eventoId, inicioUtc, fimUtc) {
     for (let idx = 0; idx < itens.length; idx++) {
       const it = itens[idx];
       if (String(it.catalogoItemId || '') !== String(eventoId)) continue;
+      /* RC2.7.81: turma vem do item (it.turma), não do nível da venda (v.turma). v.turma só
+         reflete o titular da venda - numa venda familiar com vários alunos, ou numa venda
+         online/checkout (que nem grava turma no nível da venda), as confirmações de quem não é
+         o titular apareciam com turma em branco. Cada item já carrega sua própria turma desde
+         normalizeFamilySecretaryMixedSale (studentAssignmentMeta), então basta usá-la. */
       confirmacoes.push({
         vendaId: v.id, itemIndex: idx, alunoId: it.alunoId || v.alunoId || null, alunoNome: it.alunoNome || v.alunoNome || 'Aluno',
-        turma: v.turma || null, valorCentavos: cents(it.totalCentavos != null ? it.totalCentavos : it.valorCentavos),
+        turma: it.turma || v.turma || null, valorCentavos: cents(it.totalCentavos != null ? it.totalCentavos : it.valorCentavos),
         dataHora: v.criadoEm || null, canal: v.origem || v.canal || null,
         ingressoTipo: it.ingressoTipo || 'normal',
         ingressoEntregue: Boolean(it.ingressoEntregue),
