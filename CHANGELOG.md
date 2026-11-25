@@ -1,5 +1,20 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.80 — 25/11/2026
+
+Base: **RC2.7.79**.
+
+### Novo: controle de ingresso, ingresso extra e irmãos de famílias diferentes
+
+- **Ingresso físico**: no cadastro do evento, nova opção "Este evento tem ingresso físico". Eventos marcados ganham, no Painel do evento, um botão **"Marcar entregue"** (e "Desfazer") por confirmação — separado de "confirmado" (pagou), já que o ingresso costuma ser entregue depois, na secretaria ou na entrada do evento.
+- **Ingresso extra (convidado)**: eventos com ingresso físico também podem ter um **preço de ingresso extra** configurado. Na venda normal da secretaria, ao adicionar o evento ao carrinho, agora dá pra escolher "Aluno (participante regular)" ou "Ingresso extra (convidado)" — o extra usa o preço configurado, separado da tabela por tamanho de família.
+- **Irmãos em famílias cadastradas separadamente**: ao configurar um ingresso normal de um evento com tabela de preço por família, a secretaria agora pode **adicionar participantes de qualquer família** (buscando por nome ou matrícula) para dividir o desconto por tamanho de família juntos — sem precisar unificar o cadastro financeiro de ninguém. A cobrança continua indo inteira para a conta do titular escolhido; os demais só ganham o registro de confirmação do evento. A restrição de turma do evento vale também para esses participantes extras.
+- O Painel do evento agora mostra os participantes extras de cada confirmação e um total de "pessoas" (titulares + participantes), além do total de confirmações.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.79.
+
 ## 1.6.0-rc2.7.79 — 06/11/2026
 
 Base: **RC2.7.78**.
