@@ -1,5 +1,21 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.81 — 25/11/2026
+
+Base: **RC2.7.80**.
+
+### Correção: turma em branco no Painel do evento
+
+- Encontrada a causa do "tracinho" no lugar da turma: o Painel lia a turma do nível da venda, que só reflete o titular da compra. Um irmão (ou participante) coberto pela mesma venda, mas de turma diferente, aparecia com a turma errada ou em branco — e vendas feitas por link/checkout nem gravam esse campo no nível da venda, então ficavam sempre em branco. Corrigido pra ler a turma do próprio item, que já é gravada certinha pra cada aluno.
+
+### Novo: busca e filtro no Painel do evento
+
+- Campo de busca por nome (inclui os participantes extras, não só o titular) e um filtro por turma, pra encontrar rápido o aluno que está entregando o ingresso na hora. O filtro também se mantém depois de marcar/desmarcar um ingresso como entregue.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.80.
+
 ## 1.6.0-rc2.7.80 — 25/11/2026
 
 Base: **RC2.7.79**.
