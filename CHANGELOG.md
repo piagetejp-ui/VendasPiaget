@@ -1,5 +1,18 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.82 — 26/11/2026
+
+Base: **RC2.7.81**.
+
+### Correção: seletor "Tipo de ingresso" parecia não responder
+
+- Testei bastante o fluxo de escolher "Ingresso extra (convidado)" e, em navegador automatizado, o preço e a seleção sempre atualizavam certinho — não consegui reproduzir exatamente o "não muda nada" com certeza absoluta. Mas encontrei um padrão arriscado no código: o próprio seletor se auto-reconstruía (o elemento era destruído e recriado) de dentro do seu próprio evento de troca. Isso é uma causa conhecida de comportamento inconsistente em alguns navegadores/tablets, principalmente Safari no iOS.
+- Corrigido para nunca mais recriar o seletor: agora só o valor do campo "Valor" e a seção de participantes são atualizados diretamente, sem mexer no `<select>` em si. Se o problema persistir mesmo depois desta correção, preciso saber qual aparelho/navegador a secretaria está usando, pra investigar mais a fundo.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.81.
+
 ## 1.6.0-rc2.7.81 — 25/11/2026
 
 Base: **RC2.7.80**.

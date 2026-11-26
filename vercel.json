@@ -87,7 +87,7 @@
       ]
     },
     {
-      "source": "/releases/1.6.0-rc2.7.81/(.*)",
+      "source": "/releases/1.6.0-rc2.7.82/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

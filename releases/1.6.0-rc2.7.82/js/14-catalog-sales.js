@@ -1,6 +1,6 @@
 /* Escola Piaget — Catálogo de vendas e motor unificado RC2.1 */
 (function(){
-const VERSION='1.6.0-rc2.7.81';
+const VERSION='1.6.0-rc2.7.82';
 const BASE_LOAD=window.loadCore;
 const BASE_RENDER_VENDAS=window.renderVendas;
 const BASE_START_SALE=window.startSecretarySaleV151;
@@ -200,14 +200,29 @@ function renderCatalogPickerV160(){
 }
 
 function filterCatalogPickerV166(value=''){const q=String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();state.v160Sale.search=value;saveSaleDraftV178();let visible=0;document.querySelectorAll('.v166-catalog-filterable').forEach(b=>{const ok=!q||String(b.dataset.search||'').includes(q);b.style.display=ok?'':'none';if(ok)visible++});const e=$('#v166CatalogEmpty');if(e)e.classList.toggle('hidden',visible>0)}
+function eventoLineExtrasBodyHtmlV1(i,tipo){
+  if(tipo==='extra')return'';
+  if(!(i.precoPorQuantidadeFamilia&&Object.keys(i.precoPorQuantidadeFamilia).length))return'';
+  const lista=state.v160Sale.currentLineCoParticipantes||[],chips=lista.map((a,idx)=>`<span class="badge" style="display:inline-flex;align-items:center;gap:6px;margin:3px 4px 0 0">${esc(a.nome)} (${esc(a.turma||'-')})<button type="button" onclick="removeCoParticipanteV1(${idx})" style="border:none;background:none;cursor:pointer;color:inherit;font-size:13px">✕</button></span>`).join('');
+  return `<div class="alert">Irmão de outra família (cadastro separado) participando junto deste ingresso? Adicione aqui pra já contar no preço por tamanho de família.</div><div class="fg"><label>Adicionar participante de outra família</label><input class="fi" placeholder="Nome ou matrícula" oninput="searchStudentsInto(this.value,'v1CoParticipanteResults','addCoParticipanteV1')"></div><div id="v1CoParticipanteResults" class="search-results"></div><div style="margin-top:4px">${chips}</div>`;
+}
+/* RC2.7.82: o onchange do seletor de tipo de ingresso reconstruía o modal inteiro (inclusive o
+   próprio <select>) de dentro do seu próprio evento de troca - um padrão arriscado, já que o
+   elemento se autodestrói enquanto ainda está processando a própria interação, o que pode se
+   comportar de forma inconsistente em alguns navegadores/tablets. Agora o onchange só atualiza o
+   preço sugerido e a seção de co-participantes via DOM direto, sem nunca recriar o <select>. */
+window.onEventoTicketTypeChangeV1=function(tipo){
+  state.v160Sale.currentLineTicketType=tipo;
+  const i=itemByIdV160(state.v160Sale.currentLineItemId);if(!i)return;
+  const body=$('#v1EventoExtrasBody');if(body)body.innerHTML=eventoLineExtrasBodyHtmlV1(i,tipo);
+  const priceInput=$('#v160LinePrice');
+  if(priceInput){const precoSugerido=tipo==='extra'&&i.precoIngressoExtraCentavos!=null?i.precoIngressoExtraCentavos:i.precoCentavos;priceInput.value=(Number(precoSugerido||0)/100).toFixed(2).replace('.',',')}
+};
 function eventoLineExtrasHtmlV1(i){
   if(i.tipoOperacional!=='evento')return'';
   const tipo=state.v160Sale.currentLineTicketType||'normal',podeExtra=i.precoIngressoExtraCentavos!=null;
-  const tipoSelect=podeExtra?`<div class="fg"><label>Tipo de ingresso</label><select id="v160LineTicketType" class="fi" onchange="state.v160Sale.currentLineTicketType=this.value;configureCatalogLineV160(state.v160Sale.currentLineItemId,true)"><option value="normal" ${tipo==='normal'?'selected':''}>Aluno (participante regular)</option><option value="extra" ${tipo==='extra'?'selected':''}>Ingresso extra (convidado)</option></select></div>`:'';
-  if(tipo==='extra')return tipoSelect;
-  if(!(i.precoPorQuantidadeFamilia&&Object.keys(i.precoPorQuantidadeFamilia).length))return tipoSelect;
-  const lista=state.v160Sale.currentLineCoParticipantes||[],chips=lista.map((a,idx)=>`<span class="badge" style="display:inline-flex;align-items:center;gap:6px;margin:3px 4px 0 0">${esc(a.nome)} (${esc(a.turma||'-')})<button type="button" onclick="removeCoParticipanteV1(${idx})" style="border:none;background:none;cursor:pointer;color:inherit;font-size:13px">✕</button></span>`).join('');
-  return `${tipoSelect}<div class="alert">Irmão de outra família (cadastro separado) participando junto deste ingresso? Adicione aqui pra já contar no preço por tamanho de família.</div><div class="fg"><label>Adicionar participante de outra família</label><input class="fi" placeholder="Nome ou matrícula" oninput="searchStudentsInto(this.value,'v1CoParticipanteResults','addCoParticipanteV1')"></div><div id="v1CoParticipanteResults" class="search-results"></div><div style="margin-top:4px">${chips}</div>`;
+  const tipoSelect=podeExtra?`<div class="fg"><label>Tipo de ingresso</label><select id="v160LineTicketType" class="fi" onchange="onEventoTicketTypeChangeV1(this.value)"><option value="normal" ${tipo==='normal'?'selected':''}>Aluno (participante regular)</option><option value="extra" ${tipo==='extra'?'selected':''}>Ingresso extra (convidado)</option></select></div>`:'';
+  return `${tipoSelect}<div id="v1EventoExtrasBody">${eventoLineExtrasBodyHtmlV1(i,tipo)}</div>`;
 }
 window.addCoParticipanteV1=function(alunoId){
   const a=(state.students||[]).find(x=>x.id===alunoId);if(!a)return;
