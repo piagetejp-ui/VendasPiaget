@@ -1,5 +1,5 @@
 {
-  "version": "1.6.0-rc2.7.84",
-  "name": "corrige-mensagem-de-erro-de-login-da-equipe-durante-estouro-de-cota",
+  "version": "1.6.0-rc2.7.85",
+  "name": "filtro-de-entrega-de-ingresso-no-painel-do-evento",
   "date": "2026-11-27"
 }
