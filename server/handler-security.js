@@ -76,5 +76,9 @@ module.exports=async function(req,res){
       return json(res,200,{ok:true});
     }
     return json(res,400,{error:'Ação inválida.'});
-  }catch(e){console.error('security',e);return json(res,e.status||500,{error:e.status?e.message:'Não foi possível validar o acesso.'})}
+  }catch(e){
+    console.error('security',e);
+    if(!e.status&&(e.code===8||/RESOURCE_EXHAUSTED|Quota exceeded/i.test(String(e.message||''))))return json(res,503,{error:'O banco de dados atingiu o limite de leituras do dia. Aguarde alguns minutos e tente novamente.'});
+    return json(res,e.status||500,{error:e.status?e.message:'Não foi possível validar o acesso.'});
+  }
 };

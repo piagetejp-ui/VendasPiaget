@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.84 — 27/11/2026
+
+Base: **RC2.7.83**.
+
+### Correção: login da equipe mostrava "Não foi possível validar o acesso" sem dizer o motivo real
+
+- Logo depois do estouro de cota do Firestore na exportação financeira (RC2.7.83), a secretaria não conseguiu mais entrar no sistema: tela de login mostrando "Não foi possível validar o acesso", com erro 500 no console. Investiguei e confirmei que essa mensagem genérica só aparece quando o erro que chega no servidor **não é** uma rejeição de acesso de verdade (login/senha errados ou perfil sem permissão sempre vêm com uma mensagem específica) — ou seja, é sempre um erro inesperado por trás, e nesse caso, batendo logo depois do estouro de cota, é consistente com o Firestore ainda recusando leituras (inclusive a própria consulta do perfil da equipe no login).
+- Corrigido: quando o erro por trás é um estouro de cota do Firestore, a mensagem agora é clara — "O banco de dados atingiu o limite de leituras do dia. Aguarde alguns minutos e tente novamente." — em vez de dar a entender que o acesso ou a senha da pessoa é que está errado. Não muda em nada os outros casos (senha errada, acesso desativado, etc.), só deixa esse caso específico honesto sobre a causa.
+- Importante: isso **não desbloqueia** a cota em si — se o projeto estiver no plano gratuito (Spark) e a cota diária já tiver estourado hoje, ainda é preciso esperar renovar ou migrar pro plano pago (Blaze) pra remover esse teto fixo. A correção da RC2.7.83 já reduz bastante o consumo daqui pra frente.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.83.
+
 ## 1.6.0-rc2.7.83 — 27/11/2026
 
 Base: **RC2.7.82**.
