@@ -1,5 +1,19 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.83 — 27/11/2026
+
+Base: **RC2.7.82**.
+
+### Correção: "RESOURCE_EXHAUSTED: Quota exceeded" ao exportar o financeiro
+
+- Encontrada a causa: a exportação financeira recalculava a composição de regularizações de saldo consultando a coleção inteira de movimentações do aluno **do zero, a cada venda ou pagamento** que tivesse regularização embutida no período — mesmo quando era o mesmo aluno várias vezes seguidas na mesma exportação. Num período com mais movimento (ou depois de algumas tentativas seguidas), isso multiplicava bem mais leituras no Firestore do que o necessário, até estourar a cota.
+- Corrigido: agora essa consulta é feita **uma única vez por aluno, por exportação** (e reaproveitada mesmo entre chamadas simultâneas) — o cálculo de cada composição continua correto e específico pra cada venda/pagamento, só a leitura do Firestore é que deixa de se repetir à toa. O mesmo ganho vale pro relatório de categorias da secretaria, que tinha o mesmo padrão.
+- Importante: se o projeto estiver no plano gratuito (Spark) do Firebase e a cota diária já tiver sido consumida por igual **hoje**, essa correção reduz bastante o consumo daqui pra frente, mas não desbloqueia uma cota que já estourou no dia — nesse caso, é esperar a cota renovar ou considerar o plano pago (Blaze), que não tem esse teto fixo diário.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.82.
+
 ## 1.6.0-rc2.7.82 — 26/11/2026
 
 Base: **RC2.7.81**.

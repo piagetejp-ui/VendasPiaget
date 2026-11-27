@@ -359,6 +359,13 @@ async function buildFinancialExport(db, { dataInicio, dataFim, status = null, me
   const ledgerByAluno = new Map();
   for (const alunoId of ledgerAlunoIds) ledgerByAluno.set(alunoId, await simulateAlunoLedger(db, alunoId));
 
+  /* Compartilhada entre todas as chamadas a debtCompositionItems nesta exportação: sem isso,
+     um aluno com várias vendas/pagamentos com regularização embutida no período fazia a mesma
+     consulta a movimentos_conta ser repetida do zero a cada ocorrência - em períodos com
+     bastante movimento, isso multiplicava as leituras do Firestore desnecessariamente (chegou
+     a estourar a cota do Firestore numa exportação real). */
+  const movesCacheByAluno = new Map();
+
   const vendas = [];
   const itens = [];
   const pagamentos = [];
@@ -423,7 +430,7 @@ async function buildFinancialExport(db, { dataInicio, dataFim, status = null, me
     // na venda para o valor bater com o que foi de fato cobrado no link.
     const regularizacaoEmbutida = Math.max(0, cents(v.valorRecebidoCentavos) - cents(v.valorBrutoCentavos) + cents(v.valorSaldoUtilizadoCentavos));
     if (regularizacaoEmbutida > 0) {
-      const breakdownItems = await resumoHelpers.debtCompositionItems(db, v.alunoId, v.criadoEm, regularizacaoEmbutida, categoryMap);
+      const breakdownItems = await resumoHelpers.debtCompositionItems(db, v.alunoId, v.criadoEm, regularizacaoEmbutida, categoryMap, movesCacheByAluno);
       const explicado = breakdownItems.reduce((s, x) => s + cents(x.valorCentavos), 0);
       const faltante = regularizacaoEmbutida - explicado;
       const composed = faltante > 0 ? [...breakdownItems, { nome: 'Regularização de saldo (origem não identificada no histórico)', categoria: 'Regularização de saldo', valorCentavos: faltante }] : breakdownItems;
@@ -583,7 +590,7 @@ async function buildFinancialExport(db, { dataInicio, dataFim, status = null, me
       }
       let descricaoRegularizacao = null;
       if (m.subtipo === 'regularizacao_saldo_secretaria') {
-        const breakdownItems = await resumoHelpers.debtCompositionItems(db, m.alunoId, m.criadoEm, remainder, categoryMap);
+        const breakdownItems = await resumoHelpers.debtCompositionItems(db, m.alunoId, m.criadoEm, remainder, categoryMap, movesCacheByAluno);
         const explicado = breakdownItems.reduce((s, x) => s + cents(x.valorCentavos), 0);
         const faltante = remainder - explicado;
         const partes = breakdownItems.map(b => `${b.nome || b.categoria || 'item'} (R$ ${(reais(b.valorCentavos) || 0).toFixed(2)})`);

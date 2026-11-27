@@ -129,12 +129,22 @@ const DEBT_MOVEMENT_TYPES=new Set(['compra','consumo']);
 // um campo salvo em lugar nenhum — precisa ser reconstruído andando para trás no extrato do aluno a partir do
 // momento da regularização, somando as compras/consumos até explicar o valor pago, e parando assim que a conta
 // esteve zerada ou positiva (fronteira do ciclo de dívida atual, para não misturar com um ciclo já quitado antes).
-async function debtCompositionItems(db,alunoId,cutoffIso,valorAlvoCentavos,categoryMap){
+/* movesCache (opcional): Map compartilhado por quem chama esta função várias vezes na mesma
+   operação (relatório com várias regularizações, exportação financeira com várias vendas do
+   mesmo aluno). Sem isso, cada chamada reconsultava movimentos_conta do zero para o mesmo
+   aluno - o mesmo aluno com N transações no período gerava N leituras idênticas da mesma
+   coleção, inflando desnecessariamente o consumo de leituras do Firestore. O cache guarda o
+   array já ordenado (não filtrado por cutoff, que varia por chamada). */
+async function debtCompositionItems(db,alunoId,cutoffIso,valorAlvoCentavos,categoryMap,movesCache){
   if(!alunoId||valorAlvoCentavos<=0)return [];
-  const snap=await db.collection('movimentos_conta').where('alunoId','==',alunoId).limit(400).get();
-  const moves=snap.docs.map(d=>({id:d.id,...d.data()}))
-    .filter(m=>String(m.criadoEm||'')<String(cutoffIso||''))
-    .sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||'')));
+  let movesPromise=movesCache&&movesCache.get(alunoId);
+  if(!movesPromise){
+    movesPromise=db.collection('movimentos_conta').where('alunoId','==',alunoId).limit(400).get()
+      .then(snap=>snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>String(b.criadoEm||'').localeCompare(String(a.criadoEm||''))));
+    if(movesCache)movesCache.set(alunoId,movesPromise);
+  }
+  const allMoves=await movesPromise;
+  const moves=allMoves.filter(m=>String(m.criadoEm||'')<String(cutoffIso||''));
   const out=[];let restante=valorAlvoCentavos;
   for(const m of moves){
     if(restante<=0)break;
@@ -228,8 +238,9 @@ async function relatorioCategorias(db,dataInicio,dataFim){
   }
   let composicaoReads=0;
   if(composicaoPendente.length){
+    const movesCache=new Map();
     await Promise.all(composicaoPendente.map(async req=>{
-      const items=await debtCompositionItems(db,req.alunoId,req.cutoffIso,req.valorAlvoCentavos,categoryMap);
+      const items=await debtCompositionItems(db,req.alunoId,req.cutoffIso,req.valorAlvoCentavos,categoryMap,movesCache);
       composicaoReads+=1;
       resolveRegularizationPlaceholder(req.breakdown,req.placeholder,items,req.valorAlvoCentavos);
     }));
