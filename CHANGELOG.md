@@ -1,5 +1,18 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.86 — 27/11/2026
+
+Base: **RC2.7.85**.
+
+### Correção: cancelamento de venda em dinheiro travava inteiro quando o caixa já tinha fechado
+
+- Quando uma venda em dinheiro precisava ser cancelada (baixa dada por engano, por exemplo) e o caixa daquele dia já tinha sido fechado, o sistema recusava o cancelamento **por completo** com a mensagem "o caixa já foi fechado" — mesmo a parte que não tinha nada a ver com dinheiro físico (corrigir o saldo do aluno, o status da venda, a liberação de estoque) ficava travada. A venda continuava aparecendo como paga, sem jeito de corrigir.
+- Corrigido: agora o cancelamento sempre corrige tudo na hora — saldo do aluno, status da venda, estoque e pedidos vinculados. Só o ajuste do dinheiro físico, quando o caixa daquela venda já estava fechado, fica pendente e é **aplicado automaticamente** na próxima vez que a mesma pessoa que fechou aquele caixa abrir (ou assumir) um novo caixa — com uma mensagem clara explicando qual venda cancelada gerou o ajuste e o valor. Assim, o caixa seguinte dessa pessoa já nasce com o saldo esperado corrigido, e a diferença se resolve sozinha na contagem de fechamento, sem gerar uma divergência de surpresa.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.85 (a regra `match /{document=**} { allow read, write: if staffActive(); }` já cobre a nova coleção `ajustes_caixa_pendentes` para a equipe autenticada).
+
 ## 1.6.0-rc2.7.85 — 27/11/2026
 
 Base: **RC2.7.84**.
