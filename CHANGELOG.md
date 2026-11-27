@@ -1,5 +1,18 @@
 # Changelog — Sistema de Vendas Piaget
 
+## 1.6.0-rc2.7.85 — 27/11/2026
+
+Base: **RC2.7.84**.
+
+### Melhoria: mais filtros no Painel do evento
+
+- Novo filtro "Ingresso": Todos / Pendentes de entrega / Já entregues, do lado do filtro de turma já existente. Combina com busca por nome e turma ao mesmo tempo.
+- Novo indicador "Pendentes de entrega" ao lado de "Confirmados" e "Total arrecadado" — mostra sempre o total geral de quem ainda não retirou o ingresso, independente do filtro aplicado na tabela.
+
+### Preservado
+- **10 funções serverless**; nenhuma função nova.
+- Firestore Rules byte a byte iguais à RC2.7.84.
+
 ## 1.6.0-rc2.7.84 — 27/11/2026
 
 Base: **RC2.7.83**.
